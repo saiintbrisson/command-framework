@@ -3,6 +3,7 @@ package me.saiintbrisson.commands;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
+import me.saiintbrisson.commands.annotations.Completer;
 import me.saiintbrisson.commands.result.ResultType;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -63,6 +64,49 @@ public class CommandFrame {
                 registerCommand(holder, command, method);
             }
         }
+    }
+
+    public void registerCompleters(Object... holders) {
+        for (Object holder : holders) {
+            for (Method method : holder.getClass().getMethods()) {
+                Completer completer = method.getDeclaredAnnotation(Completer.class);
+                if(completer == null) {
+                    continue;
+                }
+
+                Class<?>[] types = method.getParameterTypes();
+                if(types.length > 1
+                        || (types.length == 1
+                        && types[0] != Execution.class)) continue;
+
+                Class<?> returnType = method.getReturnType();
+                if(returnType != List.class) continue;
+
+                registerCompleter(completer, method);
+            }
+        }
+    }
+
+    public void registerCompleter(Completer completer, Method method) {
+        String[] split = completer.name().split("\\.");
+        LocalCommand localCommand = matchCommand(split[0], commands);
+
+        if(localCommand == null) {
+            return;
+        }
+
+        split = Arrays.copyOfRange(split, 1, split.length);
+        for (String s : split) {
+            LocalCommand newCommand = matchCommand(s, localCommand.getSubCommands());
+
+            if(newCommand == null) {
+                return;
+            }
+
+            localCommand = newCommand;
+        }
+
+        localCommand.setCompleter(method);
     }
 
     public void registerCommand(Object holder, Command command, Method method) {

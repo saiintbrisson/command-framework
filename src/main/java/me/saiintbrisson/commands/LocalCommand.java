@@ -1,8 +1,10 @@
 package me.saiintbrisson.commands;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
 import me.saiintbrisson.commands.result.ResultType;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class LocalCommand extends org.bukkit.command.Command {
 
@@ -22,6 +25,8 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     private boolean async;
     private boolean inGameOnly;
+
+    private @Setter Method completer;
 
     public LocalCommand(CommandFrame owner, Object holder, Command command, Method method) {
         super(command.name().split("\\.")[command.name().split("\\.").length - 1]);
@@ -82,7 +87,6 @@ public class LocalCommand extends org.bukkit.command.Command {
         Object object = invoke(execution);
 
         if(object instanceof Void) {
-            invoke(execution);
             return false;
         } else if(object instanceof Boolean) {
             return (Boolean) object;
@@ -122,5 +126,53 @@ public class LocalCommand extends org.bukkit.command.Command {
             return null;
         }
     }
-    
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        if(args.length > 0) {
+            LocalCommand command = owner.matchCommand(args[0], subCommands);
+            if(command != null) {
+                return command.tabComplete(
+                        sender,
+                        alias + " " + args[0],
+                        Arrays.copyOfRange(args, 1, args.length)
+                );
+            }
+        }
+
+        if(completer == null || completer.getReturnType() != List.class) {
+            if(subCommands.size() == 0) {
+                return Bukkit.getOnlinePlayers()
+                        .stream()
+                        .map(Player::getName)
+                        .filter(s -> args.length <= 0
+                                || s.toLowerCase()
+                                .startsWith(args[0].toLowerCase()))
+                        .collect(Collectors.toList());
+            } else {
+                return subCommands.stream()
+                        .map(LocalCommand::getName)
+                        .filter(s -> args.length <= 0
+                                || s.toLowerCase()
+                                .startsWith(args[0].toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        Class<?>[] types = completer.getParameterTypes();
+
+        try {
+            if(types.length == 0) {
+                return (List<String>) completer.invoke(holder);
+            } else if(types.length == 1 && types[0] == Execution.class) {
+                return (List<String>) completer.invoke(holder,
+                        new Execution(sender, alias, args));
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
 }
