@@ -35,12 +35,23 @@ public class ExamplePlugin extends JavaPlugin {
             aliases = {"tst", "teste"},
             description = "test",
             permission = "test.1",
-            usage = "test <letter>")
+            usage = "test <message>",
+            options = {"noprefix", "colored"})
     public ResultType test(Execution execution) {
-        String letter = execution.getArg(0);
+        String msg = execution.getArg(0);
+        if(msg == null) return ResultType.INCORRECT_USAGE;
 
-        if(letter == null) return ResultType.INCORRECT_USAGE;
-        execution.sendMessage(letter);
+        msg = String.join(" ", execution.getArgs());
+
+        if (!execution.hasOption("noprefix")) {
+            msg = "test " + msg;
+        }
+
+        if (execution.hasOption("colored")) {
+            msg = "§a" + msg;
+        }
+
+        execution.sendMessage(msg);
 
         return ResultType.NONE;
     }
@@ -48,14 +59,16 @@ public class ExamplePlugin extends JavaPlugin {
     @Command(name = "test.msg",
             aliases = {"tstmsg", "testemsg"},
             description = "test msg",
-            usage = "test msg <letter>",
+            usage = "test msg <message>",
             async = true,
             inGameOnly = true)
     public ResultType testMsg(Execution execution) {
-        String letter = execution.getArg(0);
+        String msg = execution.getArg(0);
+        if(msg == null) return ResultType.INCORRECT_USAGE;
 
-        if(letter == null) return ResultType.INCORRECT_USAGE;
-        execution.sendMessage("msg " + letter);
+        msg = String.join(" ", execution.getArgs());
+
+        execution.sendMessage("msg " + msg);
 
         return ResultType.NONE;
     }

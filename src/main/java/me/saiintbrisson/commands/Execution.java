@@ -15,6 +15,8 @@ public class Execution {
     private String label;
     private String[] args;
 
+    private String[] options;
+
     public String getArg(int index) {
         try {
             return args[index];
@@ -25,6 +27,14 @@ public class Execution {
 
     public int argsCount() {
         return args.length;
+    }
+
+    public boolean hasOption(String option) {
+        for (String s : options) {
+            if(s.equalsIgnoreCase(option)) return true;
+        }
+
+        return false;
     }
 
     public boolean isPlayer() {

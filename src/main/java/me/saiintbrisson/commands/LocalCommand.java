@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     private Object holder;
     private Method method;
+
+    private String[] options;
 
     private boolean async;
     private boolean inGameOnly;
@@ -40,6 +43,8 @@ public class LocalCommand extends org.bukkit.command.Command {
         setDescription(command.description());
         setUsage(command.usage().equals("") ? command.name() : command.usage());
         setPermission(command.permission().equals("") ? null : command.permission());
+
+        options = command.options();
 
         async = command.async();
         inGameOnly = command.inGameOnly();
@@ -72,7 +77,10 @@ public class LocalCommand extends org.bukkit.command.Command {
             }
         }
 
-        Execution execution = new Execution(sender, commandLabel, args);
+
+        String[] options = getOptions(args);
+        args = Arrays.copyOfRange(args, 0, args.length - options.length);
+        Execution execution = new Execution(sender, commandLabel, args, options);
 
         if(async) {
             CompletableFuture.runAsync(() -> run(execution));
@@ -171,13 +179,31 @@ public class LocalCommand extends org.bukkit.command.Command {
                 return (List<String>) completer.invoke(holder);
             } else if(types.length == 1 && types[0] == Execution.class) {
                 return (List<String>) completer.invoke(holder,
-                        new Execution(sender, alias, args));
+                        new Execution(sender, alias, args, new String[0]));
             } else {
                 return new ArrayList<>();
             }
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+
+    private String[] getOptions(String[] args) {
+        List<String> options = new LinkedList<>();
+        for (int i = args.length - 1; i > 0; i--) {
+            String option = args[i];
+            if(option.length() == 1 || !option.startsWith("-")) break;
+            option = option.substring(1);
+
+            for (String s : this.options) {
+                if(s.equals(option)) {
+                    options.add(option);
+                    break;
+                }
+            }
+        }
+
+        return options.toArray(new String[0]);
     }
 
 }

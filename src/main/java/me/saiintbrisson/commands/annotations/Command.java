@@ -16,6 +16,8 @@ public @interface Command {
     String usage() default "";
     String permission() default "";
 
+    String[] options() default {};
+
     boolean async() default false;
     boolean inGameOnly() default false;
 
