@@ -130,9 +130,13 @@ public class LocalCommand extends org.bukkit.command.Command {
                 return null;
             }
         } catch (Exception e) {
-            execution.sendMessage(owner.getErrorMessage()
-                    .replace("{error}", e.getMessage()));
             e.printStackTrace();
+
+            if(owner.getErrorMessage() != null && e.getMessage() != null) {
+                execution.sendMessage(owner.getErrorMessage()
+                        .replace("{error}", e.getMessage()));
+            }
+
             return null;
         }
     }

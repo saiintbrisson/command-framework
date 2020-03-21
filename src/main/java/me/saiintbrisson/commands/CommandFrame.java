@@ -26,8 +26,7 @@ public class CommandFrame {
     private @Setter String lackPermMessage;
     private @Setter String inGameOnlyMessage;
     private @Setter String usageMessage;
-
-    private @Setter String errorMessage = "§cAn error occurred: §f{error}§c.";
+    private @Setter String errorMessage = "§cAn error has been thrown: §f{error}§c.";
 
     private final List<LocalCommand> commands = new ArrayList<>();
 
