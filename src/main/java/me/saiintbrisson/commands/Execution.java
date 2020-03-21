@@ -23,6 +23,10 @@ public class Execution {
         }
     }
 
+    public int argsCount() {
+        return args.length;
+    }
+
     public boolean isPlayer() {
         return sender instanceof Player;
     }
