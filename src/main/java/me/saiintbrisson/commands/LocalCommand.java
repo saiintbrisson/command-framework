@@ -129,6 +129,10 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        if(!testPermissionSilent(sender)) {
+            return new ArrayList<>();
+        }
+
         if(args.length > 0) {
             LocalCommand command = owner.matchCommand(args[0], subCommands);
             if(command != null) {

@@ -6,4 +6,4 @@ gradle/
 gradlew
 gradlew.bat
 
-src/main/resources/
+src/main/resources/plugin.yml
