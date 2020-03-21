@@ -77,7 +77,6 @@ public class LocalCommand extends org.bukkit.command.Command {
             }
         }
 
-
         String[] options = getOptions(args);
         args = Arrays.copyOfRange(args, 0, args.length - options.length);
         Execution execution = new Execution(sender, commandLabel, args, options);
@@ -131,6 +130,9 @@ public class LocalCommand extends org.bukkit.command.Command {
                 return null;
             }
         } catch (Exception e) {
+            execution.sendMessage(owner.getErrorMessage()
+                    .replace("{error}", e.getMessage()));
+            e.printStackTrace();
             return null;
         }
     }
