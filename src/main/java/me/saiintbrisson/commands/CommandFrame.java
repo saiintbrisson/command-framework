@@ -23,9 +23,9 @@ public class CommandFrame {
 
     private CommandMap commandMap;
 
-    private @Setter String lackPermMessage;
-    private @Setter String inGameOnlyMessage;
-    private @Setter String usageMessage;
+    private @Setter String lackPermMessage = "§cYou do not have enough permissions.";
+    private @Setter String inGameOnlyMessage = "§cThis command is only available in-game";
+    private @Setter String usageMessage = "§cCorrect usage: §e/{usage}§c.";
     private @Setter String errorMessage = "§cAn error has been thrown: §f{error}§c.";
 
     private final List<LocalCommand> commands = new ArrayList<>();

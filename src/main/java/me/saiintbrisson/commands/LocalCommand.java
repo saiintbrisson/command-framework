@@ -102,12 +102,21 @@ public class LocalCommand extends org.bukkit.command.Command {
 
             switch (resultType) {
                 case NO_PERMISSION:
-                    execution.sendMessage(owner.getLackPermMessage());
+                    String message = owner.getLackPermMessage();
+                    if(message == null) return false;
+
+                    execution.sendMessage(message);
                     return false;
                 case INCORRECT_USAGE:
-                    execution.sendMessage(owner.getUsageMessage().replace("{usage}", getUsage()));
+                    message = owner.getUsageMessage();
+                    if(message == null) return false;
+
+                    execution.sendMessage(message.replace("{usage}", getUsage()));
                     return false;
                 case IN_GAME_ONLY:
+                    message = owner.getInGameOnlyMessage();
+                    if(message == null) return false;
+
                     execution.sendMessage(owner.getInGameOnlyMessage());
                     return false;
                 default:
