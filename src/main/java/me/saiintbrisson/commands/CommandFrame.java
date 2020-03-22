@@ -58,9 +58,10 @@ public class CommandFrame {
                         && types[0] != Execution.class)) continue;
 
                 Class<?> returnType = method.getReturnType();
-                if(returnType != Void.class
-                        && returnType != Boolean.class
-                        && returnType != ResultType.class) continue;
+                if(!returnType.equals(Void.TYPE)
+                        && !returnType.equals(Boolean.TYPE)
+                        && !returnType.equals(Boolean.class)
+                        && !returnType.equals(ResultType.class)) continue;
 
                 registerCommand(holder, command, method);
             }
