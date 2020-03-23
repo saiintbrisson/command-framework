@@ -49,4 +49,12 @@ public class Execution {
         sender.sendMessage(message);
     }
 
+    public void sendMessage(String... message) {
+        sender.sendMessage(String.join("\n", message));
+    }
+
+    public void sendMessage(String message, Object... objects) {
+        sendMessage(String.format(message, objects));
+    }
+
 }
