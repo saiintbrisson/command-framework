@@ -205,7 +205,7 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     private String[] getOptions(String[] args) {
         List<String> options = new LinkedList<>();
-        for (int i = args.length - 1; i > 0; i--) {
+        for (int i = args.length - 1; i >= 0; i--) {
             String option = args[i];
             if(option.length() == 1 || !option.startsWith("-")) break;
             option = option.substring(1);
