@@ -49,7 +49,7 @@ public class Execution {
         sender.sendMessage(message);
     }
 
-    public void sendMessage(String... message) {
+    public void sendMessage(String[] message) {
         sender.sendMessage(String.join("\n", message));
     }
 
