@@ -12,9 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Getter
 public class CommandFrame {
@@ -46,6 +44,8 @@ public class CommandFrame {
 
     public void registerCommands(Object... holders) {
         for (Object holder : holders) {
+            Map<String, Method> map = new HashMap<>();
+
             for (Method method : holder.getClass().getMethods()) {
                 Command command = method.getDeclaredAnnotation(Command.class);
                 if(command == null) {
@@ -63,9 +63,57 @@ public class CommandFrame {
                         && !returnType.equals(Boolean.class)
                         && !returnType.equals(ResultType.class)) continue;
 
-                registerCommand(holder, command, method);
+                map.put(command.name(), method);
+            }
+
+            registerCommands(holder, map);
+        }
+    }
+
+    private void registerCommands(Object holder, Map<String, Method> map) {
+        for (Map.Entry<String, Method> entry : map.entrySet()) {
+            Method method = entry.getValue();
+            Command command = method.getDeclaredAnnotation(Command.class);
+            String[] split = command.name().split("\\.");
+            LocalCommand localCommand = getCommand(split[0]);
+
+            StringBuilder name = new StringBuilder(split[0]);
+            if(localCommand == null) {
+                localCommand = getCommand(holder, map, name.toString());
+
+                commandMap.register(owner.getName(), localCommand);
+                commands.add(localCommand);
+            }
+
+            for (int i = 1; i < split.length; i++) {
+                name.append(".").append(split[i]);
+
+                LocalCommand newCommand = localCommand.getSubCommand(split[i]);
+                if(newCommand != null) {
+                    localCommand = newCommand;
+                    continue;
+                }
+
+                newCommand = getCommand(holder, map, name.toString());
+                localCommand.getSubCommands().add(newCommand);
+                localCommand = newCommand;
             }
         }
+    }
+
+    private LocalCommand getCommand(Object holder, Map<String, Method> map, String name) {
+        Method method = map.get(name);
+        Command command = method.getDeclaredAnnotation(Command.class);
+
+        return new LocalCommand(this, holder, command, method);
+    }
+
+    private LocalCommand getCommand(String name) {
+        for (LocalCommand command : commands) {
+            if(command.getName().equals(name)) return command;
+        }
+
+        return null;
     }
 
     public void registerCompleters(Object... holders) {
@@ -109,29 +157,6 @@ public class CommandFrame {
         }
 
         localCommand.setCompleter(method);
-    }
-
-    public void registerCommand(Object holder, Command command, Method method) {
-        String[] split = command.name().split("\\.");
-        LocalCommand localCommand = matchCommand(split[0], commands);
-
-        if(localCommand == null) {
-            localCommand = new LocalCommand(this, holder, command, method);
-            commandMap.register(owner.getName(), localCommand);
-            commands.add(localCommand);
-        }
-
-        split = Arrays.copyOfRange(split, 1, split.length);
-        for (String s : split) {
-            LocalCommand newCommand = matchCommand(s, localCommand.getSubCommands());
-
-            if(newCommand == null) {
-                newCommand = new LocalCommand(this, holder, command, method);
-                localCommand.getSubCommands().add(newCommand);
-            }
-
-            localCommand = newCommand;
-        }
     }
 
     public LocalCommand matchCommand(String input, List<LocalCommand> commands) {

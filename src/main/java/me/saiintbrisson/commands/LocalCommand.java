@@ -50,6 +50,30 @@ public class LocalCommand extends org.bukkit.command.Command {
         inGameOnly = command.inGameOnly();
     }
 
+    public LocalCommand(String name) {
+        super(name);
+    }
+
+    public void override(CommandFrame owner, Object holder, Command command, Method method) {
+        this.owner = owner;
+        this.holder = holder;
+        this.method = method;
+
+        setAliases(Arrays.asList(command.aliases()));
+        setDescription(command.description());
+        setUsage(command.usage().equals("") ? command.name() : command.usage());
+        setPermission(command.permission().equals("") ? null : command.permission());
+
+        options = command.options();
+
+        async = command.async();
+        inGameOnly = command.inGameOnly();
+    }
+
+    public boolean needsOverride() {
+        return holder == null;
+    }
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if(!owner.getOwner().isEnabled()) {
@@ -67,6 +91,10 @@ public class LocalCommand extends org.bukkit.command.Command {
         }
 
         if(args.length > 0) {
+            for (LocalCommand subCommand : subCommands) {
+                subCommand.getName();
+            }
+
             LocalCommand command = owner.matchCommand(args[0], subCommands);
             if(command != null) {
                 return command.execute(
@@ -219,6 +247,22 @@ public class LocalCommand extends org.bukkit.command.Command {
         }
 
         return options.toArray(new String[0]);
+    }
+
+    public boolean containsSubCommand(String name) {
+        for (LocalCommand subCommand : subCommands) {
+            if(subCommand.getName().equals(name)) return true;
+        }
+
+        return false;
+    }
+
+    public LocalCommand getSubCommand(String name) {
+        for (LocalCommand subCommand : subCommands) {
+            if(subCommand.getName().equals(name)) return subCommand;
+        }
+
+        return null;
     }
 
 }
