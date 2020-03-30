@@ -42,6 +42,11 @@ public class CommandFrame {
         }
     }
 
+    public void register(Object... holders) {
+        registerCommands(holders);
+        registerCompleters(holders);
+    }
+
     public void registerCommands(Object... holders) {
         for (Object holder : holders) {
             Map<String, Method> map = new HashMap<>();
