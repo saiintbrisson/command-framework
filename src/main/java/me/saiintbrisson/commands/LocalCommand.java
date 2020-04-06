@@ -3,7 +3,10 @@ package me.saiintbrisson.commands;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
+import me.saiintbrisson.commands.argument.Argument;
+import me.saiintbrisson.commands.argument.ArgumentType;
 import me.saiintbrisson.commands.result.ResultType;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +22,8 @@ import java.util.stream.Collectors;
 public class LocalCommand extends org.bukkit.command.Command {
 
     private CommandFrame owner;
-    private final @Getter List<LocalCommand> subCommands = new ArrayList<>();
+    private final @Getter
+    List<LocalCommand> subCommands = new ArrayList<>();
 
     private Object holder;
     private Method method;
@@ -29,7 +33,8 @@ public class LocalCommand extends org.bukkit.command.Command {
     private boolean async;
     private boolean inGameOnly;
 
-    private @Setter Method completer;
+    private @Setter
+    Method completer;
 
     public LocalCommand(CommandFrame owner, Object holder, Command command, Method method) {
         super(command.name().split("\\.")[command.name().split("\\.").length - 1]);
@@ -76,27 +81,23 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if(!owner.getOwner().isEnabled()) {
+        if (!owner.getOwner().isEnabled()) {
             return false;
         }
 
-        if(inGameOnly && !(sender instanceof Player)) {
+        if (inGameOnly && !(sender instanceof Player)) {
             sender.sendMessage(owner.getInGameOnlyMessage());
             return false;
         }
 
-        if(!testPermissionSilent(sender)) {
+        if (!testPermissionSilent(sender)) {
             sender.sendMessage(owner.getLackPermMessage());
             return false;
         }
 
-        if(args.length > 0) {
-            for (LocalCommand subCommand : subCommands) {
-                subCommand.getName();
-            }
-
+        if (args.length > 0) {
             LocalCommand command = owner.matchCommand(args[0], subCommands);
-            if(command != null) {
+            if (command != null) {
                 return command.execute(
                         sender,
                         commandLabel + " " + args[0],
@@ -109,7 +110,7 @@ public class LocalCommand extends org.bukkit.command.Command {
         args = Arrays.copyOfRange(args, 0, args.length - options.length);
         Execution execution = new Execution(sender, commandLabel, args, options);
 
-        if(async) {
+        if (async) {
             CompletableFuture.runAsync(() -> run(execution));
         } else {
             return run(execution);
@@ -121,29 +122,29 @@ public class LocalCommand extends org.bukkit.command.Command {
     private boolean run(Execution execution) {
         Object object = invoke(execution);
 
-        if(object instanceof Void) {
+        if (object instanceof Void) {
             return false;
-        } else if(object instanceof Boolean) {
+        } else if (object instanceof Boolean) {
             return (Boolean) object;
-        } else if(object instanceof ResultType) {
+        } else if (object instanceof ResultType) {
             ResultType resultType = (ResultType) object;
 
             switch (resultType) {
                 case NO_PERMISSION:
                     String message = owner.getLackPermMessage();
-                    if(message == null) return false;
+                    if (message == null) return false;
 
                     execution.sendMessage(message);
                     return false;
                 case INCORRECT_USAGE:
                     message = owner.getUsageMessage();
-                    if(message == null) return false;
+                    if (message == null) return false;
 
                     execution.sendMessage(message.replace("{usage}", getUsage()));
                     return false;
                 case IN_GAME_ONLY:
                     message = owner.getInGameOnlyMessage();
-                    if(message == null) return false;
+                    if (message == null) return false;
 
                     execution.sendMessage(owner.getInGameOnlyMessage());
                     return false;
@@ -159,17 +160,47 @@ public class LocalCommand extends org.bukkit.command.Command {
         Class<?>[] types = method.getParameterTypes();
 
         try {
-            if(types.length == 0) {
+            if (types.length == 0) {
                 return method.invoke(holder);
-            } else if(types.length == 1 && types[0] == Execution.class) {
+            } else if (types.length == 1 && types[0] == Execution.class) {
                 return method.invoke(holder, execution);
             } else {
-                return null;
+                Object[] parameters = new Object[0];
+
+                int i = 0;
+                for (Class<?> clazz : types) {
+                    if (clazz == Execution.class) {
+                        parameters = ArrayUtils.add(parameters, execution);
+                    } else {
+                        ArgumentType<?> type = owner.getType(clazz);
+                        if(type == null) {
+                            System.out.println("Não foi encontrado um tipo para o argumento " + i);
+                            return null;
+                        }
+
+                        try {
+                            Object parse = type.rule().parseNonNull(execution.getArg(i));
+                            parameters = ArrayUtils.add(parameters, parse);
+
+                            i++;
+                        } catch (Exception e) {
+                            String usageMessage = owner.getUsageMessage();
+                            if (usageMessage != null) {
+                                execution.sendMessage(usageMessage.replace("{usage}", getUsage()));
+                            }
+
+                            return null;
+                        }
+
+                    }
+                }
+
+                return method.invoke(holder, parameters);
             }
         } catch (Exception e) {
             e.printStackTrace();
 
-            if(owner.getErrorMessage() != null && e.getMessage() != null) {
+            if (owner.getErrorMessage() != null && e.getMessage() != null) {
                 execution.sendMessage(owner.getErrorMessage()
                         .replace("{error}", e.getMessage()));
             }
@@ -181,13 +212,13 @@ public class LocalCommand extends org.bukkit.command.Command {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args)
             throws IllegalArgumentException {
-        if(!testPermissionSilent(sender)) {
+        if (!testPermissionSilent(sender)) {
             return new ArrayList<>();
         }
 
-        if(args.length > 0) {
+        if (args.length > 0) {
             LocalCommand command = owner.matchCommand(args[0], subCommands);
-            if(command != null) {
+            if (command != null) {
                 return command.tabComplete(
                         sender,
                         alias + " " + args[0],
@@ -196,8 +227,8 @@ public class LocalCommand extends org.bukkit.command.Command {
             }
         }
 
-        if(completer == null || completer.getReturnType() != List.class) {
-            if(subCommands.size() == 0) {
+        if (completer == null || completer.getReturnType() != List.class) {
+            if (subCommands.size() == 0) {
                 return Bukkit.getOnlinePlayers()
                         .stream()
                         .map(Player::getName)
@@ -218,9 +249,9 @@ public class LocalCommand extends org.bukkit.command.Command {
         Class<?>[] types = completer.getParameterTypes();
 
         try {
-            if(types.length == 0) {
+            if (types.length == 0) {
                 return (List<String>) completer.invoke(holder);
-            } else if(types.length == 1 && types[0] == Execution.class) {
+            } else if (types.length == 1 && types[0] == Execution.class) {
                 return (List<String>) completer.invoke(holder,
                         new Execution(sender, alias, args, new String[0]));
             } else {
@@ -235,11 +266,11 @@ public class LocalCommand extends org.bukkit.command.Command {
         List<String> options = new LinkedList<>();
         for (int i = args.length - 1; i >= 0; i--) {
             String option = args[i];
-            if(option.length() == 1 || !option.startsWith("-")) break;
+            if (option.length() == 1 || !option.startsWith("-")) break;
             option = option.substring(1);
 
             for (String s : this.options) {
-                if(s.equals(option)) {
+                if (s.equals(option)) {
                     options.add(option);
                     break;
                 }
@@ -251,7 +282,7 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     public boolean containsSubCommand(String name) {
         for (LocalCommand subCommand : subCommands) {
-            if(subCommand.getName().equals(name)) return true;
+            if (subCommand.getName().equals(name)) return true;
         }
 
         return false;
@@ -259,7 +290,7 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     public LocalCommand getSubCommand(String name) {
         for (LocalCommand subCommand : subCommands) {
-            if(subCommand.getName().equals(name)) return subCommand;
+            if (subCommand.getName().equals(name)) return subCommand;
         }
 
         return null;

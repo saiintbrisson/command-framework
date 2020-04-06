@@ -4,6 +4,8 @@ import me.saiintbrisson.commands.annotations.Command;
 import me.saiintbrisson.commands.CommandFrame;
 import me.saiintbrisson.commands.Execution;
 import me.saiintbrisson.commands.result.ResultType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ExamplePlugin extends JavaPlugin {
@@ -20,6 +22,8 @@ public class ExamplePlugin extends JavaPlugin {
 
         frame.registerCommands(this);
         frame.registerCompleters(this);
+
+        frame.registerType(Player.class, Bukkit::getPlayer);
     }
 
     @Command(name = "test",
@@ -38,7 +42,7 @@ public class ExamplePlugin extends JavaPlugin {
             inGameOnly = true)
     public ResultType testMsg(Execution execution) {
         String msg = execution.getArg(0);
-        if(msg == null) return ResultType.INCORRECT_USAGE;
+        if (msg == null) return ResultType.INCORRECT_USAGE;
 
         msg = String.join(" ", execution.getArgs());
 
@@ -47,4 +51,23 @@ public class ExamplePlugin extends JavaPlugin {
         return ResultType.NONE;
     }
 
+    @Command(
+            name = "argument",
+            aliases = {"argumenttest"},
+            usage = "argumenttest <message>",
+            inGameOnly = true
+    )
+    public void argument(Execution execution, String message) {
+        execution.sendMessage("message => " + message);
+    }
+
+    @Command(
+            name = "customargument",
+            aliases = {"customargumenttest"},
+            usage = "customargumenttest <jogador>",
+            inGameOnly = true
+    )
+    public void customArgument(Execution execution, Player player) {
+        execution.sendMessage("player => " + player.getName());
+    }
 }

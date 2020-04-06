@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
 import me.saiintbrisson.commands.annotations.Completer;
+import me.saiintbrisson.commands.argument.ArgumentType;
+import me.saiintbrisson.commands.argument.ArgumentValidationRule;
 import me.saiintbrisson.commands.result.ResultType;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -27,8 +29,9 @@ public class CommandFrame {
     private @Setter String errorMessage = "§cAn error has been thrown: §f{error}§c.";
 
     private final List<LocalCommand> commands = new ArrayList<>();
+    private final List<ArgumentType<?>> types = new ArrayList<>();
 
-    public CommandFrame(Plugin plugin) {
+    public CommandFrame(Plugin plugin, boolean registerDefault) {
         this.owner = plugin;
 
         try {
@@ -40,6 +43,44 @@ public class CommandFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        if(registerDefault) {
+            registerType(String.class, argument -> argument);
+            registerType(Integer.class, Integer::parseInt);
+            registerType(Double.class, Double::parseDouble);
+            registerType(Long.class, Long::parseLong);
+            registerType(Boolean.class, Boolean::parseBoolean);
+        }
+    }
+
+    public CommandFrame(Plugin plugin) {
+        this(plugin, true);
+    }
+
+    public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {
+        ArgumentType<T> type = new ArgumentType<T>() {
+            @Override
+            public ArgumentValidationRule<T> rule() {
+                return rule;
+            }
+
+            @Override
+            public Class<T> getClazz() {
+                return clazz;
+            }
+        };
+
+        types.add(type);
+    }
+
+    public <T> ArgumentType<T> getType(Class<T> clazz) {
+        for (ArgumentType<?> type : types) {
+            if(type.getClazz().isAssignableFrom(clazz)) {
+                return (ArgumentType<T>) type;
+            }
+        }
+
+        return null;
     }
 
     public void register(Object... holders) {
@@ -56,11 +97,6 @@ public class CommandFrame {
                 if(command == null) {
                     continue;
                 }
-
-                Class<?>[] types = method.getParameterTypes();
-                if(types.length > 1
-                        || (types.length == 1
-                        && types[0] != Execution.class)) continue;
 
                 Class<?> returnType = method.getReturnType();
                 if(!returnType.equals(Void.TYPE)
