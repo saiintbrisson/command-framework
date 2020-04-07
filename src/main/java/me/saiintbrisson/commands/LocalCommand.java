@@ -3,7 +3,6 @@ package me.saiintbrisson.commands;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
-import me.saiintbrisson.commands.argument.Argument;
 import me.saiintbrisson.commands.argument.ArgumentType;
 import me.saiintbrisson.commands.result.ResultType;
 import org.apache.commons.lang.ArrayUtils;
@@ -179,7 +178,7 @@ public class LocalCommand extends org.bukkit.command.Command {
                         }
 
                         try {
-                            Object parse = type.rule().parseNonNull(execution.getArg(i));
+                            Object parse = type.getRule().validateNonNull(execution.getArg(i));
                             parameters = ArrayUtils.add(parameters, parse);
 
                             i++;

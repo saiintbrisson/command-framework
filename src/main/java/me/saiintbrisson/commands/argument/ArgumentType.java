@@ -1,8 +1,12 @@
 package me.saiintbrisson.commands.argument;
 
-public interface ArgumentType<T> {
+import lombok.Builder;
+import lombok.Getter;
 
-    ArgumentValidationRule<T> rule();
+@Getter
+@Builder
+public class ArgumentType<T> {
 
-    Class<T> getClazz();
+    private ArgumentValidationRule<T> rule;
+    private Class<T> clazz;
 }

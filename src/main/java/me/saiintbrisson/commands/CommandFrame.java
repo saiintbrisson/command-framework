@@ -23,10 +23,14 @@ public class CommandFrame {
 
     private CommandMap commandMap;
 
-    private @Setter String lackPermMessage = "§cYou do not have enough permissions.";
-    private @Setter String inGameOnlyMessage = "§cThis command is only available in-game";
-    private @Setter String usageMessage = "§cCorrect usage: §e/{usage}§c.";
-    private @Setter String errorMessage = "§cAn error has been thrown: §f{error}§c.";
+    private @Setter
+    String lackPermMessage = "§cYou do not have enough permissions.";
+    private @Setter
+    String inGameOnlyMessage = "§cThis command is only available in-game";
+    private @Setter
+    String usageMessage = "§cCorrect usage: §e/{usage}§c.";
+    private @Setter
+    String errorMessage = "§cAn error has been thrown: §f{error}§c.";
 
     private final List<LocalCommand> commands = new ArrayList<>();
     private final List<ArgumentType<?>> types = new ArrayList<>();
@@ -44,7 +48,7 @@ public class CommandFrame {
             e.printStackTrace();
         }
 
-        if(registerDefault) {
+        if (registerDefault) {
             registerType(String.class, argument -> argument);
             registerType(Integer.class, Integer::parseInt);
             registerType(Double.class, Double::parseDouble);
@@ -58,24 +62,21 @@ public class CommandFrame {
     }
 
     public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {
-        ArgumentType<T> type = new ArgumentType<T>() {
-            @Override
-            public ArgumentValidationRule<T> rule() {
-                return rule;
-            }
+        registerType(
+                ArgumentType.<T>builder()
+                        .clazz(clazz)
+                        .rule(rule)
+                        .build()
+        );
+    }
 
-            @Override
-            public Class<T> getClazz() {
-                return clazz;
-            }
-        };
-
+    public <T> void registerType(ArgumentType<T> type) {
         types.add(type);
     }
 
     public <T> ArgumentType<T> getType(Class<T> clazz) {
         for (ArgumentType<?> type : types) {
-            if(type.getClazz().isAssignableFrom(clazz)) {
+            if (type.getClazz().isAssignableFrom(clazz)) {
                 return (ArgumentType<T>) type;
             }
         }
@@ -94,12 +95,12 @@ public class CommandFrame {
 
             for (Method method : holder.getClass().getMethods()) {
                 Command command = method.getDeclaredAnnotation(Command.class);
-                if(command == null) {
+                if (command == null) {
                     continue;
                 }
 
                 Class<?> returnType = method.getReturnType();
-                if(!returnType.equals(Void.TYPE)
+                if (!returnType.equals(Void.TYPE)
                         && !returnType.equals(Boolean.TYPE)
                         && !returnType.equals(Boolean.class)
                         && !returnType.equals(ResultType.class)) continue;
@@ -119,7 +120,7 @@ public class CommandFrame {
             LocalCommand localCommand = getCommand(split[0]);
 
             StringBuilder name = new StringBuilder(split[0]);
-            if(localCommand == null) {
+            if (localCommand == null) {
                 localCommand = getCommand(holder, map, name.toString());
 
                 commandMap.register(owner.getName(), localCommand);
@@ -130,7 +131,7 @@ public class CommandFrame {
                 name.append(".").append(split[i]);
 
                 LocalCommand newCommand = localCommand.getSubCommand(split[i]);
-                if(newCommand != null) {
+                if (newCommand != null) {
                     localCommand = newCommand;
                     continue;
                 }
@@ -151,7 +152,7 @@ public class CommandFrame {
 
     private LocalCommand getCommand(String name) {
         for (LocalCommand command : commands) {
-            if(command.getName().equals(name)) return command;
+            if (command.getName().equals(name)) return command;
         }
 
         return null;
@@ -161,17 +162,17 @@ public class CommandFrame {
         for (Object holder : holders) {
             for (Method method : holder.getClass().getMethods()) {
                 Completer completer = method.getDeclaredAnnotation(Completer.class);
-                if(completer == null) {
+                if (completer == null) {
                     continue;
                 }
 
                 Class<?>[] types = method.getParameterTypes();
-                if(types.length > 1
+                if (types.length > 1
                         || (types.length == 1
                         && types[0] != Execution.class)) continue;
 
                 Class<?> returnType = method.getReturnType();
-                if(returnType != List.class) continue;
+                if (returnType != List.class) continue;
 
                 registerCompleter(completer, method);
             }
@@ -182,7 +183,7 @@ public class CommandFrame {
         String[] split = completer.name().split("\\.");
         LocalCommand localCommand = matchCommand(split[0], commands);
 
-        if(localCommand == null) {
+        if (localCommand == null) {
             return;
         }
 
@@ -190,7 +191,7 @@ public class CommandFrame {
         for (String s : split) {
             LocalCommand newCommand = matchCommand(s, localCommand.getSubCommands());
 
-            if(newCommand == null) {
+            if (newCommand == null) {
                 return;
             }
 
@@ -202,12 +203,12 @@ public class CommandFrame {
 
     public LocalCommand matchCommand(String input, List<LocalCommand> commands) {
         for (LocalCommand command : commands) {
-            if(input.equalsIgnoreCase(command.getName())) {
+            if (input.equalsIgnoreCase(command.getName())) {
                 return command;
             }
 
             for (String alias : command.getAliases()) {
-                if(input.equalsIgnoreCase(alias)) {
+                if (input.equalsIgnoreCase(alias)) {
                     return command;
                 }
             }
