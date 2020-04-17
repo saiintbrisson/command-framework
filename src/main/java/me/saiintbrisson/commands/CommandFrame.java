@@ -12,7 +12,6 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -23,14 +22,8 @@ public class CommandFrame {
 
     private CommandMap commandMap;
 
-    private @Setter
-    String lackPermMessage = "§cYou do not have enough permissions.";
-    private @Setter
-    String inGameOnlyMessage = "§cThis command is only available in-game";
-    private @Setter
-    String usageMessage = "§cCorrect usage: §e/{usage}§c.";
-    private @Setter
-    String errorMessage = "§cAn error has been thrown: §f{error}§c.";
+    @Setter
+    private String lackPermMessage, inGameOnlyMessage, usageMessage, errorMessage;
 
     private final List<LocalCommand> commands = new ArrayList<>();
     private final List<ArgumentType<?>> types = new ArrayList<>();
@@ -67,6 +60,13 @@ public class CommandFrame {
 
     public CommandFrame(Plugin plugin) {
         this(plugin, true);
+    }
+
+    {
+        lackPermMessage = "§cYou do not have enough permissions.";
+        inGameOnlyMessage = "§cThis command is only available in-game";
+        usageMessage = "§cCorrect usage: §e/{usage}§c.";
+        errorMessage = "§cAn error has been thrown: §f{error}§c.";
     }
 
     public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {
