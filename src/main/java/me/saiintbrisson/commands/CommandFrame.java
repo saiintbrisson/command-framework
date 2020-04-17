@@ -49,10 +49,19 @@ public class CommandFrame {
 
         if (registerDefault) {
             registerType(String.class, String::valueOf);
-            registerType(Integer.class, Integer::parseInt);
-            registerType(Double.class, Double::parseDouble);
-            registerType(Long.class, Long::parseLong);
-            registerType(Boolean.class, Boolean::parseBoolean);
+            registerType(Character.class, argument -> argument.charAt(0));
+            registerType(Integer.class, Integer::valueOf);
+            registerType(Double.class, Double::valueOf);
+            registerType(Long.class, Long::valueOf);
+            registerType(Boolean.class, Boolean::valueOf);
+            registerType(Byte.class, Byte::valueOf);
+
+            registerType(Character.TYPE, argument -> argument.charAt(0));
+            registerType(Integer.TYPE, Integer::parseInt);
+            registerType(Double.TYPE, Double::parseDouble);
+            registerType(Long.TYPE, Long::parseLong);
+            registerType(Boolean.TYPE, Boolean::parseBoolean);
+            registerType(Byte.TYPE, Byte::parseByte);
         }
     }
 
