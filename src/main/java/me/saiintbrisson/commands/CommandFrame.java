@@ -84,7 +84,7 @@ public class CommandFrame {
 
     public <T> ArgumentType<T> getType(Class<T> clazz) {
         for (ArgumentType<?> type : types) {
-            if (type.getClazz().isAssignableFrom(clazz)) {
+            if (clazz.isAssignableFrom(type.getClazz())) {
                 return (ArgumentType<T>) type;
             }
         }

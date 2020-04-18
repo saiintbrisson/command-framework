@@ -323,6 +323,10 @@ public class LocalCommand extends org.bukkit.command.Command {
                 return null;
             }
 
+            System.out.println("invoked parameters:");
+            for(Object parameter : parameters) {
+                System.out.println(parameter);
+            }
             return method.invoke(holder, parameters);
         } catch (Exception e) {
             e.printStackTrace();
