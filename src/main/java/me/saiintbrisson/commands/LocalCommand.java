@@ -3,7 +3,9 @@ package me.saiintbrisson.commands;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.commands.annotations.Command;
+import me.saiintbrisson.commands.argument.CommandArgument;
 import me.saiintbrisson.commands.argument.ArgumentType;
+import me.saiintbrisson.commands.argument.Argument;
 import me.saiintbrisson.commands.result.ResultType;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -11,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,8 +35,10 @@ public class LocalCommand extends org.bukkit.command.Command {
     private boolean async;
     private boolean inGameOnly;
 
-    private @Setter
-    Method completer;
+    @Setter
+    private Method completer;
+
+    private List<CommandArgument> arguments = new ArrayList<>();
 
     public LocalCommand(CommandFrame owner, Object holder, Command command, Method method) {
         super(command.name().split("\\.")[command.name().split("\\.").length - 1]);
@@ -52,6 +57,8 @@ public class LocalCommand extends org.bukkit.command.Command {
 
         async = command.async();
         inGameOnly = command.inGameOnly();
+
+        registerArguments();
     }
 
     public LocalCommand(String name) {
@@ -72,10 +79,70 @@ public class LocalCommand extends org.bukkit.command.Command {
 
         async = command.async();
         inGameOnly = command.inGameOnly();
+
+        registerArguments();
     }
 
     public boolean needsOverride() {
         return holder == null;
+    }
+
+    private void registerArguments() {
+        for(Parameter parameter : method.getParameters()) {
+            Class<?> clazz = parameter.getType();
+            if(clazz.equals(Execution.class)) {
+                arguments.add(new CommandArgument<>(
+                    new ArgumentType<>(
+                      null,
+                      clazz
+                    ),
+                    null,
+                    false
+                  )
+                );
+
+                continue;
+            }
+
+            ArgumentType<?> type = owner.getType(clazz);
+            if(type == null) {
+                throw new NullPointerException("No registered type for parameter "
+                  + parameter.getName()
+                  + "(" + getName() + ")");
+            }
+
+            Argument argument = parameter.getDeclaredAnnotation(Argument.class);
+            Object defaultValue = null;
+            boolean nullable = false;
+
+            if(argument != null) {
+                nullable = argument.nullable();
+
+                if(nullable && clazz.isPrimitive()) {
+                    throw new IllegalArgumentException("Primitive type parameter "
+                      + parameter.getName() + " may not be nullable "
+                      + "(" + getName() + ")");
+                }
+
+                String[] strings = argument.defaultValue();
+                if(strings.length > 0) {
+
+                    try {
+                        defaultValue = type.getRule().validateNonNull(
+                          String.join(" ", strings[0])
+                        );
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Invalid default value for parameter: "
+                          + parameter.getName()
+                          + "(" + getName() + ")");
+                    }
+
+                }
+
+            }
+
+            arguments.add(new CommandArgument(type, defaultValue, nullable));
+        }
     }
 
     @Override
@@ -98,9 +165,9 @@ public class LocalCommand extends org.bukkit.command.Command {
             LocalCommand command = owner.matchCommand(args[0], subCommands);
             if(command != null) {
                 return command.execute(
-                    sender,
-                    commandLabel + " " + args[0],
-                    Arrays.copyOfRange(args, 1, args.length)
+                  sender,
+                  commandLabel + " " + args[0],
+                  Arrays.copyOfRange(args, 1, args.length)
                 );
             }
         }
@@ -156,48 +223,52 @@ public class LocalCommand extends org.bukkit.command.Command {
     }
 
     private Object invoke(Execution execution) {
-        Class<?>[] types = method.getParameterTypes();
-
         try {
-            if(types.length == 0) {
+            if(arguments.size() == 0) {
                 return method.invoke(holder);
-            } else if(types.length == 1 && types[0] == Execution.class) {
-                return method.invoke(holder, execution);
             }
 
             Object[] parameters = new Object[0];
-
             int i = 0;
-            for(Class<?> clazz : types) {
-                if(clazz.equals(Execution.class)) {
-                    parameters = ArrayUtils.add(parameters, execution);
-                    continue;
-                }
 
-                ArgumentType<?> type = owner.getType(clazz);
-                if(type == null) {
-                    System.out.println("No registered type adapter for argument " + i);
-                    return null;
-                }
+            try {
 
-                try {
-                    final String arg = execution.getArg(i);
-                    if(arg == null) {
-                        throw new NullPointerException();
+                for(CommandArgument<?> argument : arguments) {
+                    if(argument.getClassType().equals(Execution.class)) {
+                        parameters = ArrayUtils.add(parameters, execution);
+                        continue;
                     }
 
-                    Object parse = type.getRule().validateNonNull(arg);
-                    parameters = ArrayUtils.add(parameters, parse);
+                    String arg = execution.getArg(i);
+                    if(arg == null && !argument.isNullable()) {
+                        Object defaultValue = argument.getDefaultValue();
+                        if(defaultValue == null) {
+                            throw new NullPointerException();
+                        }
+
+                        parameters = ArrayUtils.add(parameters, defaultValue);
+                        i++;
+                        continue;
+                    }
 
                     i++;
-                } catch (Exception e) {
-                    String usageMessage = owner.getUsageMessage();
-                    if(usageMessage != null) {
-                        execution.sendMessage(usageMessage.replace("{usage}", getUsage()));
+
+                    if(arg == null) {
+                        parameters = ArrayUtils.add(parameters, null);
+                        continue;
                     }
 
-                    return null;
+                    Object parse = argument.getType().getRule().validateNonNull(arg);
+                    parameters = ArrayUtils.add(parameters, parse);
                 }
+
+            } catch (Exception e) {
+                String usageMessage = owner.getUsageMessage();
+                if(usageMessage != null) {
+                    execution.sendMessage(usageMessage.replace("{usage}", getUsage()));
+                }
+
+                return null;
             }
 
             return method.invoke(holder, parameters);
@@ -209,7 +280,7 @@ public class LocalCommand extends org.bukkit.command.Command {
 
             if(errorMessage != null && message != null) {
                 execution.sendMessage(errorMessage
-                    .replace("{error}", message));
+                  .replace("{error}", message));
             }
 
             return null;
@@ -218,7 +289,7 @@ public class LocalCommand extends org.bukkit.command.Command {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args)
-        throws IllegalArgumentException {
+      throws IllegalArgumentException {
         if(!testPermissionSilent(sender)) {
             return new ArrayList<>();
         }
@@ -227,9 +298,9 @@ public class LocalCommand extends org.bukkit.command.Command {
             LocalCommand command = owner.matchCommand(args[0], subCommands);
             if(command != null) {
                 return command.tabComplete(
-                    sender,
-                    alias + " " + args[0],
-                    Arrays.copyOfRange(args, 1, args.length)
+                  sender,
+                  alias + " " + args[0],
+                  Arrays.copyOfRange(args, 1, args.length)
                 );
             }
         }
@@ -237,19 +308,19 @@ public class LocalCommand extends org.bukkit.command.Command {
         if(completer == null || completer.getReturnType() != List.class) {
             if(subCommands.size() == 0) {
                 return Bukkit.getOnlinePlayers()
-                    .stream()
-                    .map(Player::getName)
-                    .filter(s -> args.length <= 0
-                        || s.toLowerCase()
-                        .startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
+                  .stream()
+                  .map(Player::getName)
+                  .filter(s -> args.length <= 0
+                    || s.toLowerCase()
+                    .startsWith(args[0].toLowerCase()))
+                  .collect(Collectors.toList());
             } else {
                 return subCommands.stream()
-                    .map(LocalCommand::getName)
-                    .filter(s -> args.length <= 0
-                        || s.toLowerCase()
-                        .startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
+                  .map(LocalCommand::getName)
+                  .filter(s -> args.length <= 0
+                    || s.toLowerCase()
+                    .startsWith(args[0].toLowerCase()))
+                  .collect(Collectors.toList());
             }
         }
 
@@ -260,7 +331,7 @@ public class LocalCommand extends org.bukkit.command.Command {
                 return (List<String>) completer.invoke(holder);
             } else if(types.length == 1 && types[0] == Execution.class) {
                 return (List<String>) completer.invoke(holder,
-                    new Execution(sender, alias, args, new String[0]));
+                  new Execution(sender, alias, args, new String[0]));
             } else {
                 return new ArrayList<>();
             }

@@ -8,7 +8,7 @@ public interface ArgumentValidationRule<T> {
         T parse = validate(argument);
 
         if(parse == null) {
-            throw new NullPointerException();
+            throw new NullPointerException("Argument may not be null");
         }
 
         return parse;
