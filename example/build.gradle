@@ -25,7 +25,7 @@ dependencies {
 
     // importing from GitHub with Jitpack,
     // using it as implementation tells the plugin how to compile
-    implementation 'com.github.SaiintBrisson:command-framework:75815af0ae'
+    implementation 'com.github.SaiintBrisson:command-framework:a689875974'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

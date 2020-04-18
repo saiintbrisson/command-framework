@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+// TODO: 4/17/2020 Refactor *everything*
 public class LocalCommand extends org.bukkit.command.Command {
 
     private CommandFrame owner;
@@ -88,7 +90,9 @@ public class LocalCommand extends org.bukkit.command.Command {
     }
 
     private void registerArguments() {
-        for(Parameter parameter : method.getParameters()) {
+        Parameter[] parameters = method.getParameters();
+        for(int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
             Class<?> clazz = parameter.getType();
             if(clazz.equals(Execution.class)) {
                 arguments.add(new CommandArgument<>(
@@ -96,12 +100,25 @@ public class LocalCommand extends org.bukkit.command.Command {
                       null,
                       clazz
                     ),
+                    false,
                     null,
                     false
                   )
                 );
 
                 continue;
+            }
+
+            boolean isArray = false;
+            if(clazz.isArray()) {
+                if(i != parameters.length - 1) {
+                    throw new IllegalArgumentException("Arrays must be the last parameter in a command, "
+                      + parameter.getName()
+                      + "(" + getName() + ")");
+                }
+
+                isArray = true;
+                clazz = clazz.getComponentType();
             }
 
             ArgumentType<?> type = owner.getType(clazz);
@@ -127,21 +144,41 @@ public class LocalCommand extends org.bukkit.command.Command {
                 String[] strings = argument.defaultValue();
                 if(strings.length > 0) {
 
-                    try {
-                        defaultValue = type.getRule().validateNonNull(
-                          String.join(" ", strings[0])
+                    if(isArray) {
+                        defaultValue = Array.newInstance(
+                          clazz,
+                          0
                         );
-                    } catch (Exception e) {
-                        throw new IllegalArgumentException("Invalid default value for parameter: "
-                          + parameter.getName()
-                          + "(" + getName() + ")");
+
+                        for(String string : strings) {
+
+                            try {
+                                defaultValue = ArrayUtils.add(
+                                  (Object[]) defaultValue,
+                                  type.getRule().validateNonNull(string)
+                                );
+                            } catch (Exception e) {
+                                throw new IllegalArgumentException("Invalid default value for parameter: "
+                                  + parameter.getName()
+                                  + "(" + getName() + ")");
+                            }
+
+                        }
+                    } else {
+                        try {
+                            defaultValue = type.getRule().validateNonNull(
+                              String.join(" ", strings[0])
+                            );
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Invalid default value for parameter: "
+                              + parameter.getName()
+                              + "(" + getName() + ")");
+                        }
                     }
-
                 }
-
             }
 
-            arguments.add(new CommandArgument(type, defaultValue, nullable));
+            arguments.add(new CommandArgument(type, isArray, defaultValue, nullable));
         }
     }
 
@@ -246,8 +283,8 @@ public class LocalCommand extends org.bukkit.command.Command {
                             throw new NullPointerException();
                         }
 
-                        parameters = ArrayUtils.add(parameters, defaultValue);
                         i++;
+                        parameters = ArrayUtils.add(parameters, defaultValue);
                         continue;
                     }
 
@@ -258,7 +295,22 @@ public class LocalCommand extends org.bukkit.command.Command {
                         continue;
                     }
 
-                    Object parse = argument.getType().getRule().validateNonNull(arg);
+                    Object parse;
+                    if(argument.isArray()) {
+                        parse = Array.newInstance(argument.getClassType(), 0);
+
+                        do {
+                            parse = ArrayUtils.add(
+                              (Object[]) parse,
+                              argument.getType().getRule().validateNonNull(arg)
+                            );
+
+                            i++;
+                        } while((arg = execution.getArg(i - 1)) != null);
+                    } else {
+                        parse = argument.getType().getRule().validateNonNull(arg);
+                    }
+
                     parameters = ArrayUtils.add(parameters, parse);
                 }
 

@@ -3,11 +3,23 @@ package me.saiintbrisson.commands.example;
 import me.saiintbrisson.commands.CommandFrame;
 import me.saiintbrisson.commands.Execution;
 import me.saiintbrisson.commands.annotations.Command;
+import me.saiintbrisson.commands.argument.Argument;
 import me.saiintbrisson.commands.result.ResultType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/*
+
+
+    About Argument annotations:
+    primitive types may not be null,
+    the default value must be parsable from string
+
+    Types must be registered *before commands
+
+
+ */
 public class ExamplePlugin extends JavaPlugin {
 
     private CommandFrame frame;
@@ -20,10 +32,11 @@ public class ExamplePlugin extends JavaPlugin {
         frame.setInGameOnlyMessage("§cThis command is only available to in-game players.");
         frame.setUsageMessage("§cCorrect use: §e/{usage}§c.");
 
-        frame.registerCommands(this);
-        frame.registerCompleters(this);
-
+        // Registers a type
         frame.registerType(OfflinePlayer.class, Bukkit::getOfflinePlayer);
+
+        // Registers a command class
+        frame.register(this);
     }
 
     @Command(
@@ -37,6 +50,62 @@ public class ExamplePlugin extends JavaPlugin {
     )
     public void test(Execution execution, String message) {
         execution.sendMessage("Message: " + message);
+    }
+
+    @Command(
+      name = "test.default",
+      aliases = "testcommand",
+
+      description = "A command that accepts a message as argument",
+      usage = "test <message>",
+
+      inGameOnly = true
+    )
+    public void testDefault(Execution execution, @Argument(defaultValue = "no message provided") String message) {
+        execution.sendMessage("Message: " + message);
+    }
+
+    @Command(
+      name = "test.multidefault",
+      aliases = "testcommand",
+
+      description = "A command that accepts a message as argument",
+      usage = "test <message>",
+
+      inGameOnly = true
+    )
+    public void testMultipleDefault(Execution execution,
+                                    @Argument(defaultValue = "no message provided") String message,
+                                    @Argument(defaultValue = "no message provided either") String secondMessage) {
+        execution.sendMessage("Message: " + message + " " + secondMessage);
+    }
+
+    @Command(
+      name = "test.nullable",
+      aliases = "testcommand",
+
+      description = "A command that accepts a message as argument",
+      usage = "test <message>",
+
+      inGameOnly = true
+    )
+    public void testNullable(Execution execution, @Argument(nullable = true) String message) {
+        execution.sendMessage("May be null: " + message);
+    }
+
+    @Command(
+      name = "test.multinullable",
+      aliases = "testcommand",
+
+      description = "A command that accepts a message as argument",
+      usage = "test <message>",
+
+      inGameOnly = true
+    )
+    public void testMultipleNullable(Execution execution,
+                                     @Argument(nullable = true) String message,
+                                     @Argument(nullable = true) String secondMessage) {
+        execution.sendMessage("May be null: " + message + " " + secondMessage);
     }
 
     /*

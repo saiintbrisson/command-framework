@@ -12,6 +12,8 @@ public class CommandArgument<T> {
         return type.getClazz();
     }
 
+    private boolean array;
+
     private T defaultValue;
     private boolean nullable;
 
