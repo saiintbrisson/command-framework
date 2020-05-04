@@ -71,7 +71,7 @@ public class CommandFrame {
         inGameOnlyMessage = "§cThis command is only available in-game";
         usageMessage = "§cCorrect usage: §e/{usage}§c.";
         errorMessage = "§cAn error has been thrown: §f{error}§c.";
-        usageArrayOf = "array of";
+        usageArrayOf = "array of ";
     }
 
     public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {

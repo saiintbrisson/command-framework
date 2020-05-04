@@ -195,7 +195,7 @@ public class LocalCommand extends org.bukkit.command.Command {
             builder.append(nullable ? " [" : " <");
 
             if(isArray) {
-                builder.append("array of ");
+                builder.append(owner.getUsageArrayOf());
             }
             builder.append(StringUtils.uncapitalize(type.getClazz().getSimpleName()));
 
