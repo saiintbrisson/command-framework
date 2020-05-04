@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 @Getter
 public class CommandFrame {
@@ -23,10 +24,13 @@ public class CommandFrame {
     private CommandMap commandMap;
 
     @Setter
-    private String lackPermMessage, inGameOnlyMessage, usageMessage, errorMessage;
+    private String lackPermMessage, inGameOnlyMessage, usageMessage, errorMessage, usageArrayOf;
 
     private final List<LocalCommand> commands = new ArrayList<>();
     private final List<ArgumentType<?>> types = new ArrayList<>();
+
+    @Setter
+    private ExecutorService service;
 
     public CommandFrame(Plugin plugin, boolean registerDefault) {
         this.owner = plugin;
@@ -67,6 +71,7 @@ public class CommandFrame {
         inGameOnlyMessage = "§cThis command is only available in-game";
         usageMessage = "§cCorrect usage: §e/{usage}§c.";
         errorMessage = "§cAn error has been thrown: §f{error}§c.";
+        usageArrayOf = "array of";
     }
 
     public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {

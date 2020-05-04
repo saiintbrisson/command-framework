@@ -98,6 +98,10 @@ public class LocalCommand extends org.bukkit.command.Command {
     }
 
     private void registerArguments(boolean hasUsage) {
+        if(async && owner.getService() == null) {
+            throw new IllegalArgumentException("You must set an executor in order to run async commands");
+        }
+
         StringBuilder builder = new StringBuilder(rawName.replace(".", " "));
 
         Parameter[] parameters = method.getParameters();
@@ -237,7 +241,7 @@ public class LocalCommand extends org.bukkit.command.Command {
         Execution execution = new Execution(sender, commandLabel, args, options);
 
         if(async) {
-            CompletableFuture.runAsync(() -> run(execution));
+            CompletableFuture.runAsync(() -> run(execution), owner.getService());
         } else {
             return run(execution);
         }
