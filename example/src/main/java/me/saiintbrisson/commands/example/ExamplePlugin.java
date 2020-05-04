@@ -149,4 +149,14 @@ public class ExamplePlugin extends JavaPlugin {
         return ResultType.NONE;
     }
 
+    @Command(
+      name = "autousage"
+    )
+    public void autousage(Execution execution, OfflinePlayer player, String[] array) {}
+
+    @Command(
+      name = "autousage.nullable"
+    )
+    public void autousageNullable(Execution execution, OfflinePlayer player, @Argument(nullable = true) String[] array) {}
+
 }

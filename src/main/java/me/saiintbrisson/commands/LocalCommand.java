@@ -8,6 +8,7 @@ import me.saiintbrisson.commands.argument.ArgumentType;
 import me.saiintbrisson.commands.argument.Argument;
 import me.saiintbrisson.commands.result.ResultType;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 
 // TODO: 4/17/2020 Refactor *everything*
 public class LocalCommand extends org.bukkit.command.Command {
+
+    private String rawName;
 
     private CommandFrame owner;
     private final @Getter
@@ -46,6 +49,8 @@ public class LocalCommand extends org.bukkit.command.Command {
         super(command.name().split("\\.")[command.name().split("\\.").length - 1]);
         // TODO: 3/21/2020 fix this shitty line ^^
 
+        this.rawName = command.name();
+
         this.owner = owner;
         this.holder = holder;
         this.method = method;
@@ -60,14 +65,17 @@ public class LocalCommand extends org.bukkit.command.Command {
         async = command.async();
         inGameOnly = command.inGameOnly();
 
-        registerArguments();
+        registerArguments(!command.usage().equals(""));
     }
 
     public LocalCommand(String name) {
         super(name);
+        this.rawName = name;
     }
 
     public void override(CommandFrame owner, Object holder, Command command, Method method) {
+        this.rawName = command.name();
+
         this.owner = owner;
         this.holder = holder;
         this.method = method;
@@ -82,14 +90,16 @@ public class LocalCommand extends org.bukkit.command.Command {
         async = command.async();
         inGameOnly = command.inGameOnly();
 
-        registerArguments();
+        registerArguments(!command.usage().equals(""));
     }
 
     public boolean needsOverride() {
         return holder == null;
     }
 
-    private void registerArguments() {
+    private void registerArguments(boolean hasUsage) {
+        StringBuilder builder = new StringBuilder(rawName.replace(".", " "));
+
         Parameter[] parameters = method.getParameters();
         for(int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
@@ -178,7 +188,20 @@ public class LocalCommand extends org.bukkit.command.Command {
                 }
             }
 
+            builder.append(nullable ? " [" : " <");
+
+            if(isArray) {
+                builder.append("array of ");
+            }
+            builder.append(StringUtils.uncapitalize(type.getClazz().getSimpleName()));
+
+            builder.append(nullable ? "]" : ">");
+
             arguments.add(new CommandArgument(type, isArray, defaultValue, nullable));
+        }
+
+        if(!hasUsage) {
+            setUsage(builder.toString());
         }
     }
 
