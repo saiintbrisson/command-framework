@@ -28,14 +28,16 @@ public class CommandFrame {
     private final Map<Class<?>, ArgumentType<?>> types = new HashMap<>();
 
     @Setter
-    private String lackPermMessage, incorrectTargetMessage, usageMessage, errorMessage;
+    private String lackPermMessage = "§cYou do not have enough permissions. Required permission: §f{permission}§c.";
 
-    {
-        lackPermMessage = "§cYou do not have enough permissions. Required permission: §f{permission}§c.";
-        incorrectTargetMessage = "§cYou cannot use this command. Targeted to: §f{target}§c.";
-        usageMessage = "§cCorrect usage: §e/{usage}§c.";
-        errorMessage = "§cAn error has been thrown: §f{error}§c.";
-    }
+    @Setter
+    private String incorrectTargetMessage = "§cYou cannot use this command. Targeted to: §f{target}§c.";
+
+    @Setter
+    private String usageMessage = "§cCorrect usage: §e/{usage}§c.";
+
+    @Setter
+    private String errorMessage = "§cAn error has been thrown: §f{error}§c.";
 
     public CommandFrame(Plugin plugin, boolean registerDefault) {
         this.owner = plugin;

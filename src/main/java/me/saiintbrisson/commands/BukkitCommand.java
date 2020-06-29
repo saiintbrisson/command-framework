@@ -119,8 +119,8 @@ public class BukkitCommand extends org.bukkit.command.Command {
         }
 
         String[] options = getOptions(args);
-        args = Arrays.copyOfRange(args, 0, args.length - options.length);
-        Execution execution = new Execution(sender, commandLabel, args, options);
+        String[] finalArgs = Arrays.copyOfRange(args, 0, args.length - options.length);
+        Execution execution = new Execution(sender, commandLabel, finalArgs, options);
 
         Object object = invokeCommand(execution);
 
@@ -325,12 +325,12 @@ public class BukkitCommand extends org.bukkit.command.Command {
             return this;
         }
 
-        name = name.substring(Math.max(name.indexOf('.') + 1, 0));
+        String subName = name.substring(Math.max(name.indexOf('.') + 1, 0));
 
-        int index = name.indexOf('.');
-        String nextSubCommand = name;
+        int index = subName.indexOf('.');
+        String nextSubCommand = subName;
         if (index != -1) {
-            nextSubCommand = name.substring(0, index);
+            nextSubCommand = subName.substring(0, index);
         }
 
         BukkitSubCommand subCommand = getSubCommand(nextSubCommand);

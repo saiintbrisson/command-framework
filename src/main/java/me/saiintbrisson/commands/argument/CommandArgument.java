@@ -7,14 +7,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CommandArgument<T> {
 
-    private ArgumentType<T> type;
+    private final ArgumentType<T> type;
+
+    private final boolean array;
+
+    private final T defaultValue;
+    private final boolean nullable;
+
     public Class<T> getClassType() {
         return type.getType();
     }
-
-    private boolean array;
-
-    private T defaultValue;
-    private boolean nullable;
 
 }
