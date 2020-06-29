@@ -8,7 +8,6 @@ import me.saiintbrisson.commands.argument.ArgumentType;
 import me.saiintbrisson.commands.argument.ArgumentValidationRule;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;

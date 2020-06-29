@@ -8,6 +8,7 @@ import me.saiintbrisson.commands.argument.CommandArgument;
 import me.saiintbrisson.commands.exceptions.IncorrectTargetException;
 import me.saiintbrisson.commands.exceptions.IncorrectUsageException;
 import me.saiintbrisson.commands.exceptions.MissingPermissionException;
+import me.saiintbrisson.commands.exceptions.NoRegisteredConverterException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -179,7 +180,7 @@ public class BukkitCommand extends org.bukkit.command.Command {
                 if (arg == null && !argument.isNullable()) {
                     Object defaultValue = argument.getDefaultValue();
                     if (defaultValue == null) {
-                        throw new NullPointerException();
+                        throw new IncorrectUsageException();
                     }
 
                     i++;
@@ -375,9 +376,9 @@ public class BukkitCommand extends org.bukkit.command.Command {
             }
 
             ArgumentType<?> type = owner.getType(clazz);
-            ;
+
             if (type == null) {
-                throw new NullPointerException("No registered type for parameter "
+                throw new NoRegisteredConverterException("No registered type for parameter "
                   + parameter.getName()
                   + "(" + getName() + ")");
             }
