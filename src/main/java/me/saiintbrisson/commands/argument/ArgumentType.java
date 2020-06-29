@@ -10,6 +10,6 @@ import lombok.Getter;
 public class ArgumentType<T> {
 
     private ArgumentValidationRule<T> rule;
-    private Class<T> clazz;
+    private Class<T> type;
 
 }

@@ -9,7 +9,7 @@ public class CommandArgument<T> {
 
     private ArgumentType<T> type;
     public Class<T> getClassType() {
-        return type.getClazz();
+        return type.getType();
     }
 
     private boolean array;

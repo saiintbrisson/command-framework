@@ -9,16 +9,47 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 
+    /**
+     * Defines the command name, sub-commands are
+     * separated with dots
+     * <p>
+     * <b>Example:</b><p>
+     *   parentcommand<p>
+     *   parentcommand.subcommand<p>
+     *   parentcommand.childcommand.subcommand
+     *
+     * @return the command name
+     */
     String name();
+
+    /**
+     * @return the command aliases
+     */
     String[] aliases() default {};
 
+    /**
+     * @return the command description
+     */
     String description() default "";
+
+    /**
+     * @return the command usage example
+     */
     String usage() default "";
+
+    /**
+     * @return the required permission to execute the command
+     */
     String permission() default "";
 
+    /**
+     * @return the possible command options
+     */
     String[] options() default {};
 
-    boolean async() default false;
-    boolean inGameOnly() default false;
+    /**
+     * @return the command target
+     */
+    CommandTarget target() default CommandTarget.BOTH;
 
 }

@@ -60,7 +60,7 @@ public class Execution {
     }
 
     public void sendMessage(String[] message) {
-        sender.sendMessage(String.join("\n", message));
+        sender.sendMessage(message);
     }
 
     public void sendMessage(String message, Object... objects) {

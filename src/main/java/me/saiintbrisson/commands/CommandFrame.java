@@ -6,31 +6,37 @@ import me.saiintbrisson.commands.annotations.Command;
 import me.saiintbrisson.commands.annotations.Completer;
 import me.saiintbrisson.commands.argument.ArgumentType;
 import me.saiintbrisson.commands.argument.ArgumentValidationRule;
-import me.saiintbrisson.commands.result.ResultType;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 public class CommandFrame {
 
-    private Plugin owner;
-
+    private final Plugin owner;
     private CommandMap commandMap;
 
-    @Setter
-    private String lackPermMessage, inGameOnlyMessage, usageMessage, errorMessage, usageArrayOf;
-
-    private final List<LocalCommand> commands = new ArrayList<>();
-    private final List<ArgumentType<?>> types = new ArrayList<>();
+    private final Map<String, BukkitCommand> bukkitCommandMap = new HashMap<>();
+    private final Map<Class<?>, ArgumentType<?>> types = new HashMap<>();
 
     @Setter
-    private ExecutorService service;
+    private String lackPermMessage, incorrectTargetMessage, usageMessage, errorMessage;
+
+    {
+        lackPermMessage = "§cYou do not have enough permissions. Required permission: §f{permission}§c.";
+        incorrectTargetMessage = "§cYou cannot use this command. Targeted to: §f{target}§c.";
+        usageMessage = "§cCorrect usage: §e/{usage}§c.";
+        errorMessage = "§cAn error has been thrown: §f{error}§c.";
+    }
 
     public CommandFrame(Plugin plugin, boolean registerDefault) {
         this.owner = plugin;
@@ -59,6 +65,9 @@ public class CommandFrame {
             registerType(Long.TYPE, Long::parseLong);
             registerType(Boolean.TYPE, Boolean::parseBoolean);
             registerType(Byte.TYPE, Byte::parseByte);
+
+            registerType(Player.class, Bukkit::getPlayer);
+            registerType(Material.class, argument -> Material.valueOf(argument.toUpperCase()));
         }
     }
 
@@ -66,30 +75,9 @@ public class CommandFrame {
         this(plugin, true);
     }
 
-    {
-        lackPermMessage = "§cYou do not have enough permissions.";
-        inGameOnlyMessage = "§cThis command is only available in-game";
-        usageMessage = "§cCorrect usage: §e/{usage}§c.";
-        errorMessage = "§cAn error has been thrown: §f{error}§c.";
-        usageArrayOf = "array of ";
-    }
-
-    public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {
-        registerType(
-                ArgumentType.<T>builder()
-                        .clazz(clazz)
-                        .rule(rule)
-                        .build()
-        );
-    }
-
-    public <T> void registerType(ArgumentType<T> type) {
-        types.add(type);
-    }
-
     public <T> ArgumentType<T> getType(Class<T> clazz) {
-        for (ArgumentType<?> type : types) {
-            if (clazz.isAssignableFrom(type.getClazz())) {
+        for (ArgumentType<?> type : types.values()) {
+            if (clazz.isAssignableFrom(type.getType())) {
                 return (ArgumentType<T>) type;
             }
         }
@@ -97,137 +85,92 @@ public class CommandFrame {
         return null;
     }
 
-    public void register(Object... holders) {
-        registerCommands(holders);
-        registerCompleters(holders);
+    public <T> void registerType(Class<T> clazz, ArgumentValidationRule<T> rule) {
+        registerType(
+          ArgumentType.<T>builder()
+            .type(clazz)
+            .rule(rule)
+            .build()
+        );
     }
 
-    public void registerCommands(Object... holders) {
-        for (Object holder : holders) {
-            Map<String, Method> map = new HashMap<>();
+    public <T> void registerType(ArgumentType<T> type) {
+        types.put(type.getType(), type);
+    }
 
-            for (Method method : holder.getClass().getMethods()) {
-                Command command = method.getDeclaredAnnotation(Command.class);
-                if (command == null) {
-                    continue;
-                }
-
-                Class<?> returnType = method.getReturnType();
-                if (!returnType.equals(Void.TYPE)
-                        && !returnType.equals(Boolean.TYPE)
-                        && !returnType.equals(Boolean.class)
-                        && !returnType.equals(ResultType.class)) continue;
-
-                map.put(command.name(), method);
-            }
-
-            registerCommands(holder, map);
+    public void register(Object... objects) {
+        for (Object object : objects) {
+            registerSingle(object);
         }
     }
 
-    private void registerCommands(Object holder, Map<String, Method> map) {
-        for (Map.Entry<String, Method> entry : map.entrySet()) {
-            Method method = entry.getValue();
-            Command command = method.getDeclaredAnnotation(Command.class);
-            String[] split = command.name().split("\\.");
-            LocalCommand localCommand = getCommand(split[0]);
-
-            StringBuilder name = new StringBuilder(split[0]);
-            if (localCommand == null) {
-                localCommand = getCommand(holder, map, name.toString());
-
-                commandMap.register(owner.getName(), localCommand);
-                commands.add(localCommand);
+    private void registerSingle(Object object) {
+        for (Method method : object.getClass().getDeclaredMethods()) {
+            Command command = method.getAnnotation(Command.class);
+            if (command != null) {
+                registerCommand(object, command, method);
+                continue;
             }
 
-            for (int i = 1; i < split.length; i++) {
-                name.append(".").append(split[i]);
-
-                LocalCommand newCommand = localCommand.getSubCommand(split[i]);
-                if (newCommand != null) {
-                    localCommand = newCommand;
-                    continue;
-                }
-
-                newCommand = getCommand(holder, map, name.toString());
-                localCommand.getSubCommands().add(newCommand);
-                localCommand = newCommand;
+            Completer completer = method.getAnnotation(Completer.class);
+            if (completer != null) {
+                registerCompleter(object, completer, method);
             }
         }
     }
 
-    private LocalCommand getCommand(Object holder, Map<String, Method> map, String name) {
-        Method method = map.get(name);
-        Command command = method.getDeclaredAnnotation(Command.class);
-
-        return new LocalCommand(this, holder, command, method);
-    }
-
-    private LocalCommand getCommand(String name) {
-        for (LocalCommand command : commands) {
-            if (command.getName().equals(name)) return command;
-        }
-
-        return null;
-    }
-
-    public void registerCompleters(Object... holders) {
-        for (Object holder : holders) {
-            for (Method method : holder.getClass().getMethods()) {
-                Completer completer = method.getDeclaredAnnotation(Completer.class);
-                if (completer == null) {
-                    continue;
-                }
-
-                Class<?>[] types = method.getParameterTypes();
-                if (types.length > 1
-                        || (types.length == 1
-                        && types[0] != Execution.class)) continue;
-
-                Class<?> returnType = method.getReturnType();
-                if (returnType != List.class) continue;
-
-                registerCompleter(completer, method);
-            }
-        }
-    }
-
-    public void registerCompleter(Completer completer, Method method) {
-        String[] split = completer.name().split("\\.");
-        LocalCommand localCommand = matchCommand(split[0], commands);
-
-        if (localCommand == null) {
+    private void registerCommand(Object object, Command command, Method method) {
+        Class<?> returnType = method.getReturnType();
+        if (!returnType.equals(Void.TYPE)
+          && !returnType.equals(Boolean.TYPE)) {
+            System.err.println("Could not register command '" + command.name() + "' (check your return type)");
             return;
         }
 
-        split = Arrays.copyOfRange(split, 1, split.length);
-        for (String s : split) {
-            LocalCommand newCommand = matchCommand(s, localCommand.getSubCommands());
-
-            if (newCommand == null) {
-                return;
-            }
-
-            localCommand = newCommand;
+        BukkitCommand recursive = getRecursive(command.name());
+        if (recursive == null) {
+            return;
         }
 
-        localCommand.setCompleter(method);
+        recursive.setCommand(object, command, method);
+        commandMap.register(owner.getName(), recursive);
     }
 
-    public LocalCommand matchCommand(String input, List<LocalCommand> commands) {
-        for (LocalCommand command : commands) {
-            if (input.equalsIgnoreCase(command.getName())) {
-                return command;
-            }
-
-            for (String alias : command.getAliases()) {
-                if (input.equalsIgnoreCase(alias)) {
-                    return command;
-                }
-            }
+    private void registerCompleter(Object object, Completer completer, Method method) {
+        Class<?> returnType = method.getReturnType();
+        if (!returnType.equals(List.class)) {
+            System.err.println("Could not register completer for '" + completer.name() + "' (check your return type)");
+            return;
         }
 
-        return null;
+        Class[] parameters = method.getParameterTypes();
+        if (parameters.length > 1 || (parameters.length == 1 && !parameters[0].equals(Execution.class))) {
+            System.err.println("Could not register completer for '" + completer.name() + "' (check your parameters)");
+            return;
+        }
+
+        BukkitCommand recursive = getRecursive(completer.name());
+        if (recursive == null) {
+            return;
+        }
+
+        recursive.setCompleter(object, method);
+    }
+
+    public BukkitCommand getRecursive(String name) {
+        int index = name.indexOf('.');
+        String nextSubCommand = name;
+        if (index != -1) {
+            nextSubCommand = name.substring(0, index);
+        }
+
+        BukkitCommand subCommand = bukkitCommandMap.get(nextSubCommand);
+        if (subCommand == null) {
+            subCommand = new BukkitCommand(this, nextSubCommand);
+            bukkitCommandMap.put(nextSubCommand, subCommand);
+        }
+
+        return subCommand.createRecursive(name);
     }
 
 }
