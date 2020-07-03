@@ -1,4 +1,4 @@
-package me.saiintbrisson.commands;
+package me.saiintbrisson.minecraft.command;
 
 import lombok.Getter;
 

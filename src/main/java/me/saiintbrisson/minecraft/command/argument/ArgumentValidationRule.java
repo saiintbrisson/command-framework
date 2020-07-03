@@ -1,4 +1,4 @@
-package me.saiintbrisson.commands.argument;
+package me.saiintbrisson.minecraft.command.argument;
 
 public interface ArgumentValidationRule<T> {
 

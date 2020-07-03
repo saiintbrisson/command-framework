@@ -1,4 +1,4 @@
-package me.saiintbrisson.commands.exceptions;
+package me.saiintbrisson.minecraft.command.exceptions;
 
 import lombok.NoArgsConstructor;
 

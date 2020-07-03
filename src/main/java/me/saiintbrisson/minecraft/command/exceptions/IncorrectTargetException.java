@@ -1,8 +1,8 @@
-package me.saiintbrisson.commands.exceptions;
+package me.saiintbrisson.minecraft.command.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.saiintbrisson.commands.annotations.CommandTarget;
+import me.saiintbrisson.minecraft.command.annotations.CommandTarget;
 
 @AllArgsConstructor
 public class IncorrectTargetException extends CommandException {

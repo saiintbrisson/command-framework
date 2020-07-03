@@ -1,11 +1,11 @@
-package me.saiintbrisson.commands;
+package me.saiintbrisson.minecraft.command;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.saiintbrisson.commands.annotations.Command;
-import me.saiintbrisson.commands.annotations.Completer;
-import me.saiintbrisson.commands.argument.ArgumentType;
-import me.saiintbrisson.commands.argument.ArgumentValidationRule;
+import me.saiintbrisson.minecraft.command.annotations.Command;
+import me.saiintbrisson.minecraft.command.annotations.Completer;
+import me.saiintbrisson.minecraft.command.argument.ArgumentType;
+import me.saiintbrisson.minecraft.command.argument.ArgumentValidationRule;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;

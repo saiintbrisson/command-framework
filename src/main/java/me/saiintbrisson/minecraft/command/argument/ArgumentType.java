@@ -1,4 +1,4 @@
-package me.saiintbrisson.commands.argument;
+package me.saiintbrisson.minecraft.command.argument;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

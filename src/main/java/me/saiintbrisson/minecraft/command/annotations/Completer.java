@@ -1,15 +1,14 @@
-package me.saiintbrisson.commands.argument;
+package me.saiintbrisson.minecraft.command.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.PARAMETER)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Argument {
+public @interface Completer {
 
-    String[] defaultValue() default {};
-    boolean nullable() default false;
+    String name();
 
 }

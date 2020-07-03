@@ -1,14 +1,14 @@
-package me.saiintbrisson.commands;
+package me.saiintbrisson.minecraft.command;
 
 import lombok.Getter;
-import me.saiintbrisson.commands.annotations.Command;
-import me.saiintbrisson.commands.argument.Argument;
-import me.saiintbrisson.commands.argument.ArgumentType;
-import me.saiintbrisson.commands.argument.CommandArgument;
-import me.saiintbrisson.commands.exceptions.IncorrectTargetException;
-import me.saiintbrisson.commands.exceptions.IncorrectUsageException;
-import me.saiintbrisson.commands.exceptions.MissingPermissionException;
-import me.saiintbrisson.commands.exceptions.NoRegisteredConverterException;
+import me.saiintbrisson.minecraft.command.annotations.Command;
+import me.saiintbrisson.minecraft.command.argument.Argument;
+import me.saiintbrisson.minecraft.command.argument.ArgumentType;
+import me.saiintbrisson.minecraft.command.argument.CommandArgument;
+import me.saiintbrisson.minecraft.command.exceptions.IncorrectTargetException;
+import me.saiintbrisson.minecraft.command.exceptions.IncorrectUsageException;
+import me.saiintbrisson.minecraft.command.exceptions.MissingPermissionException;
+import me.saiintbrisson.minecraft.command.exceptions.NoRegisteredConverterException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;

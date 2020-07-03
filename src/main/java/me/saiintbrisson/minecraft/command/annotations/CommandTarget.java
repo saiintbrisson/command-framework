@@ -1,4 +1,4 @@
-package me.saiintbrisson.commands.annotations;
+package me.saiintbrisson.minecraft.command.annotations;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
