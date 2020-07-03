@@ -340,7 +340,7 @@ public class BukkitCommand extends org.bukkit.command.Command {
             getSubCommands().add(subCommand);
         }
 
-        return subCommand.createRecursive(name);
+        return subCommand.createRecursive(subName);
     }
 
     public void registerArguments() {
