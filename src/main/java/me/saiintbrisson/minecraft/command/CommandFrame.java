@@ -136,7 +136,10 @@ public class CommandFrame {
         }
 
         recursive.setCommand(object, command, method);
-        commandMap.register(owner.getName(), recursive);
+
+        if (recursive.getPosition() == 0) {
+            commandMap.register(owner.getName(), recursive);
+        }
     }
 
     private void registerCompleter(Object object, Completer completer, Method method) {
