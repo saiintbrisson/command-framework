@@ -7,6 +7,27 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+allprojects {
+
+    afterEvaluate {
+
+        dependencies {
+
+            compileOnly 'commons-lang:commons-lang:2.6'
+
+            compileOnly 'org.projectlombok:lombok:1.18.12'
+            annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+        }
+
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+}
+
 repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
@@ -21,8 +42,4 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
 }

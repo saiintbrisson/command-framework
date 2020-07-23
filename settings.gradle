@@ -1,2 +1,5 @@
 rootProject.name = 'command-framework'
-//include 'example'
+include 'example'
+include 'shared'
+include 'bukkit'
+
