@@ -1,9 +1,6 @@
 package me.saiintbrisson.minecraft.command.command;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 
@@ -25,36 +22,44 @@ public class CommandInfo {
      *
      * @return the command name
      */
+    @NonNull
     private String name;
 
     /**
      * @return the command aliases
      */
-    private String[] aliases;
+    @NonNull
+    @Builder.Default
+    private String[] aliases = new String[0];
 
     /**
      * @return the command description
      */
     @Setter
-    private String description;
+    @Builder.Default
+    private String description = "";
 
     /**
      * @return the command usage example
      */
     @Setter
-    private String usage;
+    @Builder.Default
+    private String usage = "";
 
     /**
      * @return the required permission to execute the command
      */
     @Setter
-    private String permission;
+    @Builder.Default
+    private String permission = "";
 
     /**
      * @return the command target
      */
     @Setter
-    private CommandTarget target;
+    @NonNull
+    @Builder.Default
+    private CommandTarget target = CommandTarget.ALL;
 
     public CommandInfo(Command command) {
         this(

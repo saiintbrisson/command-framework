@@ -12,9 +12,6 @@ allprojects {
 
     afterEvaluate {
 
-        apply plugin: 'java'
-        apply plugin: 'maven'
-
         repositories {
             mavenCentral()
         }

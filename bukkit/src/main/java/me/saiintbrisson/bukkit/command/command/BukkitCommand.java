@@ -60,18 +60,18 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
         setAliases(Arrays.asList(commandInfo.getAliases()));
 
-        if (commandInfo.getPermission() != null) {
+        if (StringUtils.isNotEmpty(commandInfo.getPermission())) {
             setPermission(commandInfo.getPermission());
         }
 
         final String usage = commandInfo.getUsage();
-        if (usage != null && !usage.isEmpty()) {
+        if (StringUtils.isNotEmpty(usage)) {
             setUsage(usage);
         } else if (commandExecutor instanceof BukkitCommandExecutor) {
             setUsage(((BukkitCommandExecutor) commandExecutor).getParser().buildUsage(getFancyName()));
         }
 
-        if (commandInfo.getDescription() != null) {
+        if ((StringUtils.isNotEmpty(commandInfo.getDescription()))) {
             setDescription(commandInfo.getDescription());
         }
 
@@ -170,7 +170,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
             }
 
             if (matchedChildCommands.size() != 0) {
-                Collections.sort(matchedChildCommands, String.CASE_INSENSITIVE_ORDER);
+                matchedChildCommands.sort(String.CASE_INSENSITIVE_ORDER);
                 return matchedChildCommands;
             }
         }
