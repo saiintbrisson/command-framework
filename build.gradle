@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven'
 }
 
 group 'me.saiintbrisson'
@@ -10,6 +11,9 @@ sourceCompatibility = 1.8
 allprojects {
 
     afterEvaluate {
+
+        apply plugin: 'java'
+        apply plugin: 'maven'
 
         repositories {
             mavenCentral()
