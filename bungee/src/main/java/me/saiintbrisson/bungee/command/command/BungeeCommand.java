@@ -92,6 +92,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         if (commandExecutor instanceof BungeeCommandExecutor) {
             ((BungeeCommandExecutor) commandExecutor).setCommand(this);
         }
+
     }
 
     public final void initCompleter(CompleterExecutor<CommandSender> completerExecutor) {

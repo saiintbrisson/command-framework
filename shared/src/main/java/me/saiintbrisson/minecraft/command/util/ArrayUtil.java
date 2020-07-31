@@ -21,7 +21,7 @@ public final class ArrayUtil {
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
 
-        T[] copy = (newType == Object[].class)
+        T[] copy = ((Object) newType == (Object) Object[].class)
                    ? (T[]) new Object[newLength]
                    : (T[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, from, copy, 0,
