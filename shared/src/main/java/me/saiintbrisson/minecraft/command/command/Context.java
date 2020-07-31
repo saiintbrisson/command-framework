@@ -72,6 +72,12 @@ public interface Context<S> {
     void sendMessage(String message);
 
     /**
+     * Sends multiple messages to the executor
+     * @param messages the messages to be sent
+     */
+    void sendMessage(String[] messages);
+
+    /**
      * Sends a message formatting it with the String#format() method
      * @param message the message to be sent
      * @param objects the objects to be inserted

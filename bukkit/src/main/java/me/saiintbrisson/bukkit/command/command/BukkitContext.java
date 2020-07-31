@@ -48,6 +48,11 @@ public class BukkitContext implements Context<CommandSender> {
     }
 
     @Override
+    public void sendMessage(String[] messages) {
+        sender.sendMessage(messages);
+    }
+
+    @Override
     public boolean testPermission(String permission, boolean silent) throws CommandException {
         if (sender.hasPermission(permission)) {
             return true;
