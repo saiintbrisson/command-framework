@@ -1,15 +1,13 @@
 package com.henryfabio.commandframework;
 
-import com.google.common.collect.Lists;
 import me.saiintbrisson.bungee.command.BungeeFrame;
 import me.saiintbrisson.minecraft.command.annotation.Command;
-import me.saiintbrisson.minecraft.command.annotation.Completer;
+import me.saiintbrisson.minecraft.command.annotation.Optional;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-
-import java.util.List;
 
 /**
  * @author Henry Fábio
@@ -38,23 +36,13 @@ public final class MainTest extends Plugin {
             permission = "op",
             target = CommandTarget.PLAYER
     )
-    public void test1Command(Context<CommandSender> context) {
-        context.sendMessage("§aTo aqui te ouvindo po");
-    }
-
-    @Completer(
-            name = "test"
-    )
-    public List<String> testCommandCompleter(Context<CommandSender> context) {
-        if (context.argsCount() == 1) {
-            return Lists.newArrayList(
-                    "test1",
-                    "test2",
-                    "test3"
-            );
+    public void test1Command(Context<CommandSender> context, @Optional ProxiedPlayer player, String[] message) {
+        if (player == null) {
+            context.sendMessage("§cEste usuário não está online.");
+            return;
         }
 
-        return Lists.newArrayList();
+        player.sendMessages(message);
     }
 
 }

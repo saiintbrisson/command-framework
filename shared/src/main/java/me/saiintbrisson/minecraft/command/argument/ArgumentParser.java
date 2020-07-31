@@ -58,16 +58,20 @@ public class ArgumentParser<S> {
 
             i++;
 
+            TypeAdapter<?> adapter = argument.getAdapter();
             Object parse;
             if (argument.isArray()) {
                 parse = Array.newInstance(argument.getType(), 0);
 
                 do {
-                    parse = ArrayUtil.add((Object[]) parse, argument.getAdapter().convertNonNull(arg));
+                    parse = ArrayUtil.add(
+                            (Object[]) parse,
+                            argument.isNullable() ? adapter.convert(arg) : adapter.convertNonNull(arg)
+                    );
                     i++;
                 } while ((arg = context.getArg(i - 1)) != null);
             } else {
-                parse = argument.getAdapter().convertNonNull(arg);
+                parse = argument.isNullable() ? adapter.convert(arg) : adapter.convertNonNull(arg);
             }
 
             parameters = ArrayUtil.add(parameters, parse);
@@ -107,12 +111,10 @@ public class ArgumentParser<S> {
             builder.adapter(adapterMap.get(type));
 
             final Optional optional = parameter.getDeclaredAnnotation(Optional.class);
-            if (optional == null) {
-                argumentList.add(builder.build());
-                continue;
-            }
-
-            argumentList.add(createOptional(type, optional.def(), builder));
+            argumentList.add(optional == null ?
+                             builder.build() :
+                             createOptional(type, optional.def(), builder)
+            );
         }
     }
 
