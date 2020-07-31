@@ -1,5 +1,6 @@
 package me.saiintbrisson.bungee.command.command;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.bungee.command.BungeeFrame;
@@ -15,8 +16,11 @@ import me.saiintbrisson.minecraft.command.message.MessageHolder;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.List;
  * Github: https://github.com/HenryFabio
  */
 @Getter
-public class BungeeCommand extends Command implements CommandHolder<CommandSender, BungeeChildCommand> {
+public class BungeeCommand extends Command implements CommandHolder<CommandSender, BungeeChildCommand>, TabExecutor {
 
     private final BungeeFrame frame;
     private final MessageHolder messageHolder;
@@ -132,6 +136,34 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
                 BungeeTargetValidator.INSTANCE.fromSender(sender),
                 args
         ));
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (completerExecutor != null) {
+            return completerExecutor.execute(new BungeeContext(
+                    sender,
+                    BungeeTargetValidator.INSTANCE.fromSender(sender),
+                    args
+            ));
+        }
+
+        if (childCommandList.size() != 0 && args.length != 0) {
+            List<String> matchedChildCommands = new ArrayList<>();
+
+            for (BungeeChildCommand command : childCommandList) {
+                if (StringUtils.startsWithIgnoreCase(command.getName(), args[args.length - 1])) {
+                    matchedChildCommands.add(command.getName());
+                }
+            }
+
+            if (matchedChildCommands.size() != 0) {
+                matchedChildCommands.sort(String.CASE_INSENSITIVE_ORDER);
+                return matchedChildCommands;
+            }
+        }
+
+        return Lists.newArrayList();
     }
 
     @Override
