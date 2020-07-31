@@ -24,11 +24,11 @@ public class ExamplePlugin extends JavaPlugin {
         frame.getMessageHolder().loadFromResources("command");
 
         frame.registerCommand(CommandInfo.builder()
-          .name("test.sub")
-          .aliases(new String[]{
-            "abroba"
-          })
-          .build(), context -> {
+                .name("test.sub")
+                .aliases(new String[]{
+                        "abroba"
+                })
+                .build(), context -> {
             context.sendMessage("hey");
             return false;
         });

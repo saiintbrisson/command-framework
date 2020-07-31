@@ -35,7 +35,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         final Class<?> returnType = method.getReturnType();
 
         if (!returnType.equals(Void.TYPE)
-          && !returnType.equals(Boolean.TYPE)) {
+                && !returnType.equals(Boolean.TYPE)) {
             throw new CommandException("Illegal return type, '" + method.getName());
         }
 
@@ -75,7 +75,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         } catch (InvocationTargetException e) {
             final Throwable throwable = e.getTargetException();
 
-            if (throwable == null || !(throwable instanceof CommandException)) {
+            if (!(throwable instanceof CommandException)) {
                 e.printStackTrace();
                 context.sendMessage("§cAn internal error occurred, please contact the staff team.");
 

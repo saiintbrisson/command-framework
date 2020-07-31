@@ -63,12 +63,12 @@ public class CommandInfo {
 
     public CommandInfo(Command command) {
         this(
-          command.name(),
-          command.aliases(),
-          command.description(),
-          command.usage(),
-          command.permission(),
-          command.target()
+                command.name(),
+                command.aliases(),
+                command.description(),
+                command.usage(),
+                command.permission(),
+                command.target()
         );
     }
 

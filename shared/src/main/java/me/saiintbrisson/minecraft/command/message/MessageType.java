@@ -13,28 +13,28 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 public enum MessageType {
 
     ERROR("{error}",
-      "§cAn error has been thrown: §f{error}§c.") {
+            "§cAn error has been thrown: §f{error}§c.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return "";
         }
     },
     NO_PERMISSION("{permission}",
-      "§cRequired permission: §f{permission}§c.") {
+            "§cRequired permission: §f{permission}§c.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getPermission();
         }
     },
     INCORRECT_USAGE("{usage}",
-      "§cCorrect usage: §e/{usage}§c.") {
+            "§cCorrect usage: §e/{usage}§c.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getUsage();
         }
     },
     INCORRECT_TARGET("{target}",
-      "§cYou cannot execute this command. Targeted to: §f{target}§c.") {
+            "§cYou cannot execute this command. Targeted to: §f{target}§c.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getCommandInfo().getTarget().name();

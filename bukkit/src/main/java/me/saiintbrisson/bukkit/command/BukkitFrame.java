@@ -1,5 +1,6 @@
 package me.saiintbrisson.bukkit.command;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import me.saiintbrisson.bukkit.command.command.BukkitCommand;
 import me.saiintbrisson.bukkit.command.executor.BukkitCommandExecutor;
@@ -29,20 +30,15 @@ import java.util.Map;
 /**
  * @author SaiintBrisson
  */
+@Getter
 public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCommand> {
 
-    @Getter
     private final Plugin plugin;
-
-    @Getter
     private final AdapterMap adapterMap;
-
-    @Getter
     private final MessageHolder messageHolder;
 
-    @Getter
     private final Map<String, BukkitCommand> commandMap;
-    private final CommandMap bukkitCommandMap;
+    @Getter(AccessLevel.PRIVATE) private final CommandMap bukkitCommandMap;
 
     public BukkitFrame(Plugin plugin, AdapterMap adapterMap) {
         this.plugin = plugin;

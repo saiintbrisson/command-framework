@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 public @interface Completer {
 
     /**
-     *
      * @return the command to complete
      */
     String name();

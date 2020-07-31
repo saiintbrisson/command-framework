@@ -13,19 +13,13 @@ import org.bukkit.command.CommandSender;
  * @author SaiintBrisson
  */
 
+@Getter
 @AllArgsConstructor
 public class BukkitContext implements Context<CommandSender> {
 
-    @Getter
     private final String label;
-
-    @Getter
     private final CommandSender sender;
-
-    @Getter
     private final CommandTarget target;
-
-    @Getter
     private final String[] args;
 
     @Override

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,15 +114,15 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
         if (!testPermissionSilent(sender)) {
             sender.sendMessage(
-              messageHolder.getReplacing(MessageType.NO_PERMISSION, getPermission())
+                    messageHolder.getReplacing(MessageType.NO_PERMISSION, getPermission())
             );
             return false;
         }
 
         if (!BukkitTargetValidator.INSTANCE.validate(commandInfo.getTarget(), sender)) {
             sender.sendMessage(frame.getMessageHolder().getReplacing(
-              MessageType.INCORRECT_TARGET,
-              commandInfo.getTarget().name()
+                    MessageType.INCORRECT_TARGET,
+                    commandInfo.getTarget().name()
             ));
             return false;
         }
@@ -141,10 +140,10 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         }
 
         return commandExecutor.execute(new BukkitContext(
-          commandLabel,
-          sender,
-          BukkitTargetValidator.INSTANCE.fromSender(sender),
-          args
+                commandLabel,
+                sender,
+                BukkitTargetValidator.INSTANCE.fromSender(sender),
+                args
         ));
     }
 
@@ -153,10 +152,10 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
                                              @NotNull String[] args) throws IllegalArgumentException {
         if (completerExecutor != null) {
             return completerExecutor.execute(new BukkitContext(
-              alias,
-              sender,
-              BukkitTargetValidator.INSTANCE.fromSender(sender),
-              args
+                    alias,
+                    sender,
+                    BukkitTargetValidator.INSTANCE.fromSender(sender),
+                    args
             ));
         }
 
@@ -200,18 +199,6 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         }
 
         return childCommand.createRecursive(subName);
-    }
-
-    public boolean equals(String name) {
-        if (getName().equalsIgnoreCase(name)) {
-            return true;
-        }
-
-        for (String alias : getAliases()) {
-            if (alias.equalsIgnoreCase(name)) return true;
-        }
-
-        return false;
     }
 
 }
