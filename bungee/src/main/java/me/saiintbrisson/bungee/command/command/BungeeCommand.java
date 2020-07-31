@@ -7,17 +7,17 @@ import me.saiintbrisson.bungee.command.BungeeFrame;
 import me.saiintbrisson.bungee.command.accessor.CommandAccessor;
 import me.saiintbrisson.bungee.command.executor.BungeeCommandExecutor;
 import me.saiintbrisson.bungee.command.target.BungeeTargetValidator;
-import me.saiintbrisson.bungee.command.util.StringUtil;
 import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
 import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
 import me.saiintbrisson.minecraft.command.message.MessageHolder;
 import me.saiintbrisson.minecraft.command.message.MessageType;
+import me.saiintbrisson.minecraft.command.util.ArrayUtil;
+import me.saiintbrisson.minecraft.command.util.StringUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         if (args.length > 0) {
             BungeeChildCommand command = getChildCommand(args[0]);
             if (command != null) {
-                command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                command.execute(sender, ArrayUtil.copyOfRange(args, 1, args.length));
                 return;
             }
         }
@@ -152,7 +152,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
             List<String> matchedChildCommands = new ArrayList<>();
 
             for (BungeeChildCommand command : childCommandList) {
-                if (StringUtils.startsWithIgnoreCase(command.getName(), args[args.length - 1])) {
+                if (StringUtil.startsWithIgnoreCase(command.getName(), args[args.length - 1])) {
                     matchedChildCommands.add(command.getName());
                 }
             }
@@ -176,27 +176,23 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     }
 
     public BungeeCommand createRecursive(String name) {
-        int position = getPosition() + StringUtil.countMatches(name, ".");
-        if (position == getPosition()) {
+        int currentPosition = getPosition(), position = currentPosition + StringUtil.countMatches(name, ".");
+        if (currentPosition == position) {
             return this;
         }
 
-        String subName = name.substring(Math.max(name.indexOf('.') + 1, 0));
+        String recursive = name.substring(name.indexOf('.') + 1);
 
-        int index = subName.indexOf('.');
-        String nextSubCommand = subName;
-        if (index != -1) {
-            nextSubCommand = subName.substring(0, index);
-        }
+        int index = recursive.indexOf('.');
+        String childCommandName = index != -1 ? recursive.substring(0, index) : recursive;
 
-        BungeeChildCommand childCommand = getChildCommand(nextSubCommand);
-
+        BungeeChildCommand childCommand = getChildCommand(childCommandName);
         if (childCommand == null) {
-            childCommand = new BungeeChildCommand(frame, nextSubCommand, this);
+            childCommand = new BungeeChildCommand(frame, childCommandName, this);
             getChildCommandList().add(childCommand);
         }
 
-        return childCommand.createRecursive(subName);
+        return childCommand.createRecursive(recursive);
     }
 
     @Override

@@ -103,18 +103,15 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
     @Override
     public BungeeCommand getCommand(String name) {
         int index = name.indexOf('.');
-        String nextSubCommand = name;
-        if (index != -1) {
-            nextSubCommand = name.substring(0, index);
+        String recursiveCommand = (index != -1 ? name.substring(0, index) : name).toLowerCase();
+
+        BungeeCommand command = commandMap.get(recursiveCommand);
+        if (command == null) {
+            command = new BungeeCommand(this, recursiveCommand, 0);
+            commandMap.put(recursiveCommand, command);
         }
 
-        BungeeCommand subCommand = commandMap.get(nextSubCommand);
-        if (subCommand == null) {
-            subCommand = new BungeeCommand(this, nextSubCommand, 0);
-            commandMap.put(nextSubCommand, subCommand);
-        }
-
-        return subCommand.createRecursive(name);
+        return index != -1 ? command.createRecursive(name) : command;
     }
 
 }

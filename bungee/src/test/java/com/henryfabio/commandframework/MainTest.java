@@ -9,7 +9,6 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,11 +27,19 @@ public final class MainTest extends Plugin {
     @Command(
             name = "test",
             aliases = {"testeseila"},
+            permission = "op"
+    )
+    public void testCommand(Context<CommandSender> context) {
+        context.sendMessage("§eBanana com abacate meu pau no teu tomate");
+    }
+
+    @Command(
+            name = "test.test1",
             permission = "op",
             target = CommandTarget.PLAYER
     )
-    public void testCommand() {
-        System.out.println("213sduahsudh");
+    public void test1Command(Context<CommandSender> context) {
+        context.sendMessage("§aTo aqui te ouvindo po");
     }
 
     @Completer(
