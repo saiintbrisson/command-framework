@@ -21,7 +21,7 @@ public interface CommandHolder<S, C extends CommandHolder<S, C>> {
     C getChildCommand(String name);
 
     String getName();
-    List<String> getAliases();
+    List<String> getAliasesList();
     String getPermission();
     String getUsage();
     String getDescription();
@@ -33,7 +33,7 @@ public interface CommandHolder<S, C extends CommandHolder<S, C>> {
             return true;
         }
 
-        for (String alias : getAliases()) {
+        for (String alias : getAliasesList()) {
             if (alias.equalsIgnoreCase(name)) return true;
         }
 

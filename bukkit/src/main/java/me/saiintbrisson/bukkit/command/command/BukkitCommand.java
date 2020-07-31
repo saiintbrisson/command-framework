@@ -88,11 +88,6 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     }
 
     @Override
-    public CommandExecutor<CommandSender> getCommandExecutor() {
-        return commandExecutor;
-    }
-
-    @Override
     public BukkitChildCommand getChildCommand(String name) {
         for (BukkitChildCommand childCommand : childCommandList) {
             if (childCommand.equals(name)) return childCommand;
@@ -199,6 +194,11 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         }
 
         return childCommand.createRecursive(subName);
+    }
+
+    @Override
+    public List<String> getAliasesList() {
+        return getAliases();
     }
 
 }
