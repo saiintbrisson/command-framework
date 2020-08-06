@@ -120,7 +120,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
             return false;
         }
 
-        if (!BukkitTargetValidator.INSTANCE.validate(commandInfo.getTarget(), sender)) {
+        if (commandInfo != null && !BukkitTargetValidator.INSTANCE.validate(commandInfo.getTarget(), sender)) {
             sender.sendMessage(frame.getMessageHolder().getReplacing(
               MessageType.INCORRECT_TARGET,
               commandInfo.getTarget().name()
