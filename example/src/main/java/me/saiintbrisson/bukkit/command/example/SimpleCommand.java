@@ -22,10 +22,10 @@ public class SimpleCommand {
      */
 
     @Command(
-            name = "simple",
-            aliases = {"example"},
+      name = "simple",
+      aliases = { "example" },
 
-            target = CommandTarget.ALL // This line can be omitted, it defaults to ALL
+      target = CommandTarget.ALL // This line can be omitted, it defaults to ALL
     )
     public void handleSimple(BukkitContext context, Player player, String[] message) {
         String join = String.join(" ", message);
@@ -42,8 +42,8 @@ public class SimpleCommand {
      */
 
     @Command(
-            name = "simple.broadcast",
-            permission = "simple.broadcast"
+      name = "simple.broadcast",
+      permission = "simple.broadcast"
     )
     public void handleSimpleBroadcast(String[] message) {
         Bukkit.broadcastMessage(String.join(" ", message));
@@ -54,18 +54,18 @@ public class SimpleCommand {
      */
 
     @Command(
-            name = "simple.console",
-            target = CommandTarget.CONSOLE
+      name = "simple.console",
+      target = CommandTarget.CONSOLE
     )
     public void handleSimpleConsole(BukkitContext context, int number) {
         context.sendMessage("Given number * 2: %s", number);
     }
 
     @Command(
-            name = "simple.player",
-            target = CommandTarget.PLAYER,
+      name = "simple.player",
+      target = CommandTarget.PLAYER,
 
-            permission = "simple.permission"
+      permission = "simple.permission"
     )
     public void handleSimplePlayer(BukkitContext context) {
         context.sendMessage("§aYay! You may access this command.");
@@ -87,8 +87,8 @@ public class SimpleCommand {
      */
 
     @Command(
-            name = "simple.player.sub",
-            description = "Sends a message to the players"
+      name = "simple.player.sub",
+      description = "Sends a message to the players"
     )
     public void handleSimplePlayerSub(Context<CommandSender> context, @Optional Player[] players) {
         final CommandSender sender = context.getSender();

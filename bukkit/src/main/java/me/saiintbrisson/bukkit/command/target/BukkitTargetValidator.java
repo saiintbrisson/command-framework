@@ -14,15 +14,15 @@ public class BukkitTargetValidator implements TargetValidator {
 
     @Override
     public boolean validate(CommandTarget target, Object object) {
-        if (target == CommandTarget.CONSOLE) {
-            return object instanceof ConsoleCommandSender;
+        if (target == CommandTarget.ALL) {
+            return true;
         }
 
-        if (target == CommandTarget.PLAYER) {
-            return object instanceof Player;
+        if (target == CommandTarget.PLAYER && object instanceof Player) {
+            return true;
         }
 
-        return true;
+        return target == CommandTarget.CONSOLE && object instanceof ConsoleCommandSender;
     }
 
     @Override

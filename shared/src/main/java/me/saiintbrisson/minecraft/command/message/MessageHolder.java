@@ -49,8 +49,7 @@ public class MessageHolder {
             try {
                 final MessageType type = MessageType.valueOf(s);
                 setMessage(type, bundle.getString(s).replace("&", "§"));
-            } catch (IllegalArgumentException ignore) {
-            }
+            } catch (IllegalArgumentException ignore) {}
         }
     }
 

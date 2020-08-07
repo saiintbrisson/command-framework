@@ -19,8 +19,8 @@ public @interface Command {
      * Defines the command name, sub-commands are split with dots
      * <p><p>
      * <b>Example:</b><p>
-     * parentcommand<p>
-     * parentcommand.subcommand<p>
+     *   parentcommand<p>
+     *   parentcommand.subcommand<p>
      *
      * @return the command name
      */
