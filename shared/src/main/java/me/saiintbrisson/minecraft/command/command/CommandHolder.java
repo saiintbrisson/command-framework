@@ -15,15 +15,21 @@ public interface CommandHolder<S, C extends CommandHolder<S, C>> {
     int getPosition();
 
     CommandExecutor<S> getCommandExecutor();
+
     CompleterExecutor<S> getCompleterExecutor();
 
     List<C> getChildCommandList();
+
     C getChildCommand(String name);
 
     String getName();
+
     List<String> getAliasesList();
+
     String getPermission();
+
     String getUsage();
+
     String getDescription();
 
     String getFancyName();

@@ -98,15 +98,15 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     public void execute(CommandSender sender, String[] args) {
         if (!testPermissionSilent(sender)) {
             sender.sendMessage(
-                    messageHolder.getReplacing(MessageType.NO_PERMISSION, getPermission())
+              messageHolder.getReplacing(MessageType.NO_PERMISSION, getPermission())
             );
             return;
         }
 
         if (!BungeeTargetValidator.INSTANCE.validate(commandInfo.getTarget(), sender)) {
             sender.sendMessage(frame.getMessageHolder().getReplacing(
-                    MessageType.INCORRECT_TARGET,
-                    commandInfo.getTarget().name()
+              MessageType.INCORRECT_TARGET,
+              commandInfo.getTarget().name()
             ));
             return;
         }
@@ -124,9 +124,9 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         }
 
         commandExecutor.execute(new BungeeContext(
-                sender,
-                BungeeTargetValidator.INSTANCE.fromSender(sender),
-                args
+          sender,
+          BungeeTargetValidator.INSTANCE.fromSender(sender),
+          args
         ));
     }
 
@@ -134,9 +134,9 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         if (completerExecutor != null) {
             return completerExecutor.execute(new BungeeContext(
-                    sender,
-                    BungeeTargetValidator.INSTANCE.fromSender(sender),
-                    args
+              sender,
+              BungeeTargetValidator.INSTANCE.fromSender(sender),
+              args
             ));
         }
 

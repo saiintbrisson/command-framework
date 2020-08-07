@@ -84,8 +84,8 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
 
         if (recursive.getPosition() == 0) {
             ProxyServer.getInstance().getPluginManager().registerCommand(
-                    plugin,
-                    recursive
+              plugin,
+              recursive
             );
         }
     }

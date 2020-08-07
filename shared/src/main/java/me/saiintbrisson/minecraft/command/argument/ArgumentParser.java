@@ -84,10 +84,10 @@ public class ArgumentParser<S> {
             Class type = parameter.getType();
 
             final Argument.ArgumentBuilder builder = Argument
-                    .builder()
-                    .name(parameter.getName())
-                    .type(type)
-                    .isArray(type.isArray());
+              .builder()
+              .name(parameter.getName())
+              .type(type)
+              .isArray(type.isArray());
 
             if (Context.class.isAssignableFrom(type)) {
                 argumentList.add(builder.build());
@@ -97,7 +97,7 @@ public class ArgumentParser<S> {
             if (type.isArray()) {
                 if (i != parameters.length - 1) {
                     throw new IllegalArgumentException("Arrays must be the last parameter in a command, "
-                            + method.getName());
+                      + method.getName());
                 }
 
                 type = type.getComponentType();
@@ -120,7 +120,7 @@ public class ArgumentParser<S> {
                                     String[] def, Argument.ArgumentBuilder builder) {
         if (type.isPrimitive()) {
             throw new IllegalArgumentException("Use wrappers instead of primitive types for nullability, "
-                    + method.getName());
+              + method.getName());
         }
 
         final TypeAdapter<?> adapter = adapterMap.get(type);
@@ -144,8 +144,8 @@ public class ArgumentParser<S> {
 
         for (String s : def) {
             value = ArrayUtil.add(
-                    value,
-                    adapter.convertNonNull(s)
+              value,
+              adapter.convertNonNull(s)
             );
         }
 

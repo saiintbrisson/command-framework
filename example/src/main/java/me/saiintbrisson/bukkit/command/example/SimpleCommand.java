@@ -23,7 +23,7 @@ public class SimpleCommand {
 
     @Command(
       name = "simple",
-      aliases = { "example" },
+      aliases = {"example"},
 
       target = CommandTarget.ALL // This line can be omitted, it defaults to ALL
     )

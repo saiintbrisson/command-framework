@@ -18,9 +18,11 @@ public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     P getPlugin();
 
     AdapterMap getAdapterMap();
+
     MessageHolder getMessageHolder();
 
     Map<String, C> getCommandMap();
+
     C getCommand(String name);
 
     default <T> void registerAdapter(Class<T> type, TypeAdapter<T> adapter) {
@@ -30,6 +32,7 @@ public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     void registerCommands(Object... objects);
 
     void registerCommand(CommandInfo commandInfo, CommandExecutor<S> commandExecutor);
+
     void registerCompleter(String name, CompleterExecutor<S> completerExecutor);
 
 }

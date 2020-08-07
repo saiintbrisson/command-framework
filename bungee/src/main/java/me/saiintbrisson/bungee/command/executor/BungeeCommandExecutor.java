@@ -36,7 +36,7 @@ public final class BungeeCommandExecutor implements CommandExecutor<CommandSende
         final Class<?> returnType = method.getReturnType();
 
         if (!returnType.equals(Void.TYPE)
-                && !returnType.equals(Boolean.TYPE)) {
+          && !returnType.equals(Boolean.TYPE)) {
             throw new CommandException("Illegal return type, '" + method.getName());
         }
 

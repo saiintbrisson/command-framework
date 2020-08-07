@@ -6,6 +6,7 @@ package me.saiintbrisson.minecraft.command.target;
 public interface TargetValidator {
 
     boolean validate(CommandTarget target, Object object);
+
     CommandTarget fromSender(Object object);
 
 }

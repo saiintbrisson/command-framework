@@ -25,32 +25,32 @@ public final class MainTest extends Plugin {
     }
 
     @Command(
-            name = "test",
-            aliases = {"testeseila"},
-            permission = "op"
+      name = "test",
+      aliases = {"testeseila"},
+      permission = "op"
     )
     public void testCommand(Context<CommandSender> context) {
         context.sendMessage("§eBanana com abacate meu pau no teu tomate");
     }
 
     @Command(
-            name = "test.test1",
-            permission = "op",
-            target = CommandTarget.PLAYER
+      name = "test.test1",
+      permission = "op",
+      target = CommandTarget.PLAYER
     )
     public void test1Command(Context<CommandSender> context) {
         context.sendMessage("§aTo aqui te ouvindo po");
     }
 
     @Completer(
-            name = "test"
+      name = "test"
     )
     public List<String> testCommandCompleter(Context<CommandSender> context) {
         if (context.argsCount() == 1) {
             return Lists.newArrayList(
-                    "test1",
-                    "test2",
-                    "test3"
+              "test1",
+              "test2",
+              "test3"
             );
         }
 

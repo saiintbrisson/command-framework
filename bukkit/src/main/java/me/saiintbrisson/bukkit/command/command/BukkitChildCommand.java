@@ -2,8 +2,6 @@ package me.saiintbrisson.bukkit.command.command;
 
 import lombok.Getter;
 import me.saiintbrisson.bukkit.command.BukkitFrame;
-import me.saiintbrisson.minecraft.command.command.CommandHolder;
-import org.bukkit.command.CommandSender;
 
 /**
  * @author SaiintBrisson
