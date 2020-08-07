@@ -6,8 +6,8 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.exception.NoSuchConverterException;
 import me.saiintbrisson.minecraft.command.message.MessageType;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import me.saiintbrisson.minecraft.command.util.ArrayUtil;
+import me.saiintbrisson.minecraft.command.util.StringUtil;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -40,7 +40,7 @@ public class ArgumentParser<S> {
 
         for (Argument<?> argument : argumentList) {
             if (Context.class.isAssignableFrom(argument.getType())) {
-                parameters = ArrayUtils.add(parameters, context);
+                parameters = ArrayUtil.add(parameters, context);
                 continue;
             }
 
@@ -49,7 +49,7 @@ public class ArgumentParser<S> {
                 if (!argument.isNullable()) {
                     throw new CommandException(MessageType.INCORRECT_USAGE, null);
                 } else {
-                    parameters = ArrayUtils.add(parameters, argument.getDefaultValue());
+                    parameters = ArrayUtil.add(parameters, argument.getDefaultValue());
                 }
 
                 i++;
@@ -63,14 +63,14 @@ public class ArgumentParser<S> {
                 parse = Array.newInstance(argument.getType(), 0);
 
                 do {
-                    parse = ArrayUtils.add((Object[]) parse, argument.getAdapter().convertNonNull(arg));
+                    parse = ArrayUtil.add((Object[]) parse, argument.getAdapter().convertNonNull(arg));
                     i++;
                 } while ((arg = context.getArg(i - 1)) != null);
             } else {
                 parse = argument.getAdapter().convertNonNull(arg);
             }
 
-            parameters = ArrayUtils.add(parameters, parse);
+            parameters = ArrayUtil.add(parameters, parse);
         }
 
         return parameters;
@@ -84,10 +84,10 @@ public class ArgumentParser<S> {
             Class type = parameter.getType();
 
             final Argument.ArgumentBuilder builder = Argument
-              .builder()
-              .name(parameter.getName())
-              .type(type)
-              .isArray(type.isArray());
+                    .builder()
+                    .name(parameter.getName())
+                    .type(type)
+                    .isArray(type.isArray());
 
             if (Context.class.isAssignableFrom(type)) {
                 argumentList.add(builder.build());
@@ -97,7 +97,7 @@ public class ArgumentParser<S> {
             if (type.isArray()) {
                 if (i != parameters.length - 1) {
                     throw new IllegalArgumentException("Arrays must be the last parameter in a command, "
-                      + method.getName());
+                            + method.getName());
                 }
 
                 type = type.getComponentType();
@@ -120,7 +120,7 @@ public class ArgumentParser<S> {
                                     String[] def, Argument.ArgumentBuilder builder) {
         if (type.isPrimitive()) {
             throw new IllegalArgumentException("Use wrappers instead of primitive types for nullability, "
-              + method.getName());
+                    + method.getName());
         }
 
         final TypeAdapter<?> adapter = adapterMap.get(type);
@@ -143,9 +143,9 @@ public class ArgumentParser<S> {
         Object[] value = (Object[]) Array.newInstance(type, 0);
 
         for (String s : def) {
-            value = ArrayUtils.add(
-              value,
-              adapter.convertNonNull(s)
+            value = ArrayUtil.add(
+                    value,
+                    adapter.convertNonNull(s)
             );
         }
 
@@ -162,7 +162,7 @@ public class ArgumentParser<S> {
 
             builder.append(argument.isNullable() ? " [" : " <");
 
-            builder.append(StringUtils.uncapitalize(argument.getType().getSimpleName()));
+            builder.append(StringUtil.uncapitalize(argument.getType().getSimpleName()));
             if (argument.isArray()) {
                 builder.append("...");
             }
