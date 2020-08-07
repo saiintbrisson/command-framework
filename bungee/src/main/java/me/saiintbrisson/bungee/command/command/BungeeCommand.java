@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.bungee.command.BungeeFrame;
-import me.saiintbrisson.bungee.command.accessor.CommandAccessor;
 import me.saiintbrisson.bungee.command.executor.BungeeCommandExecutor;
 import me.saiintbrisson.bungee.command.target.BungeeTargetValidator;
 import me.saiintbrisson.minecraft.command.command.CommandHolder;
@@ -44,8 +43,12 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
 
     private final List<BungeeChildCommand> childCommandList = new LinkedList<>();
 
+    private String permission;
+    private String[] aliases;
+
     @Setter
     private String usage;
+
     private final String description = "Not provided";
 
     public BungeeCommand(BungeeFrame frame, String name, int position) {
@@ -63,23 +66,11 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         this.commandInfo = commandInfo;
         this.commandExecutor = commandExecutor;
 
-        try {
-            CommandAccessor accessor = CommandAccessor.accessor();
+        this.aliases = commandInfo.getAliases();
 
-            accessor.aliasesField().set(
-                    this,
-                    commandInfo.getAliases()
-            );
-
-            String permission = commandInfo.getPermission();
-            if (!StringUtil.isEmpty(permission)) {
-                accessor.permissionField().set(
-                        this,
-                        permission
-                );
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
+        String permission = commandInfo.getPermission();
+        if (!StringUtil.isEmpty(permission)) {
+            this.permission = permission;
         }
 
         final String usage = commandInfo.getUsage();
