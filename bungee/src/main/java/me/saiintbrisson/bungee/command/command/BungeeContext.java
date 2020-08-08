@@ -8,6 +8,8 @@ import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * @author Henry Fábio
@@ -37,12 +39,14 @@ public class BungeeContext implements Context<CommandSender> {
 
     @Override
     public void sendMessage(String message) {
-        sender.sendMessage(message);
+        sender.sendMessage(new TextComponent(message));
     }
 
     @Override
     public void sendMessage(String[] messages) {
-        sender.sendMessages(messages);
+        for (String message : messages) {
+            sendMessage(message);
+        }
     }
 
     @Override
