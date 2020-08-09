@@ -56,6 +56,15 @@ The [Command][Command] annotation is how the framework detects and registers you
 )
 ```
 
+Async commands require an executor in the CommandFrame. Bukkit has a native executor implementation called [BukkitSchedulerExecution][BukkitSchedulerExecution].
+
+> Setting an executor
+```java
+BukkitFrame frame = new BukkitFrame(plugin);
+
+frame.setExecutor(new BukkitSchedulerExecutor(plugin));
+```
+
 ### Context
 
 [Context][Context] is the information created during execution, it stores the sender, label and arguments. It contains a lot of useful commands. `S` is the generic type of the sender.
@@ -81,3 +90,5 @@ public void handleCommand(Context<Player> context) {
 [Custom-messages]: https://github.com/SaiintBrisson/command-framework/wiki/Custom-messages
 
 [AdapterMap]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/argument/AdapterMap.java
+
+[BukkitSchedulerExecution]: https://github.com/SaiintBrisson/command-framework/blob/master/bukkit/src/main/java/me/saiintbrisson/bukkit/command/executor/BukkitSchedulerExecutor.java
