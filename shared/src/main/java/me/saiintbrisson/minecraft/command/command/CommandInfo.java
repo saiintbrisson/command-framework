@@ -23,14 +23,14 @@ public class CommandInfo {
      * @return the command name
      */
     @NonNull
-    private String name;
+    private final String name;
 
     /**
      * @return the command aliases
      */
     @NonNull
     @Builder.Default
-    private String[] aliases = new String[0];
+    private final String[] aliases = new String[0];
 
     /**
      * @return the command description
@@ -67,10 +67,8 @@ public class CommandInfo {
      * This option requires an executor.
      * @return whether the command should be ran asynchronously
      */
-    @Setter
-    @NonNull
     @Builder.Default
-    private boolean async = false;
+    private final boolean async = false;
 
     public CommandInfo(Command command) {
         this(

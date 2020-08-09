@@ -125,6 +125,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
         if (args.length > 0) {
             BukkitChildCommand command = getChildCommand(args[0]);
+
             if (command != null) {
                 final String label = commandLabel + " " + args[0];
                 return command.execute(sender, label, Arrays.copyOfRange(args, 1, args.length));
@@ -145,9 +146,9 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         if (commandInfo.isAsync() && frame.getExecutor() != null) {
             frame.getExecutor().execute(() -> commandExecutor.execute(context));
             return false;
-        } else {
-            return commandExecutor.execute(context);
         }
+
+        return commandExecutor.execute(context);
     }
 
     @Override

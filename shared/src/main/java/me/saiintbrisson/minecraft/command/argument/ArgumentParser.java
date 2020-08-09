@@ -98,11 +98,9 @@ public class ArgumentParser<S> {
 
                 final int length = arg.length();
 
-                if (arg.charAt(length - 1) == '"') {
-                    if (length == 1 || arg.charAt(length - 2) != '\\') {
-                        builder.append(arg, 0, length - 1);
-                        break;
-                    }
+                if (arg.charAt(length - 1) == '"' && (length == 1 || arg.charAt(length - 2) != '\\')) {
+                    builder.append(arg, 0, length - 1);
+                    break;
                 }
 
                 builder.append(arg);

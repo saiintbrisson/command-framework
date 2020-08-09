@@ -8,7 +8,6 @@ import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**

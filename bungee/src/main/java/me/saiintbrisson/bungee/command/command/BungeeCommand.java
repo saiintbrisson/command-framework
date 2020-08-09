@@ -15,6 +15,7 @@ import me.saiintbrisson.minecraft.command.message.MessageType;
 import me.saiintbrisson.minecraft.command.util.ArrayUtil;
 import me.saiintbrisson.minecraft.command.util.StringUtil;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -97,17 +98,17 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!testPermissionSilent(sender)) {
-            sender.sendMessage(
+            sender.sendMessage(new TextComponent(
               messageHolder.getReplacing(MessageType.NO_PERMISSION, getPermission())
-            );
+            ));
             return;
         }
 
         if (!BungeeTargetValidator.INSTANCE.validate(commandInfo.getTarget(), sender)) {
-            sender.sendMessage(frame.getMessageHolder().getReplacing(
+            sender.sendMessage(new TextComponent(frame.getMessageHolder().getReplacing(
               MessageType.INCORRECT_TARGET,
               commandInfo.getTarget().name()
-            ));
+            )));
             return;
         }
 
@@ -168,8 +169,8 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     }
 
     public BungeeCommand createRecursive(String name) {
-        int currentPosition = getPosition(), position = currentPosition + StringUtil.countMatches(name, ".");
-        if (currentPosition == position) {
+        int position = getPosition() + StringUtil.countMatches(name, ".");
+        if (position == getPosition()) {
             return this;
         }
 
