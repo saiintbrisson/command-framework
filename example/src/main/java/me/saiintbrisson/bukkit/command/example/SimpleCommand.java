@@ -9,7 +9,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 public class SimpleCommand {
+
+    @Command(
+      name = "tester"
+    )
+    public void handleSimple(BukkitContext context, String oi, String[] name) {
+        context.sendMessage("resultado picakkkkkkk:");
+        context.sendMessage(oi);
+        context.sendMessage(Arrays.toString(name));
+    }
 
     /*
         A command method must return one of the following:

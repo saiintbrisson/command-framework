@@ -21,7 +21,7 @@ public class ExamplePlugin extends JavaPlugin {
 
         frame.registerAdapter(Integer.TYPE, argument -> Integer.parseInt(argument) * 2);
 
-        frame.getMessageHolder().loadFromResources("command");
+        //frame.getMessageHolder().loadFromResources("command");
 
         frame.registerCommand(CommandInfo.builder()
           .name("test.sub")

@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author SaiintBrisson
@@ -23,9 +24,9 @@ public class ArgumentParser<S> {
     @Getter
     private final List<Argument<?>> argumentList = new ArrayList<>();
 
-    private AdapterMap adapterMap;
+    private final AdapterMap adapterMap;
 
-    private Method method;
+    private final Method method;
 
     public ArgumentParser(AdapterMap adapterMap, Method method) {
         this.adapterMap = adapterMap;
@@ -36,7 +37,7 @@ public class ArgumentParser<S> {
 
     public Object[] parseArguments(Context<S> context) {
         Object[] parameters = new Object[0];
-        int i = 0;
+        AtomicInteger currentArg = new AtomicInteger(0);
 
         for (Argument<?> argument : argumentList) {
             if (Context.class.isAssignableFrom(argument.getType())) {
@@ -44,7 +45,7 @@ public class ArgumentParser<S> {
                 continue;
             }
 
-            String arg = context.getArg(i);
+            String arg = readFullString(currentArg, context);
             if (arg == null) {
                 if (!argument.isNullable()) {
                     throw new CommandException(MessageType.INCORRECT_USAGE, null);
@@ -52,28 +53,65 @@ public class ArgumentParser<S> {
                     parameters = ArrayUtil.add(parameters, argument.getDefaultValue());
                 }
 
-                i++;
+                currentArg.incrementAndGet();
                 continue;
             }
 
-            i++;
+            Object object;
 
-            Object parse;
             if (argument.isArray()) {
-                parse = Array.newInstance(argument.getType(), 0);
+                object = Array.newInstance(argument.getType(), 0);
 
                 do {
-                    parse = ArrayUtil.add((Object[]) parse, argument.getAdapter().convertNonNull(arg));
-                    i++;
-                } while ((arg = context.getArg(i - 1)) != null);
+
+                    object = ArrayUtil.add(
+                      (Object[]) object,
+                      argument.getAdapter().convertNonNull(arg)
+                    );
+
+                } while ((arg = readFullString(currentArg, context)) != null);
+
             } else {
-                parse = argument.getAdapter().convertNonNull(arg);
+                object = argument.getAdapter().convertNonNull(arg);
             }
 
-            parameters = ArrayUtil.add(parameters, parse);
+            parameters = ArrayUtil.add(parameters, object);
         }
 
         return parameters;
+    }
+
+    private String readFullString(AtomicInteger currentArg, Context<S> context) {
+        String arg = context.getArg(currentArg.get());
+        if (arg == null) {
+            return null;
+        }
+
+        currentArg.incrementAndGet();
+
+        if (arg.charAt(0) == '"') {
+            StringBuilder builder = new StringBuilder(arg.substring(1));
+
+            while ((arg = context.getArg(currentArg.get())) != null) {
+                builder.append(" ");
+                currentArg.incrementAndGet();
+
+                final int length = arg.length();
+
+                if (arg.charAt(length - 1) == '"') {
+                    if (length == 1 || arg.charAt(length - 2) != '\\') {
+                        builder.append(arg, 0, length - 1);
+                        break;
+                    }
+                }
+
+                builder.append(arg);
+            }
+
+            return builder.toString().replace("\\\"", "\"");
+        } else {
+            return arg;
+        }
     }
 
     private void createArguments() {
