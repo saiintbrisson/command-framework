@@ -51,4 +51,12 @@ public @interface Command {
      */
     CommandTarget target() default CommandTarget.ALL;
 
+    /**
+     * Tells the executor how to run the command,
+     * some implementations might ignore this option as they are async by default.
+     * This option requires an executor.
+     * @return whether the command should be ran asynchronously
+     */
+    boolean async() default false;
+
 }

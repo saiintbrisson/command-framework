@@ -2,6 +2,8 @@ package me.saiintbrisson.bukkit.command;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import me.saiintbrisson.bukkit.command.command.BukkitCommand;
 import me.saiintbrisson.bukkit.command.executor.BukkitCommandExecutor;
 import me.saiintbrisson.bukkit.command.executor.BukkitCompleterExecutor;
@@ -21,11 +23,13 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author SaiintBrisson
@@ -45,7 +49,10 @@ public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCo
     @Getter(AccessLevel.PRIVATE)
     private final CommandMap bukkitCommandMap;
 
-    public BukkitFrame(Plugin plugin, AdapterMap adapterMap) {
+    @Setter
+    private Executor executor;
+
+    public BukkitFrame(@NonNull @NotNull Plugin plugin, @NonNull @NotNull AdapterMap adapterMap) {
         this.plugin = plugin;
 
         this.adapterMap = adapterMap;
@@ -63,7 +70,7 @@ public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCo
         }
     }
 
-    public BukkitFrame(Plugin plugin, boolean registerDefault) {
+    public BukkitFrame(@NonNull @NotNull Plugin plugin, boolean registerDefault) {
         this(plugin, new AdapterMap(registerDefault));
 
         if (registerDefault) {

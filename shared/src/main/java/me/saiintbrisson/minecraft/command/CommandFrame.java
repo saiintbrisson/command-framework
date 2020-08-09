@@ -7,8 +7,10 @@ import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
 import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
 import me.saiintbrisson.minecraft.command.message.MessageHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author SaiintBrisson
@@ -24,6 +26,9 @@ public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     Map<String, C> getCommandMap();
 
     C getCommand(String name);
+
+    @Nullable
+    Executor getExecutor();
 
     default <T> void registerAdapter(Class<T> type, TypeAdapter<T> adapter) {
         getAdapterMap().put(type, adapter);

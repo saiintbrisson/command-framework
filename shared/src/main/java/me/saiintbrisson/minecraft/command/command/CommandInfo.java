@@ -61,6 +61,17 @@ public class CommandInfo {
     @Builder.Default
     private CommandTarget target = CommandTarget.ALL;
 
+    /**
+     * Tells the executor how to run the command,
+     * some implementations might ignore this option as they are async by default.
+     * This option requires an executor.
+     * @return whether the command should be ran asynchronously
+     */
+    @Setter
+    @NonNull
+    @Builder.Default
+    private boolean async = false;
+
     public CommandInfo(Command command) {
         this(
           command.name(),
@@ -68,7 +79,8 @@ public class CommandInfo {
           command.description(),
           command.usage(),
           command.permission(),
-          command.target()
+          command.target(),
+          command.async()
         );
     }
 

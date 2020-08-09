@@ -1,6 +1,7 @@
 package me.saiintbrisson.bukkit.command.command;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.saiintbrisson.bukkit.command.BukkitFrame;
 import me.saiintbrisson.bukkit.command.executor.BukkitCommandExecutor;
 import me.saiintbrisson.bukkit.command.target.BukkitTargetValidator;
@@ -38,7 +39,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
     private final List<BukkitChildCommand> childCommandList;
 
-    public BukkitCommand(BukkitFrame frame, String name, int position) {
+    public BukkitCommand(@NonNull @NotNull BukkitFrame frame, @NonNull @NotNull String name, int position) {
         super(name);
 
         this.frame = frame;
@@ -134,12 +135,19 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
             return false;
         }
 
-        return commandExecutor.execute(new BukkitContext(
+        final BukkitContext context = new BukkitContext(
           commandLabel,
           sender,
           BukkitTargetValidator.INSTANCE.fromSender(sender),
           args
-        ));
+        );
+
+        if (commandInfo.isAsync() && frame.getExecutor() != null) {
+            frame.getExecutor().execute(() -> commandExecutor.execute(context));
+            return false;
+        } else {
+            return commandExecutor.execute(context);
+        }
     }
 
     @Override

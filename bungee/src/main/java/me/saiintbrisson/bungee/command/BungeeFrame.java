@@ -16,10 +16,12 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author Henry Fábio
@@ -53,6 +55,11 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
 
     public BungeeFrame(Plugin plugin) {
         this(plugin, true);
+    }
+
+    @Override
+    public @Nullable Executor getExecutor() {
+        return null;
     }
 
     @Override
