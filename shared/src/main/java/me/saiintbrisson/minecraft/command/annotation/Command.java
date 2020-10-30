@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-
     /**
      * Defines the command name, sub-commands are split with dots
      * <p><p>
@@ -58,5 +57,4 @@ public @interface Command {
      * @return whether the command should be ran asynchronously
      */
     boolean async() default false;
-
 }

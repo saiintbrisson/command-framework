@@ -13,7 +13,6 @@ import java.util.ResourceBundle;
 
 @Getter
 public class MessageHolder {
-
     private final EnumMap<MessageType, String> messageMap = new EnumMap<>(MessageType.class);
 
     public MessageHolder() {
@@ -53,5 +52,4 @@ public class MessageHolder {
             }
         }
     }
-
 }

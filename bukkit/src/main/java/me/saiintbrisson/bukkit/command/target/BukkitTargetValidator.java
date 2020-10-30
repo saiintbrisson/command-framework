@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
  * @author SaiintBrisson
  */
 public class BukkitTargetValidator implements TargetValidator {
-
     public static final BukkitTargetValidator INSTANCE = new BukkitTargetValidator();
 
     @Override
@@ -37,5 +36,4 @@ public class BukkitTargetValidator implements TargetValidator {
 
         return CommandTarget.ALL;
     }
-
 }

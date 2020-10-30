@@ -10,7 +10,6 @@ import me.saiintbrisson.minecraft.command.message.MessageType;
 
 @NoArgsConstructor
 public class CommandException extends RuntimeException {
-
     @Getter
     private MessageType messageType;
 
@@ -26,5 +25,4 @@ public class CommandException extends RuntimeException {
     public CommandException(String message) {
         super(message);
     }
-
 }

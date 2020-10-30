@@ -13,7 +13,6 @@ import java.util.List;
  */
 
 public class BukkitCompleterExecutor implements CompleterExecutor<CommandSender> {
-
     private final Method method;
     private final Object holder;
 
@@ -49,5 +48,4 @@ public class BukkitCompleterExecutor implements CompleterExecutor<CommandSender>
             return null;
         }
     }
-
 }

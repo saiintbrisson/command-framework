@@ -11,6 +11,7 @@ import me.saiintbrisson.minecraft.command.CommandFrame;
 import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.annotation.Completer;
 import me.saiintbrisson.minecraft.command.argument.AdapterMap;
+import me.saiintbrisson.minecraft.command.argument.eval.MethodEvaluator;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
@@ -37,14 +38,12 @@ import java.util.concurrent.Executor;
 
 @Getter
 public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCommand> {
-
     private final Plugin plugin;
-
     private final AdapterMap adapterMap;
-
     private final MessageHolder messageHolder;
 
     private final Map<String, BukkitCommand> commandMap;
+    private final MethodEvaluator methodEvaluator;
 
     @Getter(AccessLevel.PRIVATE)
     private final CommandMap bukkitCommandMap;
@@ -59,6 +58,7 @@ public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCo
         this.messageHolder = new MessageHolder();
 
         this.commandMap = new HashMap<>();
+        this.methodEvaluator = new MethodEvaluator(adapterMap);
 
         try {
             final Server server = Bukkit.getServer();
@@ -81,6 +81,23 @@ public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCo
 
     public BukkitFrame(Plugin plugin) {
         this(plugin, true);
+    }
+
+    @Override
+    public BukkitCommand getCommand(String name) {
+        int index = name.indexOf('.');
+        String nextSubCommand = name;
+        if (index != -1) {
+            nextSubCommand = name.substring(0, index);
+        }
+
+        BukkitCommand subCommand = commandMap.get(nextSubCommand);
+        if (subCommand == null) {
+            subCommand = new BukkitCommand(this, nextSubCommand, 0);
+            commandMap.put(nextSubCommand, subCommand);
+        }
+
+        return subCommand.createRecursive(name);
     }
 
     @Override
@@ -126,20 +143,8 @@ public class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCo
     }
 
     @Override
-    public BukkitCommand getCommand(String name) {
-        int index = name.indexOf('.');
-        String nextSubCommand = name;
-        if (index != -1) {
-            nextSubCommand = name.substring(0, index);
-        }
-
-        BukkitCommand subCommand = commandMap.get(nextSubCommand);
-        if (subCommand == null) {
-            subCommand = new BukkitCommand(this, nextSubCommand, 0);
-            commandMap.put(nextSubCommand, subCommand);
-        }
-
-        return subCommand.createRecursive(name);
+    public boolean unregisterCommand(String name) {
+        final BukkitCommand command = commandMap.remove(name);
+        return command != null && command.unregister(bukkitCommandMap);
     }
-
 }

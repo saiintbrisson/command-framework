@@ -11,7 +11,6 @@ import lombok.NonNull;
 @Getter
 @Builder
 public class Argument<T> {
-
     private final String name;
 
     private final Class<T> type;
@@ -33,5 +32,4 @@ public class Argument<T> {
         this.isNullable = isNullable;
         this.isArray = isArray;
     }
-
 }

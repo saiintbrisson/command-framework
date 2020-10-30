@@ -7,7 +7,6 @@ import me.saiintbrisson.bukkit.command.BukkitFrame;
  * @author SaiintBrisson
  */
 public class BukkitChildCommand extends BukkitCommand {
-
     @Getter
     private final BukkitCommand parent;
 
@@ -21,5 +20,4 @@ public class BukkitChildCommand extends BukkitCommand {
     public String getFancyName() {
         return parent.getFancyName() + " " + getName();
     }
-
 }

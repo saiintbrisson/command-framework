@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.bukkit.command.BukkitFrame;
 import me.saiintbrisson.bukkit.command.command.BukkitCommand;
-import me.saiintbrisson.minecraft.command.argument.ArgumentParser;
+import me.saiintbrisson.minecraft.command.argument.eval.ArgumentEvaluator;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
@@ -19,12 +19,11 @@ import java.lang.reflect.Method;
  * @author SaiintBrisson
  */
 public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
-
     private final Method method;
     private final Object holder;
 
     @Getter
-    private final ArgumentParser<CommandSender> parser;
+    private final ArgumentEvaluator<CommandSender> evaluator;
 
     private final MessageHolder messageHolder;
 
@@ -42,7 +41,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         this.method = method;
         this.holder = holder;
 
-        this.parser = new ArgumentParser<>(frame.getAdapterMap(), method);
+        this.evaluator = new ArgumentEvaluator<>(frame.getMethodEvaluator().evaluateMethod(method));
         this.messageHolder = frame.getMessageHolder();
     }
 
@@ -59,14 +58,14 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 
     public Object invokeCommand(Context<CommandSender> context) {
         try {
-            if (parser.getArgumentList().size() == 0) {
+            if (evaluator.getArgumentList().size() == 0) {
                 return method.invoke(holder);
             }
 
             final Object[] parameters;
 
             try {
-                parameters = parser.parseArguments(context);
+                parameters = evaluator.parseArguments(context);
             } catch (Exception e) {
                 throw new InvocationTargetException(new CommandException(MessageType.INCORRECT_USAGE, null));
             }
@@ -75,7 +74,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         } catch (InvocationTargetException e) {
             final Throwable throwable = e.getTargetException();
 
-            if (throwable == null || !(throwable instanceof CommandException)) {
+            if (!(throwable instanceof CommandException)) {
                 e.printStackTrace();
                 context.sendMessage("§cAn internal error occurred, please contact the staff team.");
 
@@ -107,5 +106,4 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 
         return false;
     }
-
 }

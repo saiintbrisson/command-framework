@@ -11,7 +11,6 @@ import java.lang.reflect.Array;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArrayUtil {
-
     public static <T> T[] copyOfRange(T[] original, int from, int to) {
         return copyOfRange(original, from, to, (Class<? extends T[]>) original.getClass());
     }
@@ -52,5 +51,4 @@ public final class ArrayUtil {
         }
         return Array.newInstance(newArrayComponentType, 1);
     }
-
 }

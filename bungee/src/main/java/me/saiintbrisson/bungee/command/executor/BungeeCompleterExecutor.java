@@ -13,7 +13,6 @@ import java.util.List;
  * Github: https://github.com/HenryFabio
  */
 public class BungeeCompleterExecutor implements CompleterExecutor<CommandSender> {
-
     private final Method method;
     private final Object holder;
 
@@ -49,5 +48,4 @@ public class BungeeCompleterExecutor implements CompleterExecutor<CommandSender>
             return null;
         }
     }
-
 }

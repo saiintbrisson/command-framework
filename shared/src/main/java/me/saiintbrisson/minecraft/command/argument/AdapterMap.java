@@ -6,7 +6,6 @@ import java.util.HashMap;
  * @author SaiintBrisson
  */
 public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
-
     public AdapterMap(boolean registerDefault) {
         super();
 
@@ -35,5 +34,4 @@ public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
     public <T> TypeAdapter<T> put(Class<T> key, TypeAdapter<T> value) {
         return (TypeAdapter<T>) super.put(key, value);
     }
-
 }

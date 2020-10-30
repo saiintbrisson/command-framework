@@ -14,12 +14,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Optional {
-
     /**
      * Required if the argument type is a primitive
      *
      * @return the default value for a argument
      */
     String[] def() default {};
-
 }

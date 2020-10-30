@@ -12,7 +12,6 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 @Builder
 @AllArgsConstructor
 public class CommandInfo {
-
     /**
      * Defines the command name, sub-commands are split with dots
      * <p><p>
@@ -81,5 +80,4 @@ public class CommandInfo {
           command.async()
         );
     }
-
 }

@@ -11,7 +11,6 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 @Getter
 @AllArgsConstructor
 public enum MessageType {
-
     ERROR("{error}",
       "§cAn error has been thrown: §f{error}§c.") {
         @Override
@@ -45,5 +44,4 @@ public enum MessageType {
     private final String defMessage;
 
     public abstract String getDefault(CommandHolder<?, ?> commandHolder);
-
 }

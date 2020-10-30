@@ -10,7 +10,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  * Github: https://github.com/HenryFabio
  */
 public class BungeeTargetValidator implements TargetValidator {
-
     public static final BungeeTargetValidator INSTANCE = new BungeeTargetValidator();
 
     @Override
@@ -38,5 +37,4 @@ public class BungeeTargetValidator implements TargetValidator {
 
         return CommandTarget.ALL;
     }
-
 }

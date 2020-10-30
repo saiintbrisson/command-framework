@@ -17,7 +17,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 @Getter
 @AllArgsConstructor
 public class BungeeContext implements Context<CommandSender> {
-
     private final CommandSender sender;
     private final CommandTarget target;
     private final String[] args;
@@ -78,5 +77,4 @@ public class BungeeContext implements Context<CommandSender> {
     public String getLabel() {
         throw new UnsupportedOperationException();
     }
-
 }

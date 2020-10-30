@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.saiintbrisson.bungee.command.BungeeFrame;
 import me.saiintbrisson.bungee.command.command.BungeeCommand;
-import me.saiintbrisson.minecraft.command.argument.ArgumentParser;
+import me.saiintbrisson.minecraft.command.argument.eval.ArgumentEvaluator;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
@@ -20,12 +20,11 @@ import java.lang.reflect.Method;
  * Github: https://github.com/HenryFabio
  */
 public final class BungeeCommandExecutor implements CommandExecutor<CommandSender> {
-
     private final Method method;
     private final Object holder;
 
     @Getter
-    private final ArgumentParser<CommandSender> parser;
+    private final ArgumentEvaluator<CommandSender> evaluator;
 
     private final MessageHolder messageHolder;
 
@@ -43,7 +42,7 @@ public final class BungeeCommandExecutor implements CommandExecutor<CommandSende
         this.method = method;
         this.holder = holder;
 
-        this.parser = new ArgumentParser<>(frame.getAdapterMap(), method);
+        this.evaluator = new ArgumentEvaluator<>(frame.getMethodEvaluator().evaluateMethod(method));
         this.messageHolder = frame.getMessageHolder();
     }
 
@@ -60,14 +59,14 @@ public final class BungeeCommandExecutor implements CommandExecutor<CommandSende
 
     public Object invokeCommand(Context<CommandSender> context) {
         try {
-            if (parser.getArgumentList().size() == 0) {
+            if (evaluator.getArgumentList().size() == 0) {
                 return method.invoke(holder);
             }
 
             final Object[] parameters;
 
             try {
-                parameters = parser.parseArguments(context);
+                parameters = evaluator.parseArguments(context);
             } catch (Exception e) {
                 throw new InvocationTargetException(new CommandException(MessageType.INCORRECT_USAGE, null));
             }
@@ -108,5 +107,4 @@ public final class BungeeCommandExecutor implements CommandExecutor<CommandSende
 
         return false;
     }
-
 }

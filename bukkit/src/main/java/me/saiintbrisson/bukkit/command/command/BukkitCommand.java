@@ -26,7 +26,6 @@ import java.util.List;
 
 @Getter
 public class BukkitCommand extends Command implements CommandHolder<CommandSender, BukkitChildCommand> {
-
     private final BukkitFrame frame;
     private final MessageHolder messageHolder;
 
@@ -68,7 +67,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         if (StringUtils.isNotEmpty(usage)) {
             setUsage(usage);
         } else if (commandExecutor instanceof BukkitCommandExecutor) {
-            setUsage(((BukkitCommandExecutor) commandExecutor).getParser().buildUsage(getFancyName()));
+            setUsage(((BukkitCommandExecutor) commandExecutor).getEvaluator().buildUsage(getFancyName()));
         }
 
         if ((StringUtils.isNotEmpty(commandInfo.getDescription()))) {
@@ -209,5 +208,4 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     public List<String> getAliasesList() {
         return getAliases();
     }
-
 }

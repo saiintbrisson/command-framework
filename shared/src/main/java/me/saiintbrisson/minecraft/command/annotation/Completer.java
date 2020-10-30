@@ -12,10 +12,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Completer {
-
     /**
      * @return the command to complete
      */
     String name();
-
 }

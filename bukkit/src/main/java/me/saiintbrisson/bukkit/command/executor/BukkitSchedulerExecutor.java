@@ -10,7 +10,6 @@ import java.util.concurrent.Executor;
  * @author SaiintBrisson
  */
 public class BukkitSchedulerExecutor implements Executor {
-
     private final Plugin plugin;
     private final BukkitScheduler scheduler;
 
@@ -23,5 +22,4 @@ public class BukkitSchedulerExecutor implements Executor {
     public void execute(@NotNull Runnable command) {
         scheduler.runTaskAsynchronously(plugin, command);
     }
-
 }

@@ -16,13 +16,9 @@ import org.bukkit.command.CommandSender;
 @Getter
 @AllArgsConstructor
 public class BukkitContext implements Context<CommandSender> {
-
     private final String label;
-
     private final CommandSender sender;
-
     private final CommandTarget target;
-
     private final String[] args;
 
     @Override
@@ -74,5 +70,4 @@ public class BukkitContext implements Context<CommandSender> {
 
         return false;
     }
-
 }

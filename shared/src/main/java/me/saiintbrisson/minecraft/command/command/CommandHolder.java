@@ -9,7 +9,6 @@ import java.util.List;
  * @author SaiintBrisson
  */
 public interface CommandHolder<S, C extends CommandHolder<S, C>> {
-
     CommandInfo getCommandInfo();
 
     int getPosition();
@@ -45,5 +44,4 @@ public interface CommandHolder<S, C extends CommandHolder<S, C>> {
 
         return false;
     }
-
 }

@@ -8,6 +8,7 @@ import me.saiintbrisson.minecraft.command.CommandFrame;
 import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.annotation.Completer;
 import me.saiintbrisson.minecraft.command.argument.AdapterMap;
+import me.saiintbrisson.minecraft.command.argument.eval.MethodEvaluator;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
 import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
@@ -29,12 +30,12 @@ import java.util.concurrent.Executor;
  */
 @Getter
 public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCommand> {
-
     private final Plugin plugin;
     private final AdapterMap adapterMap;
     private final MessageHolder messageHolder;
 
     private final Map<String, BungeeCommand> commandMap;
+    private final MethodEvaluator methodEvaluator;
 
     public BungeeFrame(Plugin plugin, AdapterMap adapterMap) {
         this.plugin = plugin;
@@ -43,6 +44,7 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
         this.messageHolder = new MessageHolder();
 
         this.commandMap = new HashMap<>();
+        this.methodEvaluator = new MethodEvaluator(adapterMap);
     }
 
     public BungeeFrame(Plugin plugin, boolean registerDefault) {
@@ -60,6 +62,20 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
     @Override
     public @Nullable Executor getExecutor() {
         return null;
+    }
+
+    @Override
+    public BungeeCommand getCommand(String name) {
+        int index = name.indexOf('.');
+        String recursiveCommand = (index != -1 ? name.substring(0, index) : name).toLowerCase();
+
+        BungeeCommand command = commandMap.get(recursiveCommand);
+        if (command == null) {
+            command = new BungeeCommand(this, recursiveCommand, 0);
+            commandMap.put(recursiveCommand, command);
+        }
+
+        return index != -1 ? command.createRecursive(name) : command;
     }
 
     @Override
@@ -100,7 +116,7 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
     @Override
     public void registerCompleter(String name, CompleterExecutor<CommandSender> completerExecutor) {
         BungeeCommand recursive = getCommand(name);
-        if (recursive == null) {
+        if(recursive == null) {
             return;
         }
 
@@ -108,17 +124,11 @@ public class BungeeFrame implements CommandFrame<Plugin, CommandSender, BungeeCo
     }
 
     @Override
-    public BungeeCommand getCommand(String name) {
-        int index = name.indexOf('.');
-        String recursiveCommand = (index != -1 ? name.substring(0, index) : name).toLowerCase();
+    public boolean unregisterCommand(String name) {
+        final BungeeCommand command = commandMap.remove(name);
+        if (command == null) return false;
 
-        BungeeCommand command = commandMap.get(recursiveCommand);
-        if (command == null) {
-            command = new BungeeCommand(this, recursiveCommand, 0);
-            commandMap.put(recursiveCommand, command);
-        }
-
-        return index != -1 ? command.createRecursive(name) : command;
+        ProxyServer.getInstance().getPluginManager().unregisterCommand(command);
+        return true;
     }
-
 }

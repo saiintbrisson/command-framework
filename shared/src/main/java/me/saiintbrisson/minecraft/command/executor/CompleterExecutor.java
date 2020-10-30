@@ -10,7 +10,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface CompleterExecutor<S> {
-
     List<String> execute(Context<S> context);
-
 }

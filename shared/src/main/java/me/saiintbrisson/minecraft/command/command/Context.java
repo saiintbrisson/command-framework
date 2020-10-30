@@ -9,7 +9,6 @@ import java.util.Arrays;
  * @author SaiintBrisson
  */
 public interface Context<S> {
-
     /**
      * @return the label used to execute the command
      */
@@ -100,5 +99,4 @@ public interface Context<S> {
      * @return the test result if silent
      */
     boolean testTarget(CommandTarget target, boolean silent) throws CommandException;
-
 }

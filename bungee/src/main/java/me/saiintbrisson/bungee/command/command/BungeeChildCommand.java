@@ -8,7 +8,6 @@ import me.saiintbrisson.bungee.command.BungeeFrame;
  * Github: https://github.com/HenryFabio
  */
 public class BungeeChildCommand extends BungeeCommand {
-
     @Getter
     private final BungeeCommand parent;
 
@@ -21,5 +20,4 @@ public class BungeeChildCommand extends BungeeCommand {
     public String getFancyName() {
         return parent.getFancyName() + " " + getName();
     }
-
 }

@@ -31,7 +31,6 @@ import java.util.List;
  */
 @Getter
 public class BungeeCommand extends Command implements CommandHolder<CommandSender, BungeeChildCommand>, TabExecutor {
-
     private final BungeeFrame frame;
     private final MessageHolder messageHolder;
 
@@ -78,7 +77,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         if (!StringUtil.isEmpty(usage)) {
             setUsage(usage);
         } else if (commandExecutor instanceof BungeeCommandExecutor) {
-            setUsage(((BungeeCommandExecutor) commandExecutor).getParser().buildUsage(getFancyName()));
+            setUsage(((BungeeCommandExecutor) commandExecutor).getEvaluator().buildUsage(getFancyName()));
         }
 
         if (commandExecutor instanceof BungeeCommandExecutor) {
@@ -212,5 +211,4 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
 
         return false;
     }
-
 }
