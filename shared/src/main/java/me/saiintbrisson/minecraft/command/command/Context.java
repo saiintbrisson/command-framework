@@ -1,5 +1,6 @@
 package me.saiintbrisson.minecraft.command.command;
 
+import me.saiintbrisson.minecraft.command.CommandFrame;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 
@@ -99,4 +100,14 @@ public interface Context<S> {
      * @return the test result if silent
      */
     boolean testTarget(CommandTarget target, boolean silent) throws CommandException;
+
+    /**
+     * @return this command's frame
+     */
+    CommandFrame<?, ?, ?> getCommandFrame();
+
+    /**
+     * @return this command's holder
+     */
+    CommandHolder<?, ?> getCommandHolder();
 }

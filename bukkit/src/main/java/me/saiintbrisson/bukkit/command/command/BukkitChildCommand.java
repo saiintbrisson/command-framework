@@ -1,23 +1,28 @@
 package me.saiintbrisson.bukkit.command.command;
 
-import lombok.Getter;
 import me.saiintbrisson.bukkit.command.BukkitFrame;
+import me.saiintbrisson.minecraft.command.command.CommandHolder;
+
+import java.util.Optional;
 
 /**
  * @author SaiintBrisson
  */
 public class BukkitChildCommand extends BukkitCommand {
-    @Getter
-    private final BukkitCommand parent;
+    private final BukkitCommand parentCommand;
 
-    public BukkitChildCommand(BukkitFrame frame, String name, BukkitCommand parent) {
-        super(frame, name, parent.getPosition() + 1);
+    public BukkitChildCommand(BukkitFrame frame, String name, BukkitCommand parentCommand) {
+        super(frame, name, parentCommand.getPosition() + 1);
 
-        this.parent = parent;
+        this.parentCommand = parentCommand;
     }
 
     @Override
     public String getFancyName() {
-        return parent.getFancyName() + " " + getName();
+        return parentCommand.getFancyName() + " " + getName();
+    }
+
+    public Optional<CommandHolder<?, ?>> getParentCommand() {
+        return Optional.of(parentCommand);
     }
 }

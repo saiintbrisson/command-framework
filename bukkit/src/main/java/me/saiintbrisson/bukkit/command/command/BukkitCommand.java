@@ -139,7 +139,9 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
           commandLabel,
           sender,
           BukkitTargetValidator.INSTANCE.fromSender(sender),
-          args
+          args,
+          frame,
+          this
         );
 
         if (commandInfo.isAsync() && frame.getExecutor() != null) {
@@ -158,7 +160,9 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
               alias,
               sender,
               BukkitTargetValidator.INSTANCE.fromSender(sender),
-              args
+              args,
+              frame,
+              this
             ));
         }
 

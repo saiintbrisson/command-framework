@@ -126,7 +126,9 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         commandExecutor.execute(new BungeeContext(
           sender,
           BungeeTargetValidator.INSTANCE.fromSender(sender),
-          args
+          args,
+          frame,
+          this
         ));
     }
 
@@ -136,7 +138,9 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
             return completerExecutor.execute(new BungeeContext(
               sender,
               BungeeTargetValidator.INSTANCE.fromSender(sender),
-              args
+              args,
+              frame,
+              this
             ));
         }
 

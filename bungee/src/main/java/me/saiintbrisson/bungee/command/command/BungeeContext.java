@@ -3,6 +3,8 @@ package me.saiintbrisson.bungee.command.command;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.saiintbrisson.bungee.command.target.BungeeTargetValidator;
+import me.saiintbrisson.minecraft.command.CommandFrame;
+import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.message.MessageType;
@@ -20,6 +22,9 @@ public class BungeeContext implements Context<CommandSender> {
     private final CommandSender sender;
     private final CommandTarget target;
     private final String[] args;
+
+    private final CommandFrame<?, ?, ?> commandFrame;
+    private final CommandHolder<?, ?> commandHolder;
 
     @Override
     public int argsCount() {
