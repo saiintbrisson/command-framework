@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @Getter

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.Executor;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class BukkitSchedulerExecutor implements Executor {
     private final Plugin plugin;

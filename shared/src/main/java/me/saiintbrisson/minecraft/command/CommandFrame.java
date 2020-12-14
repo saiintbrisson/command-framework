@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     P getPlugin();

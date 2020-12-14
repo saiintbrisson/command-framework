@@ -23,7 +23,7 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import java.util.Arrays;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public interface Context<S> {
     /**

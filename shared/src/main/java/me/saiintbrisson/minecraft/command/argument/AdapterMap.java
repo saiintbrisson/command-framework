@@ -19,7 +19,7 @@ package me.saiintbrisson.minecraft.command.argument;
 import java.util.HashMap;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
     public AdapterMap(boolean registerDefault) {

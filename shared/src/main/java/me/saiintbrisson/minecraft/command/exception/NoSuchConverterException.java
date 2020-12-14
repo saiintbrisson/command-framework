@@ -17,7 +17,7 @@
 package me.saiintbrisson.minecraft.command.exception;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class NoSuchConverterException extends CommandException {
     public NoSuchConverterException(Class<?> type) {

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @Getter

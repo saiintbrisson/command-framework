@@ -17,7 +17,7 @@
 package me.saiintbrisson.minecraft.command.argument;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public interface TypeAdapter<T> {
     T convert(String raw);

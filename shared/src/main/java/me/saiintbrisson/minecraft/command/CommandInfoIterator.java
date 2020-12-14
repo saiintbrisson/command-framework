@@ -22,7 +22,7 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import java.util.Iterator;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @RequiredArgsConstructor

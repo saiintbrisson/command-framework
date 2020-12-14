@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Allows a argument to be optional, nullable if primitive
  *
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @Target(ElementType.PARAMETER)

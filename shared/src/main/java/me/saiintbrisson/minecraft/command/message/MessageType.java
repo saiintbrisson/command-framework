@@ -21,7 +21,7 @@ import lombok.Getter;
 import me.saiintbrisson.minecraft.command.command.CommandHolder;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @Getter

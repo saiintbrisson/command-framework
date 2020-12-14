@@ -19,7 +19,7 @@ package me.saiintbrisson.minecraft.command.executor;
 import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @FunctionalInterface

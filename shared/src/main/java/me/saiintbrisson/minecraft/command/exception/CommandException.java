@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 
 @NoArgsConstructor

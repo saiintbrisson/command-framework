@@ -22,7 +22,7 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import java.util.Optional;
 
 /**
- * @author SaiintBrisson
+ * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class BukkitChildCommand extends BukkitCommand {
     private final BukkitCommand parentCommand;
