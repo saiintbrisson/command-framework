@@ -9,28 +9,22 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 allprojects {
-
     afterEvaluate {
-
         repositories {
             mavenCentral()
         }
 
         dependencies {
-
             compileOnly 'commons-lang:commons-lang:2.6'
 
             implementation 'org.jetbrains:annotations:16.0.2'
 
             compileOnly 'org.projectlombok:lombok:1.18.12'
             annotationProcessor 'org.projectlombok:lombok:1.18.12'
-
         }
-
     }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
-
 }
