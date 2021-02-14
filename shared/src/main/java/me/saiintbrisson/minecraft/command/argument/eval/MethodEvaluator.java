@@ -43,26 +43,26 @@ public class MethodEvaluator {
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             Class type = parameter.getType();
+            boolean isArray = type.isArray();
 
             final Argument.ArgumentBuilder builder = Argument
               .builder()
               .name(parameter.getName())
               .type(type)
-              .isArray(type.isArray());
+              .isArray(isArray);
 
             if (Context.class.isAssignableFrom(type)) {
                 argumentList.add(builder.build());
                 continue;
             }
 
-            if (type.isArray()) {
+            if (isArray) {
                 if (i != parameters.length - 1) {
                     throw new IllegalArgumentException("Arrays must be the last parameter in a command, "
                       + method.getName());
                 }
 
-                type = type.getComponentType();
-                builder.type(type);
+                builder.type(type = type.getComponentType());
             }
 
             builder.adapter(adapterMap.get(type));
@@ -73,13 +73,13 @@ public class MethodEvaluator {
                 continue;
             }
 
-            argumentList.add(createOptional(method, type, optional.def(), builder));
+            argumentList.add(createOptional(method, type, isArray, optional.def(), builder));
         }
 
         return argumentList;
     }
 
-    private Argument createOptional(Method method, Class type,
+    private Argument createOptional(Method method, Class type, boolean isArray,
                                     String[] def, Argument.ArgumentBuilder builder) {
         if (type.isPrimitive() && def.length == 0) {
             throw new IllegalArgumentException("Use wrappers instead of primitive types for nullability, "
@@ -93,7 +93,7 @@ public class MethodEvaluator {
 
         builder.isNullable(true);
 
-        if (type.isArray() && def.length != 0) {
+        if (isArray && def.length != 0) {
             builder.defaultValue(createArray(type, adapter, def));
         } else if (def.length != 0) {
             builder.defaultValue(adapter.convertNonNull(def[0]));
