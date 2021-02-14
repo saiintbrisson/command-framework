@@ -81,7 +81,7 @@ public class MethodEvaluator {
 
     private Argument createOptional(Method method, Class type,
                                     String[] def, Argument.ArgumentBuilder builder) {
-        if (type.isPrimitive()) {
+        if (type.isPrimitive() && def.length == 0) {
             throw new IllegalArgumentException("Use wrappers instead of primitive types for nullability, "
               + method.getName());
         }
