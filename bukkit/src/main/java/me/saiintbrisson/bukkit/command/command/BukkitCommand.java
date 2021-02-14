@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -171,6 +172,10 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias,
                                              @NotNull String[] args) throws IllegalArgumentException {
+        if (!testPermissionSilent(sender)) {
+            return Collections.emptyList();
+        }
+
         if (completerExecutor != null) {
             return completerExecutor.execute(new BukkitContext(
               alias,
@@ -186,7 +191,8 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
             List<String> matchedChildCommands = new ArrayList<>();
 
             for (BukkitChildCommand command : childCommandList) {
-                if (StringUtils.startsWithIgnoreCase(command.getName(), args[args.length - 1])) {
+                if (StringUtils.startsWithIgnoreCase(command.getName(), args[args.length - 1])
+                  && command.testPermissionSilent(sender)) {
                     matchedChildCommands.add(command.getName());
                 }
             }

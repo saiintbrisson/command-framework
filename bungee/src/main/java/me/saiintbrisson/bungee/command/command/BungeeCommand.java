@@ -36,10 +36,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Henry Fábio
@@ -150,6 +147,10 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (!testPermissionSilent(sender)) {
+            return Collections.emptyList();
+        }
+
         if (completerExecutor != null) {
             return completerExecutor.execute(new BungeeContext(
               sender,
@@ -164,7 +165,8 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
             List<String> matchedChildCommands = new ArrayList<>();
 
             for (BungeeChildCommand command : childCommandList) {
-                if (StringUtil.startsWithIgnoreCase(command.getName(), args[args.length - 1])) {
+                if (StringUtil.startsWithIgnoreCase(command.getName(), args[args.length - 1])
+                  && command.testPermissionSilent(sender)) {
                     matchedChildCommands.add(command.getName());
                 }
             }
@@ -217,7 +219,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         return getName();
     }
 
-    private boolean testPermissionSilent(@NotNull CommandSender target) {
+    protected boolean testPermissionSilent(@NotNull CommandSender target) {
         String permission = getPermission();
         if ((permission == null) || (permission.length() == 0)) {
             return true;
