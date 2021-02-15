@@ -43,20 +43,6 @@ public class BukkitContext implements Context<CommandSender> {
     private final CommandHolder<?, ?> commandHolder;
 
     @Override
-    public int argsCount() {
-        return args.length;
-    }
-
-    @Override
-    public String getArg(int index) {
-        try {
-            return args[index];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-    }
-
-    @Override
     public void sendMessage(String message) {
         sender.sendMessage(message);
     }

@@ -17,9 +17,11 @@
 package me.saiintbrisson.minecraft.command.command;
 
 import me.saiintbrisson.minecraft.command.CommandFrame;
+import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
@@ -41,22 +43,34 @@ public interface Context<S> {
      */
     CommandTarget getTarget();
 
+    /**
+     * @return the arguments array
+     */
+    String[] getArgs();
+
 
     /**
      * @return the number of arguments
      */
-    int argsCount();
+    default int argsCount() {
+        return getArgs().length;
+    }
 
     /**
      * @param index the index of the argument
      * @return the argument - null if the index is out of bounds
      */
-    String getArg(int index);
+    default String getArg(int index) {
+        try {
+            return getArgs()[index];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+    }
 
-    /**
-     * @return the arguments array
-     */
-    String[] getArgs();
+    default <T> T getArg(int index, Class<T> type) {
+        return (T) getCommandFrame().getAdapterMap().get(type).convertNonNull(getArg(index));
+    }
 
     /**
      * Gets all args between indexes from and to
@@ -68,6 +82,21 @@ public interface Context<S> {
     default String[] getArgs(int from, int to) {
         try {
             return Arrays.copyOfRange(getArgs(), from, to);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    default <T> T[] getArgs(int from, int to, Class<T> type) {
+        try {
+            final TypeAdapter<?> adapter = getCommandFrame().getAdapterMap().get(type);
+            final T[] instance = (T[]) Array.newInstance(type,  to - from);
+
+            for (int i = from; i <= to; i++) {
+                instance[i - from] = (T) adapter.convertNonNull(getArg(i));
+            }
+
+            return instance;
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }

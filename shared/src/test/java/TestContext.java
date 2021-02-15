@@ -1,17 +1,23 @@
 import me.saiintbrisson.minecraft.command.CommandFrame;
+import me.saiintbrisson.minecraft.command.argument.AdapterMap;
+import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
 import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
+
+import java.lang.reflect.Array;
 
 /**
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class TestContext implements Context<Object> {
     private final String[] args;
+    private final AdapterMap adapterMap;
 
-    public TestContext(String[] args) {
+    public TestContext(String[] args, AdapterMap adapterMap) {
         this.args = args;
+        this.adapterMap = adapterMap;
     }
 
     @Override
@@ -30,22 +36,28 @@ public class TestContext implements Context<Object> {
     }
 
     @Override
-    public int argsCount() {
-        return args.length;
+    public String[] getArgs() {
+        return args;
     }
 
     @Override
-    public String getArg(int index) {
+    public <T> T getArg(int index, Class<T> type) {
+        return (T) adapterMap.get(type).convertNonNull(getArg(index));
+    }
+
+    public <T> T[] getArgs(int from, int to, Class<T> type) {
         try {
-            return args[index];
+            final TypeAdapter<?> adapter = adapterMap.get(type);
+            final T[] instance = (T[]) Array.newInstance(type,  to - from);
+
+            for (int i = from; i < to; i++) {
+                instance[i - from] = (T) adapter.convertNonNull(getArg(i));
+            }
+
+            return instance;
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
-    }
-
-    @Override
-    public String[] getArgs() {
-        return args;
     }
 
     @Override
