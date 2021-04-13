@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
+
     private final Method method;
     private final Object holder;
 
@@ -72,6 +73,13 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         return false;
     }
 
+    /**
+     * Invokes the command method and returns the
+     * result of dispatching that method.
+     * @param context Context
+     *
+     * @return Object
+     */
     public Object invokeCommand(Context<CommandSender> context) {
         try {
             if (evaluator.getArgumentList().size() == 0) {
@@ -79,7 +87,6 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
             }
 
             final Object[] parameters;
-
             try {
                 parameters = evaluator.parseArguments(context);
             } catch (Exception e) {
@@ -87,11 +94,11 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
             }
 
             return method.invoke(holder, parameters);
-        } catch (InvocationTargetException e) {
-            final Throwable throwable = e.getTargetException();
+        } catch (InvocationTargetException targetException) {
+            final Throwable throwable = targetException.getTargetException();
 
             if (!(throwable instanceof CommandException)) {
-                e.printStackTrace();
+                targetException.printStackTrace();
                 context.sendMessage("§cAn internal error occurred, please contact the staff team.");
 
                 return false;
@@ -108,12 +115,13 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
                 }
 
                 context.sendMessage(messageHolder.getReplacing(messageType, message));
-            } else {
-                e.printStackTrace();
+                return true;
+            }
 
-                if (e.getMessage() != null) {
-                    context.sendMessage(messageHolder.getReplacing(MessageType.ERROR, e.getMessage()));
-                }
+            targetException.printStackTrace();
+
+            if (targetException.getMessage() != null) {
+                context.sendMessage(messageHolder.getReplacing(MessageType.ERROR, targetException.getMessage()));
             }
         } catch (Exception e) {
             e.printStackTrace();

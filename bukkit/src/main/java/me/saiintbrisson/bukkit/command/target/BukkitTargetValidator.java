@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class BukkitTargetValidator implements TargetValidator {
+
     public static final BukkitTargetValidator INSTANCE = new BukkitTargetValidator();
 
     @Override
@@ -52,4 +53,5 @@ public class BukkitTargetValidator implements TargetValidator {
 
         return CommandTarget.ALL;
     }
+
 }
