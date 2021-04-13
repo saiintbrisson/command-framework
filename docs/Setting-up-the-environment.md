@@ -46,7 +46,7 @@ dependencies {
     <dependency>
         <groupId>com.github.SaiintBrisson.command-framework</groupId>
         <artifactId>bukkit</artifactId>
-        <version>1.0.0</version>
+        <version>1.2.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -69,7 +69,7 @@ dependencies {
     <dependency>
         <groupId>com.github.SaiintBrisson.command-framework</groupId>
         <artifactId>bungee</artifactId>
-        <version>1.0.0</version>
+        <version>1.2.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -92,7 +92,7 @@ dependencies {
     <dependency>
         <groupId>com.github.SaiintBrisson.command-framework</groupId>
         <artifactId>shared</artifactId>
-        <version>1.0.0</version>
+        <version>1.2.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>

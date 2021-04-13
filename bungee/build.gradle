@@ -5,17 +5,12 @@ plugins {
     id 'maven'
 }
 
-group 'me.saiintbrisson'
-version '1.0-SNAPSHOT'
-
 repositories {
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
-
-    mavenCentral()
 }
 
 dependencies {
-    compileOnly 'net.md-5:bungeecord-api:1.16-R0.3'
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.4'
 
     implementation project(':shared')
     api project(':shared')

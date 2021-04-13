@@ -22,11 +22,23 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * The BukkitTargetValidator validates if the Target
+ * is a correct and usable {@link CommandTarget}
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
-public class BukkitTargetValidator implements TargetValidator {
+public final class BukkitTargetValidator implements TargetValidator {
+
     public static final BukkitTargetValidator INSTANCE = new BukkitTargetValidator();
 
+    /**
+     * Tries to validate the Command target and Sender object.
+     * <p> Returns false if it wasn't validated</p>
+     * @param target CommandTarget
+     * @param object Object
+     *
+     * @return Boolean
+     */
     @Override
     public boolean validate(CommandTarget target, Object object) {
         if (target == CommandTarget.ALL) {
@@ -40,6 +52,13 @@ public class BukkitTargetValidator implements TargetValidator {
         return target == CommandTarget.CONSOLE && object instanceof ConsoleCommandSender;
     }
 
+    /**
+     * Returns the CommandTarget by the Sender object
+     * <p>Example: The Player object returns a {@link CommandTarget} of PLAYER</p>
+     * @param object Object
+     *
+     * @return CommandTarget
+     */
     @Override
     public CommandTarget fromSender(Object object) {
         if (object instanceof Player) {
@@ -52,4 +71,5 @@ public class BukkitTargetValidator implements TargetValidator {
 
         return CommandTarget.ALL;
     }
+
 }

@@ -22,11 +22,14 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import java.util.Iterator;
 
 /**
+ * The CommandInfoIterator is a Iterator for
+ * CommandHolder, it can access the next command from the list.
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
-
 @RequiredArgsConstructor
 public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {
+
     private final CommandHolder<?, ?> root;
 
     private int index = -1;
@@ -51,4 +54,5 @@ public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {
 
         return current.next();
     }
+
 }

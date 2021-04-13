@@ -17,10 +17,30 @@
 package me.saiintbrisson.minecraft.command.target;
 
 /**
+ * The BukkitTargetValidator validates if the Target
+ * is a correct and usable {@link CommandTarget}
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public interface TargetValidator {
+
+    /**
+     * Tries to validate the Command target and Sender object.
+     * <p> Returns false if it wasn't validated</p>
+     * @param target CommandTarget
+     * @param object Object
+     *
+     * @return Boolean
+     */
     boolean validate(CommandTarget target, Object object);
 
+    /**
+     * Returns the CommandTarget by the Sender object
+     * <p>Example: The Player object returns a {@link CommandTarget} of PLAYER</p>
+     * @param object Object
+     *
+     * @return CommandTarget
+     */
     CommandTarget fromSender(Object object);
+
 }

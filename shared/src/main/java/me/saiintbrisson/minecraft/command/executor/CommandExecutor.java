@@ -19,10 +19,22 @@ package me.saiintbrisson.minecraft.command.executor;
 import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
+ * The BukkitCommandExecutor is the main executor of each
+ * method that is listed as a Command, it invokes the method
+ * and executes everything inside.
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
-
 @FunctionalInterface
 public interface CommandExecutor<S> {
+
+    /**
+     * Executes the command with the provided context
+     * <p>Returns false if the execution wasn't successful</p>
+     * @param context Context
+     *
+     * @return boolean
+     */
     boolean execute(Context<S> context);
+
 }

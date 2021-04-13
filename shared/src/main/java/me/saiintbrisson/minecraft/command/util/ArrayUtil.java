@@ -25,8 +25,10 @@ import java.lang.reflect.Array;
 /**
  * @author The Apache Software Foundation
  */
+@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArrayUtil {
+
     public static <T> T[] copyOfRange(T[] original, int from, int to) {
         return copyOfRange(original, from, to, (Class<? extends T[]>) original.getClass());
     }
@@ -36,11 +38,11 @@ public final class ArrayUtil {
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
 
-        T[] copy = ((Object) newType == (Object) Object[].class)
+        T[] copy = (newType == Object[].class)
           ? (T[]) new Object[newLength]
           : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-        System.arraycopy(original, from, copy, 0,
-          Math.min(original.length - from, newLength));
+
+        System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
         return copy;
     }
 
@@ -53,6 +55,7 @@ public final class ArrayUtil {
         } else {
             type = Object.class;
         }
+
         Object[] newArray = (Object[]) copyArrayGrow1(array, type);
         newArray[newArray.length - 1] = element;
         return newArray;
@@ -65,6 +68,7 @@ public final class ArrayUtil {
             System.arraycopy(array, 0, newArray, 0, arrayLength);
             return newArray;
         }
+
         return Array.newInstance(newArrayComponentType, 1);
     }
 }
