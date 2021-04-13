@@ -19,15 +19,25 @@ package me.saiintbrisson.minecraft.command.argument;
 import java.util.HashMap;
 
 /**
+ * The AdapterMap contains adapters such as
+ * primitive values and such.
+ *
+ * <p>It can be created with the default primitive types
+ * or totally empty, after other values can be added</p>
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
+
+    /**
+     * Creates a new AdapterMap that can be empty
+     * or registered with the default values.
+     *
+     * @param registerDefault Boolean
+     */
     public AdapterMap(boolean registerDefault) {
         super();
-
-        if (!registerDefault) {
-            return;
-        }
+        if (!registerDefault) return;
 
         put(String.class, String::valueOf);
         put(Character.class, argument -> argument.charAt(0));
@@ -47,7 +57,9 @@ public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
         put(Byte.TYPE, Byte::parseByte);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> TypeAdapter<T> put(Class<T> key, TypeAdapter<T> value) {
         return (TypeAdapter<T>) super.put(key, value);
     }
+
 }

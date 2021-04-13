@@ -32,6 +32,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * The BukkitCommandExecutor is the main executor of each
+ * method that is listed as a Command, it invokes the method
+ * and executes everything inside.
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
@@ -47,6 +51,13 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
     @Setter
     private BukkitCommand command;
 
+    /**
+     * Creates a new BukkitCommandExecutor with the provided
+     * Command method to execute and Command holder
+     * @param frame BukkitFrame
+     * @param method Method
+     * @param holder Object
+     */
     public BukkitCommandExecutor(BukkitFrame frame, Method method, Object holder) {
         final Class<?> returnType = method.getReturnType();
 
@@ -62,6 +73,13 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
         this.messageHolder = frame.getMessageHolder();
     }
 
+    /**
+     * Executes the command with the provided context
+     * <p>Returns false if the execution wasn't successful</p>
+     * @param context Context
+     *
+     * @return boolean
+     */
     @Override
     public boolean execute(Context<CommandSender> context) {
         final Object result = invokeCommand(context);
@@ -130,4 +148,5 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 
         return false;
     }
+
 }

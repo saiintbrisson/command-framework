@@ -49,6 +49,10 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
+ * The BukkitFrame is the core of the framework,
+ * it registers the commands, adapters {@link AdapterMap}
+ * and message holders {@link MessageHolder}
+ *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
 @Getter

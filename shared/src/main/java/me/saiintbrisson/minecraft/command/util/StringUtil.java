@@ -22,17 +22,15 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil {
+
     public static boolean startsWithIgnoreCase(String str, String prefix) {
         return startsWith(str, prefix, true);
     }
 
     private static boolean startsWith(String str, String prefix, boolean ignoreCase) {
-        if (str == null || prefix == null) {
-            return (str == null && prefix == null);
-        }
-        if (prefix.length() > str.length()) {
-            return false;
-        }
+        if (str == null || prefix == null) return (str == null && prefix == null);
+        if (prefix.length() > str.length()) return false;
+
         return str.regionMatches(ignoreCase, 0, prefix, 0, prefix.length());
     }
 
@@ -41,23 +39,20 @@ public final class StringUtil {
     }
 
     public static int countMatches(String str, String sub) {
-        if (isEmpty(str) || isEmpty(sub)) {
-            return 0;
-        }
+        if (isEmpty(str) || isEmpty(sub)) return 0;
+
         int count = 0;
         int idx = 0;
         while ((idx = str.indexOf(sub, idx)) != -1) {
             count++;
             idx += sub.length();
         }
+
         return count;
     }
 
     public static String uncapitalize(String str) {
-        if (str == null || str.length() == 0) {
-            return str;
-        }
-
+        if (str == null || str.length() == 0) return str;
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 }
