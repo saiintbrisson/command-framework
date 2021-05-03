@@ -1,6 +1,7 @@
 plugins {
     java
     kotlin("jvm") version "1.5.0-RC"
+    maven
 }
 
 group = "me.saiintbrisson"
