@@ -41,14 +41,20 @@ public interface CommandHolder<S, C extends CommandHolder<S, C>> extends Iterabl
     C getChildCommand(String name);
 
     CommandInfo getCommandInfo();
+    void setCommandInfo(CommandInfo commandInfo);
 
     String getName();
+    void setCommandName(String name);
     String getFancyName();
     List<String> getAliasesList();
+    void setAliasesList(List<String> aliasesList);
 
     String getPermission();
+    void setCommandPermission(String permission);
     String getUsage();
+    void setCommandUsage(String usage);
     String getDescription();
+    void setCommandDescription(String description);
 
     default boolean equals(String name) {
         if (getName().equalsIgnoreCase(name)) {

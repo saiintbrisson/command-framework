@@ -16,6 +16,8 @@
 
 package me.saiintbrisson.minecraft.command.executor;
 
+import me.saiintbrisson.minecraft.command.argument.eval.ArgumentEvaluator;
+import me.saiintbrisson.minecraft.command.command.CommandHolder;
 import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
@@ -25,4 +27,12 @@ import me.saiintbrisson.minecraft.command.command.Context;
 @FunctionalInterface
 public interface CommandExecutor<S> {
     boolean execute(Context<S> context);
+
+    default ArgumentEvaluator<S> getEvaluator() {
+        return null;
+    }
+
+    default CommandHolder<S, ?> getHolder() {
+        return null;
+    }
 }

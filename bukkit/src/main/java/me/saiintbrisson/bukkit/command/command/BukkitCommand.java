@@ -32,10 +32,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
@@ -105,12 +103,27 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     }
 
     @Override
+    public Optional<CommandHolder<?, ?>> getParentCommand() {
+        return CommandHolder.super.getParentCommand();
+    }
+
+    @Override
     public BukkitChildCommand getChildCommand(String name) {
         for (BukkitChildCommand childCommand : childCommandList) {
             if (childCommand.equals(name)) return childCommand;
         }
 
         return null;
+    }
+
+    @Override
+    public void setCommandInfo(CommandInfo commandInfo) {
+        this.commandInfo = commandInfo;
+    }
+
+    @Override
+    public void setCommandName(String name) {
+        setName(name);
     }
 
     @Override
@@ -233,5 +246,45 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     @Override
     public List<String> getAliasesList() {
         return getAliases();
+    }
+
+    @Override
+    public void setAliasesList(List<String> aliasesList) {
+        setAliases(aliasesList);
+    }
+
+    @Override
+    public void setCommandPermission(String permission) {
+        setPermission(permission);
+    }
+
+    @Override
+    public void setCommandUsage(String usage) {
+        setUsage(usage);
+    }
+
+    @Override
+    public void setCommandDescription(String description) {
+        setDescription(description);
+    }
+
+    @Override
+    public boolean equals(String name) {
+        return CommandHolder.super.equals(name);
+    }
+
+    @Override
+    public @NotNull Iterator<CommandHolder<?, ?>> iterator() {
+        return CommandHolder.super.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super CommandHolder<?, ?>> action) {
+        CommandHolder.super.forEach(action);
+    }
+
+    @Override
+    public Spliterator<CommandHolder<?, ?>> spliterator() {
+        return CommandHolder.super.spliterator();
     }
 }
