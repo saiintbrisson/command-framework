@@ -34,7 +34,7 @@ import kotlin.reflect.full.findAnnotation
  * @param scope the target coroutine scope
  * @param delegate the remaining implementation of [CommandFrame]
  */
-class CoroutinesFrame<P, S, C : CommandHolder<S, C>>(
+class CoroutinesFrame<P, S, C : CommandHolder<S, out C>>(
     val scope: CoroutineScope,
     private val delegate: CommandFrame<P, S, C>
 ) : CommandFrame<P, S, C> by delegate {

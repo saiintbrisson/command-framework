@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
 import kotlin.reflect.jvm.reflect
 
 @OptIn(ExperimentalReflectionOnLambdas::class)
-fun <P, S, C : CommandHolder<S, C>> CoroutinesFrame<P, S, C>.registerCommand(
+fun <P, S, C : CommandHolder<S, out C>> CoroutinesFrame<P, S, out C>.registerCommand(
     name: String,
     dsl: CommandDsl<S>.() -> Unit
 ) {
