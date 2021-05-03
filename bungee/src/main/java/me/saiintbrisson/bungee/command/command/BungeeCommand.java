@@ -189,6 +189,15 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
         return null;
     }
 
+    @Override
+    public void setCommandInfo(CommandInfo commandInfo) {
+        this.commandInfo = commandInfo;
+    }
+
+    @Override
+    public void setCommandName(String name) {
+    }
+
     public BungeeCommand createRecursive(String name) {
         int position = getPosition() + StringUtil.countMatches(name, ".");
         if (position == getPosition()) {
@@ -212,6 +221,25 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     @Override
     public List<String> getAliasesList() {
         return Arrays.asList(getAliases());
+    }
+
+    @Override
+    public void setAliasesList(List<String> aliasesList) {
+        this.aliases = aliasesList.toArray(new String[0]);
+    }
+
+    @Override
+    public void setCommandPermission(String permission) {
+    }
+
+    @Override
+    public void setCommandUsage(String usage) {
+        setUsage(usage);
+    }
+
+    @Override
+    public void setCommandDescription(String description) {
+
     }
 
     @Override
