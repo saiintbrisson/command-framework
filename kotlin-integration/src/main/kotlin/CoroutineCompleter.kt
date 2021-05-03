@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.commandframework
+package me.saiintbrisson.minecraft.command.kotlin
 
 import kotlinx.coroutines.runBlocking
 import me.saiintbrisson.minecraft.command.command.Context
