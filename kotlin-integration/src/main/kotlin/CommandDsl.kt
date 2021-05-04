@@ -21,26 +21,29 @@ import me.saiintbrisson.minecraft.command.command.CommandInfo
 import me.saiintbrisson.minecraft.command.command.Context
 import me.saiintbrisson.minecraft.command.target.CommandTarget
 import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
-import kotlin.reflect.jvm.reflect
 
 @OptIn(ExperimentalReflectionOnLambdas::class)
 fun <P, S, C : CommandHolder<S, out C>> CoroutineFrame<P, S, out C>.registerCommand(
     name: String,
     dsl: CommandDsl<S>.() -> Unit
 ) {
-    val holder = CommandDsl<S>(name).apply(dsl)
-    val info = holder.buildInfo()
-    val function = requireNotNull(holder.handler.reflect()) {
-        "Could not reflect command dsl"
-    }
+    val commandDsl = CommandDsl<S>(name).apply(dsl)
+    val info = commandDsl.buildInfo()
     val commandHolder = requireNotNull(getCommand(info.name)) {
         "Failed to find command holder for ${info.name}"
     }
 
-    registerCommand(
-        info,
-        CoroutineExecutor(scope, Any(), this, function, messageHolder, commandHolder)
-    )
+    class CommandHolder {
+        suspend fun handleCommand(context: Context<S>) {
+            commandDsl.handler(context)
+        }
+    }
+
+    val function = CommandHolder::handleCommand
+    val holder = CommandHolder()
+    val executor = CoroutineExecutor(scope, holder, this, function, messageHolder, commandHolder)
+
+    registerCommand(info, executor)
 }
 
 class CommandDsl<S>(var name: String) {
