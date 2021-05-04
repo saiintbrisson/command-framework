@@ -49,7 +49,7 @@ class CommandDsl<S>(var name: String) {
 
     internal lateinit var handler: suspend (Context<S>) -> Unit
 
-    fun handle(handler: suspend (Context<S>) -> Unit) {
+    fun handle(handler: suspend Context<S>.() -> Unit) {
         this.handler = handler
     }
 }
