@@ -16,6 +16,7 @@
 
 package me.saiintbrisson.minecraft.command.kotlin
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import me.saiintbrisson.minecraft.command.command.Context
 import me.saiintbrisson.minecraft.command.executor.CompleterExecutor
@@ -28,6 +29,7 @@ import kotlin.reflect.typeOf
 @Suppress("UNCHECKED_CAST")
 class CoroutineCompleter<S>(
     private val holder: Any,
+    private val scope: CoroutineScope,
     function: KFunction<Any>
 ) : CompleterExecutor<S> {
     private val function: KFunction<Iterable<Any>>
@@ -49,7 +51,7 @@ class CoroutineCompleter<S>(
         this.function = function as KFunction<Iterable<Any>>
     }
 
-    override fun execute(context: Context<S>): List<String> = runBlocking {
+    override fun execute(context: Context<S>): List<String> = runBlocking(scope.coroutineContext) {
         function.callSuspend(holder, context).map(Any::toString)
     }
 }

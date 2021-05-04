@@ -34,22 +34,22 @@ import kotlin.reflect.full.findAnnotation
  * @param scope the target coroutine scope
  * @param delegate the remaining implementation of [CommandFrame]
  */
-class CoroutinesFrame<P, S, C : CommandHolder<S, out C>>(
+class CoroutineFrame<P, S, C : CommandHolder<S, out C>>(
     val scope: CoroutineScope,
     private val delegate: CommandFrame<P, S, C>
 ) : CommandFrame<P, S, C> by delegate {
     override fun registerCommands(vararg objects: Any) {
-        objects.forEach { commandHolder ->
-            val functions = commandHolder::class.declaredMemberFunctions
+        objects.forEach { holder ->
+            val functions = holder::class.declaredMemberFunctions
                 .filterIsInstance<KFunction<Any>>()
 
             functions.forEach register@{ function ->
                 val command = function.findAnnotation<Command>() ?: return@register
-                val holder = getCommand(command.name) ?: return@register
+                val commandHolder = getCommand(command.name) ?: return@register
 
                 registerCommand(
                     CommandInfo(command),
-                    CoroutineExecutor(this, scope, function, messageHolder, holder)
+                    CoroutineExecutor(scope, holder, this, function, messageHolder, commandHolder)
                 )
             }
 
@@ -58,7 +58,7 @@ class CoroutinesFrame<P, S, C : CommandHolder<S, out C>>(
 
                 registerCompleter(
                     completer.name,
-                    CoroutineCompleter(commandHolder, function)
+                    CoroutineCompleter(holder, scope, function)
                 )
             }
         }
@@ -77,7 +77,6 @@ class CoroutinesFrame<P, S, C : CommandHolder<S, out C>>(
                 setCommandPermission(info.permission)
             }
 
-            commandInfo = info
             aliasesList = info.aliases.toList()
         }
 

@@ -18,7 +18,7 @@ package me.saiintbrisson.minecraft.command.kotlin
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import me.saiintbrisson.minecraft.command.CommandFrame
 import me.saiintbrisson.minecraft.command.argument.eval.ArgumentEvaluator
 import me.saiintbrisson.minecraft.command.command.CommandHolder
@@ -33,11 +33,12 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.javaMethod
 
 class CoroutineExecutor<S, C : CommandHolder<S, C>>(
-    private val frame: CommandFrame<*, S, *>,
     scope: CoroutineScope,
+    private val holder: Any,
+    private val frame: CommandFrame<*, S, *>,
     private val function: KFunction<Any>,
-    private val message: MessageHolder,
-    private val holder: CommandHolder<S, C>
+    private val messageHolder: MessageHolder,
+    private val commandHolder: CommandHolder<S, C>
 ) : CommandExecutor<S>, CoroutineScope {
     override val coroutineContext = scope.coroutineContext
     private val evaluator = run {
@@ -45,7 +46,7 @@ class CoroutineExecutor<S, C : CommandHolder<S, C>>(
     }
 
     override fun getEvaluator(): ArgumentEvaluator<S> = evaluator
-    override fun getHolder(): CommandHolder<S, *> = holder
+    override fun getHolder(): CommandHolder<S, *> = commandHolder
 
     override fun execute(context: Context<S>): Boolean {
         val coroutineContext = coroutineContext + CoroutineExceptionHandler { _, throwable ->
@@ -61,12 +62,12 @@ class CoroutineExecutor<S, C : CommandHolder<S, C>>(
                         null -> {
                             throwable.printStackTrace()
                             throwable.message?.let {
-                                message.getReplacing(MessageType.ERROR, it)
+                                messageHolder.getReplacing(MessageType.ERROR, it)
                             }
                         }
                         else -> {
-                            throwable.message?.let { message.getReplacing(type, it) }
-                                ?: type.getDefault(holder)
+                            throwable.message?.let { messageHolder.getReplacing(type, it) }
+                                ?: type.getDefault(commandHolder)
                         }
                     }
 
@@ -79,8 +80,14 @@ class CoroutineExecutor<S, C : CommandHolder<S, C>>(
             }
         }
 
-        runBlocking(coroutineContext) {
-            function.callSuspend(args = evaluator.parseArguments(context))
+        launch(coroutineContext) {
+            val args = try {
+                evaluator.parseArguments(context)
+            } catch (exception: Exception) {
+                throw InvocationTargetException(CommandException(MessageType.INCORRECT_USAGE, null))
+            }
+
+            function.callSuspend(holder, *args)
         }
 
         return false

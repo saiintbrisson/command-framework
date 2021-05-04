@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
 import kotlin.reflect.jvm.reflect
 
 @OptIn(ExperimentalReflectionOnLambdas::class)
-fun <P, S, C : CommandHolder<S, out C>> CoroutinesFrame<P, S, out C>.registerCommand(
+fun <P, S, C : CommandHolder<S, out C>> CoroutineFrame<P, S, out C>.registerCommand(
     name: String,
     dsl: CommandDsl<S>.() -> Unit
 ) {
@@ -37,7 +37,10 @@ fun <P, S, C : CommandHolder<S, out C>> CoroutinesFrame<P, S, out C>.registerCom
         "Failed to find command holder for ${info.name}"
     }
 
-    registerCommand(info, CoroutineExecutor(this, scope, function, messageHolder, commandHolder))
+    registerCommand(
+        info,
+        CoroutineExecutor(scope, Any(), this, function, messageHolder, commandHolder)
+    )
 }
 
 class CommandDsl<S>(var name: String) {

@@ -34,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MethodEvaluator {
     private final AdapterMap adapterMap;
+    private static final String continuationClass = "kotlin.coroutines.Continuation";
 
     public List<Argument<?>> evaluateMethod(Method method) {
         final List<Argument<?>> argumentList = new ArrayList<>();
@@ -43,6 +44,11 @@ public class MethodEvaluator {
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             Class type = parameter.getType();
+
+            if (type.getName().equals(continuationClass)) {
+                continue;
+            }
+
             boolean isArray = type.isArray();
 
             final Argument.ArgumentBuilder builder = Argument
