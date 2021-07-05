@@ -61,7 +61,7 @@ public final class BukkitCompleterExecutor implements CompleterExecutor<CommandS
             }
 
             return null;
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
             return null;
         }
     }
