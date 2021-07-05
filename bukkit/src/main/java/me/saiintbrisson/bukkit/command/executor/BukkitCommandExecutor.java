@@ -38,7 +38,7 @@ import java.lang.reflect.Method;
  *
  * @author SaiintBrisson (https://github.com/SaiintBrisson)
  */
-public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
+public final class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 
     private final Method method;
     private final Object holder;
