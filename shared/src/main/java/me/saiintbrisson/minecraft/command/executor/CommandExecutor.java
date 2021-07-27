@@ -23,7 +23,7 @@ import me.saiintbrisson.minecraft.command.command.Context;
  * method that is listed as a Command, it invokes the method
  * and executes everything inside.
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @FunctionalInterface
 public interface CommandExecutor<S> {

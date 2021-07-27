@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
  * method that is listed as a Command, it invokes the method
  * and executes everything inside.
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 

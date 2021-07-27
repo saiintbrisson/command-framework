@@ -25,7 +25,7 @@ import me.saiintbrisson.minecraft.command.message.MessageType;
  * by the framework if any errors are thrown during the
  * execution of a command.
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @NoArgsConstructor
 public class CommandException extends RuntimeException {

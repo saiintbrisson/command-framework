@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class BukkitCompleterExecutor implements CompleterExecutor<CommandSender> {
 

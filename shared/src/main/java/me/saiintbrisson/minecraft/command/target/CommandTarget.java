@@ -17,7 +17,7 @@
 package me.saiintbrisson.minecraft.command.target;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public enum CommandTarget {
     /**

@@ -44,7 +44,7 @@ import java.util.List;
  * AbstractCommand, it contains the main information about
  * that command {@link CommandInfo} position and Child commands {@link BukkitChildCommand}
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @Getter
 public class BukkitCommand extends Command implements CommandHolder<CommandSender, BukkitChildCommand> {

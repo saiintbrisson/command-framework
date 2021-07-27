@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * The context is where all information from the command dispatcher
  * is stored, such as the sender, arguments and label
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public interface Context<S> {
 

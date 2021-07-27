@@ -28,7 +28,7 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import org.bukkit.command.CommandSender;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @Getter
 @AllArgsConstructor

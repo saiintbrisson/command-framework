@@ -34,7 +34,7 @@ import java.util.concurrent.Executor;
  * it registers the commands, adapters {@link AdapterMap}
  * and message holders {@link MessageHolder}
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
 

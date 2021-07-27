@@ -28,7 +28,7 @@ import java.util.Optional;
  * <p>As a example, /help is a {@link BukkitCommand} but in /help list,
  * the list argument is a Child command. The /ħelp continues to be a parent command.</p>
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class BukkitChildCommand extends BukkitCommand {
 

@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
  * The MessageHolder stores the messages for each Error
  * thrown by the command.
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  * @see MessageType
  */
 @Getter

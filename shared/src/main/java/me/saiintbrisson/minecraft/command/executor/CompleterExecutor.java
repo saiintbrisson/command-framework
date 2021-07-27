@@ -21,7 +21,7 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import java.util.List;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 
 @FunctionalInterface

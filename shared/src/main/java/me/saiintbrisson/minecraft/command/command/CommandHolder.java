@@ -30,7 +30,7 @@ import java.util.Optional;
  * Command, it contains the main information about
  * that command {@link CommandInfo} position and Parent/Child commands
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public interface CommandHolder<S, C extends CommandHolder<S, C>> extends Iterable<CommandHolder<?, ?>> {
 

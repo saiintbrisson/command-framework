@@ -25,7 +25,7 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
  * as well that values can be edited.
  *
  * <p>Placeholders can be put on each of those errors</p>
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @Getter
 @AllArgsConstructor

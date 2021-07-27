@@ -25,7 +25,7 @@ import java.util.Iterator;
  * The CommandInfoIterator is a Iterator for
  * CommandHolder, it can access the next command from the list.
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @RequiredArgsConstructor
 public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {

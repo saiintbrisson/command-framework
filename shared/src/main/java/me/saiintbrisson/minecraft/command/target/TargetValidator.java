@@ -20,7 +20,7 @@ package me.saiintbrisson.minecraft.command.target;
  * The BukkitTargetValidator validates if the Target
  * is a correct and usable {@link CommandTarget}
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public interface TargetValidator {
 

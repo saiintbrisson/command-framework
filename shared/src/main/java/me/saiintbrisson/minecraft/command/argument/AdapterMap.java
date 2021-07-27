@@ -25,7 +25,7 @@ import java.util.HashMap;
  * <p>It can be created with the default primitive types
  * or totally empty, after other values can be added</p>
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
 
