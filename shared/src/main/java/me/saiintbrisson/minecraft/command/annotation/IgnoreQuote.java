@@ -14,32 +14,19 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.argument;
+package me.saiintbrisson.minecraft.command.annotation;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The model for each argument in the command.
- * <p>It contains the main information of each argument
- * such as it's type and name.</p>
+ * Makes the argument parser ignore strings with whitespaces.
  *
  * @author Luiz Carlos Mourão
  */
-@Getter
-@Builder
-@AllArgsConstructor
-public class Argument<T> {
-    private final String name;
 
-    private final Class<T> type;
-    private final TypeAdapter<T> adapter;
-
-    private final T defaultValue;
-
-    private final boolean isNullable;
-    private final boolean isArray;
-    private final boolean ignoreQuote;
-}
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface IgnoreQuote {}

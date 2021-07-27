@@ -17,6 +17,7 @@
 package me.saiintbrisson.minecraft.command.argument.eval;
 
 import lombok.RequiredArgsConstructor;
+import me.saiintbrisson.minecraft.command.annotation.IgnoreQuote;
 import me.saiintbrisson.minecraft.command.annotation.Optional;
 import me.saiintbrisson.minecraft.command.argument.AdapterMap;
 import me.saiintbrisson.minecraft.command.argument.Argument;
@@ -38,6 +39,8 @@ import java.util.List;
  *
  * <p>It validates if the method contains the correct
  * parameters and creates an {@link Optional} parameter
+ *
+ * @author Luiz Carlos Mourão
  */
 @RequiredArgsConstructor
 public class MethodEvaluator {
@@ -58,7 +61,8 @@ public class MethodEvaluator {
               .builder()
               .name(parameter.getName())
               .type(type)
-              .isArray(isArray);
+              .isArray(isArray)
+              .ignoreQuote(parameter.isAnnotationPresent(IgnoreQuote.class));
 
             if (Context.class.isAssignableFrom(type)) {
                 argumentList.add(builder.build());

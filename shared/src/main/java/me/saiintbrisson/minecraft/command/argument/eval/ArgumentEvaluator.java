@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * and provides a useful object to invoke the methods.
  *
  * @param <S> Argument
+ *
+ * @author Luiz Carlos Mourão
  */
 @Getter
 @RequiredArgsConstructor
@@ -52,7 +54,7 @@ public class ArgumentEvaluator<S> {
                 continue;
             }
 
-            String arg = readFullString(currentArg, context);
+            String arg = readFullString(argument, currentArg, context);
             if (arg == null) {
                 if (!argument.isNullable()) {
                     throw new CommandException(MessageType.INCORRECT_USAGE, null);
@@ -71,7 +73,7 @@ public class ArgumentEvaluator<S> {
                       (Object[]) object,
                       argument.getAdapter().convertNonNull(arg)
                     );
-                } while ((arg = readFullString(currentArg, context)) != null);
+                } while ((arg = readFullString(argument, currentArg, context)) != null);
             } else {
                 object = argument.getAdapter().convertNonNull(arg);
             }
@@ -82,12 +84,12 @@ public class ArgumentEvaluator<S> {
         return parameters;
     }
 
-    private String readFullString(AtomicInteger currentArg, Context<S> context) {
+    private String readFullString(Argument<?> argument, AtomicInteger currentArg, Context<S> context) {
         String arg = context.getArg(currentArg.get());
         if (arg == null) return null;
 
         currentArg.incrementAndGet();
-        if (arg.charAt(0) == '"') {
+        if (!argument.isIgnoreQuote() && arg.charAt(0) == '"') {
             final StringBuilder builder = new StringBuilder(arg.substring(1));
             while ((arg = context.getArg(currentArg.get())) != null) {
                 builder.append(" ");
