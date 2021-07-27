@@ -53,7 +53,7 @@ import java.util.concurrent.Executor;
  * it registers the commands, adapters {@link AdapterMap}
  * and message holders {@link MessageHolder}
  *
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 @Getter
 public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCommand> {
@@ -141,6 +141,10 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
             commandMap.put(nextSubCommand, subCommand);
         }
 
+        if (subCommand.getPosition() == 0) {
+            bukkitCommandMap.register(plugin.getName(), subCommand);
+        }
+
         return subCommand.createRecursive(name);
     }
 
@@ -180,10 +184,6 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         }
 
         recursive.initCommand(commandInfo, commandExecutor);
-
-        if (recursive.getPosition() == 0) {
-            bukkitCommandMap.register(plugin.getName(), recursive);
-        }
     }
 
     @Override
