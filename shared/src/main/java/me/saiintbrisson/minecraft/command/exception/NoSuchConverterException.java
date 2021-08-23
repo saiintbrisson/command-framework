@@ -17,10 +17,15 @@
 package me.saiintbrisson.minecraft.command.exception;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The NoSuchConverterException is thrown when there
+ * isn't a converter for the type provided.
+ *
+ * @author Luiz Carlos Mourão
  */
 public class NoSuchConverterException extends CommandException {
+
     public NoSuchConverterException(Class<?> type) {
         super("No converter found for type " + type.getTypeName());
     }
+
 }

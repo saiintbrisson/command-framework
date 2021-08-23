@@ -29,9 +29,19 @@ import java.lang.reflect.Array;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The ArgumentEvaluator is the main argument
+ * parser of the framework, it reads the argument
+ * and provides a useful object to invoke the methods.
+ *
+ * @param <S> Argument
+ *
+ * @author Luiz Carlos Mourão
+ */
 @Getter
 @RequiredArgsConstructor
 public class ArgumentEvaluator<S> {
+
     private final List<Argument<?>> argumentList;
 
     public Object[] parseArguments(Context<S> context) {
@@ -44,32 +54,26 @@ public class ArgumentEvaluator<S> {
                 continue;
             }
 
-            String arg = readFullString(currentArg, context);
+            String arg = readFullString(argument, currentArg, context);
             if (arg == null) {
                 if (!argument.isNullable()) {
                     throw new CommandException(MessageType.INCORRECT_USAGE, null);
-                } else {
-                    parameters = ArrayUtil.add(parameters, argument.getDefaultValue());
                 }
 
+                parameters = ArrayUtil.add(parameters, argument.getDefaultValue());
                 currentArg.incrementAndGet();
                 continue;
             }
 
             Object object;
-
             if (argument.isArray()) {
                 object = Array.newInstance(argument.getType(), 0);
-
                 do {
-
                     object = ArrayUtil.add(
                       (Object[]) object,
                       argument.getAdapter().convertNonNull(arg)
                     );
-
-                } while ((arg = readFullString(currentArg, context)) != null);
-
+                } while ((arg = readFullString(argument, currentArg, context)) != null);
             } else {
                 object = argument.getAdapter().convertNonNull(arg);
             }
@@ -80,23 +84,18 @@ public class ArgumentEvaluator<S> {
         return parameters;
     }
 
-    private String readFullString(AtomicInteger currentArg, Context<S> context) {
+    private String readFullString(Argument<?> argument, AtomicInteger currentArg, Context<S> context) {
         String arg = context.getArg(currentArg.get());
-        if (arg == null) {
-            return null;
-        }
+        if (arg == null) return null;
 
         currentArg.incrementAndGet();
-
-        if (arg.charAt(0) == '"') {
-            StringBuilder builder = new StringBuilder(arg.substring(1));
-
+        if (!argument.isIgnoreQuote() && arg.charAt(0) == '"') {
+            final StringBuilder builder = new StringBuilder(arg.substring(1));
             while ((arg = context.getArg(currentArg.get())) != null) {
                 builder.append(" ");
                 currentArg.incrementAndGet();
 
                 final int length = arg.length();
-
                 if (arg.charAt(length - 1) == '"' && (length == 1 || arg.charAt(length - 2) != '\\')) {
                     builder.append(arg, 0, length - 1);
                     break;
@@ -106,30 +105,26 @@ public class ArgumentEvaluator<S> {
             }
 
             return builder.toString().replace("\\\"", "\"");
-        } else {
-            return arg;
         }
+
+        return arg;
     }
 
 
     public String buildUsage(String name) {
-        StringBuilder builder = new StringBuilder(name);
-
+        final StringBuilder builder = new StringBuilder(name);
         for (Argument<?> argument : argumentList) {
-            if (Context.class.isAssignableFrom(argument.getType())) {
-                continue;
-            }
+            if (Context.class.isAssignableFrom(argument.getType())) continue;
 
             builder.append(argument.isNullable() ? " [" : " <");
-
             builder.append(StringUtil.uncapitalize(argument.getType().getSimpleName()));
-            if (argument.isArray()) {
-                builder.append("...");
-            }
+
+            if (argument.isArray()) builder.append("...");
 
             builder.append(argument.isNullable() ? "]" : ">");
         }
 
         return builder.toString();
     }
+
 }

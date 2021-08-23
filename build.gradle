@@ -1,24 +1,23 @@
-plugins {
-    id 'java'
-    id 'maven'
-}
-
-group 'me.saiintbrisson'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
-
 allprojects {
     afterEvaluate {
+        apply plugin: 'java'
+        apply plugin: 'maven'
+
+        group 'me.saiintbrisson'
+        version '1.2-SNAPSHOT'
+
+        sourceCompatibility = 1.8
+
         repositories {
             mavenCentral()
         }
 
         dependencies {
-            implementation 'org.jetbrains:annotations:16.0.2'
+            implementation 'org.jetbrains:annotations:21.0.1'
 
-            compileOnly 'org.projectlombok:lombok:1.18.12'
-            annotationProcessor 'org.projectlombok:lombok:1.18.12'
+            def lombok = 'org.projectlombok:lombok:1.18.20'
+            compileOnly lombok
+            annotationProcessor lombok
         }
     }
 

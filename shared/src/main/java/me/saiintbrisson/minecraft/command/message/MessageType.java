@@ -21,12 +21,20 @@ import lombok.Getter;
 import me.saiintbrisson.minecraft.command.command.CommandHolder;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The MessageType contains the default messages for the errors
+ * as well that values can be edited.
+ *
+ * <p>Placeholders can be put on each of those errors</p>
+ * @author Luiz Carlos Mourão
  */
-
 @Getter
 @AllArgsConstructor
 public enum MessageType {
+
+    /**
+     * Used when a error is thrown, the {error} can be
+     * used to send the message of error
+     */
     ERROR("{error}",
       "§cAn error has been thrown: §f{error}§c.") {
         @Override
@@ -34,6 +42,10 @@ public enum MessageType {
             return "";
         }
     },
+    /**
+     * Used when a player doesn't have a permission,
+     * the {permission} can be used to send the permission
+     */
     NO_PERMISSION("{permission}",
       "§cRequired permission: §f{permission}§c.") {
         @Override
@@ -41,6 +53,10 @@ public enum MessageType {
             return commandHolder.getPermission();
         }
     },
+    /**
+     * Used when a player doesn't use the command correctly,
+     * the {usage} can be used to send the correct usage
+     */
     INCORRECT_USAGE("{usage}",
       "§cCorrect usage: §e/{usage}§c.") {
         @Override
@@ -48,6 +64,10 @@ public enum MessageType {
             return commandHolder.getUsage();
         }
     },
+    /**
+     * Used when a player doesn't use the target correctly,
+     * the {target} can be used to send the correct target
+     */
     INCORRECT_TARGET("{target}",
       "§cYou cannot execute this command. Targeted to: §f{target}§c.") {
         @Override

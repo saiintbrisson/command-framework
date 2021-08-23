@@ -24,11 +24,15 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The MessageHolder stores the messages for each Error
+ * thrown by the command.
+ *
+ * @author Luiz Carlos Mourão
+ * @see MessageType
  */
-
 @Getter
-public class MessageHolder {
+public final class MessageHolder {
+
     private final EnumMap<MessageType, String> messageMap = new EnumMap<>(MessageType.class);
 
     public MessageHolder() {
@@ -68,4 +72,5 @@ public class MessageHolder {
             }
         }
     }
+
 }

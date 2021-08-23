@@ -21,24 +21,29 @@ import lombok.NoArgsConstructor;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The CommandException is the default exception thrown
+ * by the framework if any errors are thrown during the
+ * execution of a command.
+ *
+ * @author Luiz Carlos Mourão
  */
-
 @NoArgsConstructor
 public class CommandException extends RuntimeException {
+
     @Getter
     private MessageType messageType;
 
-    public CommandException(MessageType messageType, String message) {
+    public CommandException(final MessageType messageType, final String message) {
         super(message);
         this.messageType = messageType;
     }
 
-    public CommandException(Throwable cause) {
+    public CommandException(final Throwable cause) {
         super(cause);
     }
 
-    public CommandException(String message) {
+    public CommandException(final String message) {
         super(message);
     }
+
 }

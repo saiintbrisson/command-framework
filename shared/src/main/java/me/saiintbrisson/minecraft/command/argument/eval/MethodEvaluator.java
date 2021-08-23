@@ -17,11 +17,13 @@
 package me.saiintbrisson.minecraft.command.argument.eval;
 
 import lombok.RequiredArgsConstructor;
+import me.saiintbrisson.minecraft.command.annotation.IgnoreQuote;
 import me.saiintbrisson.minecraft.command.annotation.Optional;
 import me.saiintbrisson.minecraft.command.argument.AdapterMap;
 import me.saiintbrisson.minecraft.command.argument.Argument;
 import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
 import me.saiintbrisson.minecraft.command.command.Context;
+import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.exception.NoSuchConverterException;
 import me.saiintbrisson.minecraft.command.util.ArrayUtil;
 
@@ -31,18 +33,29 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ArgumentEvaluator is the main method
+ * validator of the framework.
+ *
+ * <p>It validates if the method contains the correct
+ * parameters and creates an {@link Optional} parameter
+ *
+ * @author Luiz Carlos Mourão
+ */
 @RequiredArgsConstructor
 public class MethodEvaluator {
+
     private final AdapterMap adapterMap;
     private static final String continuationClass = "kotlin.coroutines.Continuation";
 
+    @SuppressWarnings("unchecked")
     public List<Argument<?>> evaluateMethod(Method method) {
         final List<Argument<?>> argumentList = new ArrayList<>();
 
-        Parameter[] parameters = method.getParameters();
-
+        final Parameter[] parameters = method.getParameters();
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
+
             Class type = parameter.getType();
 
             if (type.getName().equals(continuationClass)) {
@@ -50,12 +63,12 @@ public class MethodEvaluator {
             }
 
             boolean isArray = type.isArray();
-
             final Argument.ArgumentBuilder builder = Argument
               .builder()
               .name(parameter.getName())
               .type(type)
-              .isArray(isArray);
+              .isArray(isArray)
+              .ignoreQuote(parameter.isAnnotationPresent(IgnoreQuote.class));
 
             if (Context.class.isAssignableFrom(type)) {
                 argumentList.add(builder.build());
@@ -64,8 +77,7 @@ public class MethodEvaluator {
 
             if (isArray) {
                 if (i != parameters.length - 1) {
-                    throw new IllegalArgumentException("Arrays must be the last parameter in a command, "
-                      + method.getName());
+                    throw new CommandException("Arrays must be the last parameter in a command, " + method.getName());
                 }
 
                 builder.type(type = type.getComponentType());
@@ -85,17 +97,17 @@ public class MethodEvaluator {
         return argumentList;
     }
 
+    @SuppressWarnings("unchecked")
     private Argument createOptional(Method method, Class type, boolean isArray,
-                                    String[] def, Argument.ArgumentBuilder builder) {
+                                    String[] def, Argument.ArgumentBuilder builder
+    ) {
         if (type.isPrimitive() && def.length == 0) {
             throw new IllegalArgumentException("Use wrappers instead of primitive types for nullability, "
               + method.getName());
         }
 
         final TypeAdapter<?> adapter = adapterMap.get(type);
-        if (adapter == null) {
-            throw new NoSuchConverterException(type);
-        }
+        if (adapter == null) throw new NoSuchConverterException(type);
 
         builder.isNullable(true);
 
@@ -110,14 +122,11 @@ public class MethodEvaluator {
 
     private Object[] createArray(Class type, TypeAdapter<?> adapter, String[] def) {
         Object[] value = (Object[]) Array.newInstance(type, 0);
-
-        for (String s : def) {
-            value = ArrayUtil.add(
-              value,
-              adapter.convertNonNull(s)
-            );
+        for (String arg : def) {
+            value = ArrayUtil.add(value, adapter.convertNonNull(arg));
         }
 
         return value;
     }
+
 }

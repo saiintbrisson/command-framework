@@ -1,3 +1,4 @@
+import me.saiintbrisson.minecraft.command.annotation.IgnoreQuote;
 import me.saiintbrisson.minecraft.command.annotation.Optional;
 import me.saiintbrisson.minecraft.command.argument.AdapterMap;
 import me.saiintbrisson.minecraft.command.argument.Argument;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class ArgumentParsingTest {
     @Test
@@ -37,23 +38,23 @@ public class ArgumentParsingTest {
         final List<Argument<?>> list = getArguments();
 
         assertArrayEquals(
-          new Object[]{"first", new String[] {"Hello", "World!"}},
+          new Object[]{"first", new String[]{"Hello", "World!"}},
           getArguments(list, "first")
         );
 
         assertArrayEquals(
-          new Object[]{"first", new String[] {"second"}},
+          new Object[]{"first", new String[]{"second"}},
           getArguments(list, "first", "second")
         );
 
         assertArrayEquals(
-          new Object[]{"first", new String[] {"second", "third"}},
+          new Object[]{"first", new String[]{"second", "third"}},
           getArguments(list, "first", "second", "third")
         );
     }
 
     @Test
-    void invokeCommand() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void invokeTestCommand() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final AdapterMap adapterMap = new AdapterMap(true);
         final MethodEvaluator evaluator = new MethodEvaluator(adapterMap);
 
@@ -69,7 +70,26 @@ public class ArgumentParsingTest {
                             String firstArgument,
                             @Optional(def = {"Hello", "World!"}) String[] secondArgument) {
         context.getArg(0, Double.class);
-        assertArrayEquals(new Double[] {1.1, 1.2, 1.3}, context.getArgs(1, 4, Double.class));
+        assertArrayEquals(new Double[]{1.1, 1.2, 1.3}, context.getArgs(1, 4, Double.class));
+    }
+
+    @Test
+    void invokeIgnoreQuoteTestCommand() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final AdapterMap adapterMap = new AdapterMap(true);
+        final MethodEvaluator evaluator = new MethodEvaluator(adapterMap);
+
+        final Method method = getClass().getMethod("ignoreQuoteTestCommand", Context.class, String.class, String.class);
+        final List<Argument<?>> list = evaluator.evaluateMethod(method);
+        final ArgumentEvaluator<Object> argumentEvaluator = new ArgumentEvaluator<>(list);
+        final TestContext context = new TestContext(new String[]{"one", "\"argument1", "argument2\""}, adapterMap);
+
+        invokeCommand(method, argumentEvaluator, context);
+    }
+
+    public void ignoreQuoteTestCommand(Context<?> context,
+                                       @IgnoreQuote String a, String b) {
+        assertFalse(a.contains(" "));
+        assertTrue(b.contains(" "));
     }
 
     private List<Argument<?>> getArguments() throws NoSuchMethodException {

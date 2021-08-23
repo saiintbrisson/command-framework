@@ -16,16 +16,21 @@
 
 package me.saiintbrisson.minecraft.command.argument;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The model for each argument in the command.
+ * <p>It contains the main information of each argument
+ * such as it's type and name.</p>
+ *
+ * @author Luiz Carlos Mourão
  */
-
 @Getter
 @Builder
+@AllArgsConstructor
 public class Argument<T> {
     private final String name;
 
@@ -36,16 +41,5 @@ public class Argument<T> {
 
     private final boolean isNullable;
     private final boolean isArray;
-
-    public Argument(@NonNull String name,
-                    @NonNull Class<T> type, TypeAdapter<T> adapter,
-                    T defaultValue,
-                    boolean isNullable, boolean isArray) {
-        this.name = name;
-        this.type = type;
-        this.adapter = adapter;
-        this.defaultValue = defaultValue;
-        this.isNullable = isNullable;
-        this.isArray = isArray;
-    }
+    private final boolean ignoreQuote;
 }

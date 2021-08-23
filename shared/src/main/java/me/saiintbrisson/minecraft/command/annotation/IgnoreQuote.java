@@ -22,14 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Makes the argument parser ignore strings with whitespaces.
+ *
  * @author Luiz Carlos Mourão
  */
 
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
-    /**
-     * @return the command to complete
-     */
-    String name();
-}
+public @interface IgnoreQuote {}

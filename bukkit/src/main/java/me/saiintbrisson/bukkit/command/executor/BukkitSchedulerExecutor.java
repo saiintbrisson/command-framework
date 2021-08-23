@@ -23,9 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.Executor;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class BukkitSchedulerExecutor implements Executor {
+
     private final Plugin plugin;
     private final BukkitScheduler scheduler;
 
@@ -38,4 +39,5 @@ public class BukkitSchedulerExecutor implements Executor {
     public void execute(@NotNull Runnable command) {
         scheduler.runTaskAsynchronously(plugin, command);
     }
+
 }

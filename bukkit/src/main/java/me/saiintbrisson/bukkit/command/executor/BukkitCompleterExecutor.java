@@ -25,10 +25,10 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
-
 public class BukkitCompleterExecutor implements CompleterExecutor<CommandSender> {
+
     private final Method method;
     private final Object holder;
 
@@ -48,20 +48,22 @@ public class BukkitCompleterExecutor implements CompleterExecutor<CommandSender>
         this.holder = holder;
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public List<String> execute(Context<CommandSender> context) {
-        Class<?>[] types = method.getParameterTypes();
-
+        final Class<?>[] types = method.getParameterTypes();
         try {
             if (types.length == 0) {
                 return (List<String>) method.invoke(holder);
-            } else if (types.length == 1 && types[0] == Context.class) {
-                return (List<String>) method.invoke(holder, context);
-            } else {
-                return null;
             }
-        } catch (Exception e) {
+
+            if (types.length == 1 && types[0] == Context.class) {
+                return (List<String>) method.invoke(holder, context);
+            }
+
+            return null;
+        } catch (Exception exception) {
             return null;
         }
     }
+
 }

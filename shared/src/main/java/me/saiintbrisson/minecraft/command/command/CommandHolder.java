@@ -26,9 +26,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The CommandHolder is the main implementation of the
+ * Command, it contains the main information about
+ * that command {@link CommandInfo} position and Parent/Child commands
+ *
+ * @author Luiz Carlos Mourão
  */
 public interface CommandHolder<S, C extends CommandHolder<S, C>> extends Iterable<CommandHolder<?, ?>> {
+
     int getPosition();
 
     CommandExecutor<S> getCommandExecutor();

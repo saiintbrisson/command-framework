@@ -25,16 +25,22 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The context is where all information from the command dispatcher
+ * is stored, such as the sender, arguments and label
+ * @author Luiz Carlos Mourão
  */
 public interface Context<S> {
+
     /**
-     * @return the label used to execute the command
+     * Contains the label sent by the command
+     * @return String
      */
     String getLabel();
 
     /**
-     * @return who sent the command
+     * The generic value can be either
+     * a Console or Player
+     * @return S
      */
     S getSender();
 
@@ -44,7 +50,8 @@ public interface Context<S> {
     CommandTarget getTarget();
 
     /**
-     * @return the arguments array
+     * Contains all arguments sent by the command
+     * @return String[] of arguments
      */
     String[] getArgs();
 
@@ -68,6 +75,7 @@ public interface Context<S> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     default <T> T getArg(int index, Class<T> type) {
         return (T) getCommandFrame().getAdapterMap().get(type).convertNonNull(getArg(index));
     }
@@ -87,6 +95,7 @@ public interface Context<S> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     default <T> T[] getArgs(int from, int to, Class<T> type) {
         try {
             final TypeAdapter<?> adapter = getCommandFrame().getAdapterMap().get(type);

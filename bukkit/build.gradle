@@ -6,17 +6,15 @@ plugins {
 }
 
 group 'me.saiintbrisson'
-version '1.0-SNAPSHOT'
+version '1.2-SNAPSHOT'
 
 repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
-
-    mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
 
     implementation project(':shared')
     api project(':shared')

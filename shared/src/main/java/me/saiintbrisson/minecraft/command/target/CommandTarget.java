@@ -17,10 +17,23 @@
 package me.saiintbrisson.minecraft.command.target;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public enum CommandTarget {
+    /**
+     * The ALL target can be all senders listed below,
+     * that means that it can receive command from
+     * PLAYER and CONSOLE.
+     */
     ALL,
+    /**
+     * The PLAYER target only accepts Players
+     * to execute that command
+     */
     PLAYER,
+    /**
+     * The CONSOLE target only accept the Console
+     * to execute that command
+     */
     CONSOLE
 }

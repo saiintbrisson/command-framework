@@ -21,55 +21,62 @@ import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 
 @Getter
 @Builder
 @AllArgsConstructor
 public class CommandInfo {
+
     /**
      * Defines the command name, sub-commands are split with dots
      * <p><p>
      * <b>Example:</b><p>
      * parentcommand<p>
      * parentcommand.subcommand<p>
-     *
-     * @return the command name
      */
     @NonNull
     private final String name;
 
     /**
-     * @return the command aliases
+     * Defines the array of aliases of the command,
+     * if it doesn't have aliases it return a empty
+     * array of strings
      */
     @NonNull
     @Builder.Default
     private final String[] aliases = new String[0];
 
     /**
-     * @return the command description
+     * Defines the description of the command,
+     * if it wasn't provided, it returns a empty
+     * String
      */
     @Setter
     @Builder.Default
     private String description = "";
 
     /**
-     * @return the command usage example
+     * Defines the command usage for the MessageuHolder,
+     * if it's empty, returns a empty String
      */
     @Setter
     @Builder.Default
     private String usage = "";
 
     /**
-     * @return the required permission to execute the command
+     * Defines the permission required to execute
+     * the command, if it's empty the default permission
+     * is a empty String
      */
     @Setter
     @Builder.Default
     private String permission = "";
 
     /**
-     * @return the command target
+     * Defines the CommandTarget of the command,
+     * if it's empty, it returns a ALL target.
      */
     @Setter
     @NonNull
@@ -80,7 +87,6 @@ public class CommandInfo {
      * Tells the executor how to run the command,
      * some implementations might ignore this option as they are async by default.
      * This option requires an executor.
-     * @return whether the command should be ran asynchronously
      */
     @Builder.Default
     private final boolean async = false;
@@ -96,4 +102,5 @@ public class CommandInfo {
           command.async()
         );
     }
+
 }

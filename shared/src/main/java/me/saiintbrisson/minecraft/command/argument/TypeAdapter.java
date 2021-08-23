@@ -17,9 +17,10 @@
 package me.saiintbrisson.minecraft.command.argument;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public interface TypeAdapter<T> {
+
     T convert(String raw);
 
     default T convertNonNull(String raw) {
@@ -31,4 +32,5 @@ public interface TypeAdapter<T> {
 
         return result;
     }
+
 }

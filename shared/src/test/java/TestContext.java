@@ -9,7 +9,7 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import java.lang.reflect.Array;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * @author Luiz Carlos Mourão
  */
 public class TestContext implements Context<Object> {
     private final String[] args;

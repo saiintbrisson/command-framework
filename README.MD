@@ -1,3 +1,5 @@
+I'm not maintaining this project anymore, PRs are welcome.
+
 # CommandFramework
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5223a66192eb4874a4fb12728957d77a)](https://app.codacy.com/manual/SaiintBrisson/command-framework?utm_source=github.com&utm_medium=referral&utm_content=SaiintBrisson/command-framework&utm_campaign=Badge_Grade_Dashboard)

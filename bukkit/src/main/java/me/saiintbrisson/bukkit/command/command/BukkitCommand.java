@@ -29,18 +29,24 @@ import me.saiintbrisson.minecraft.command.message.MessageHolder;
 import me.saiintbrisson.minecraft.command.message.MessageType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * @author SaiintBrisson (https://github.com/SaiintBrisson)
+ * The BukkitCommand is the main implementation of the
+ * AbstractCommand, it contains the main information about
+ * that command {@link CommandInfo} position and Child commands {@link BukkitChildCommand}
+ *
+ * @author Luiz Carlos Mourão
  */
-
 @Getter
 public class BukkitCommand extends Command implements CommandHolder<CommandSender, BukkitChildCommand> {
+
     private final BukkitFrame frame;
     private final MessageHolder messageHolder;
 
@@ -53,6 +59,12 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
     private final List<BukkitChildCommand> childCommandList;
 
+    /**
+     * Creates a new BukkitCommand with the name provided.
+     * @param frame BukkitFrame
+     * @param name String
+     * @param position Integer
+     */
     public BukkitCommand(@NonNull @NotNull BukkitFrame frame, @NonNull @NotNull String name, int position) {
         super(name);
 
@@ -60,13 +72,19 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         this.position = position;
 
         this.messageHolder = frame.getMessageHolder();
-
         this.childCommandList = new ArrayList<>();
     }
 
+    /**
+     * Initializes the command when the server is started.
+     * <p>If you try to register the same commands multiple times, it throws
+     * a CommandException</p>
+     * @param commandInfo CommandInfo
+     * @param commandExecutor CommandExecutor
+     */
     public final void initCommand(CommandInfo commandInfo, CommandExecutor<CommandSender> commandExecutor) {
         if (this.commandInfo != null) {
-            throw new IllegalStateException("Command already initialized");
+            throw new CommandException("Command already initialized");
         }
 
         this.commandInfo = commandInfo;
@@ -108,6 +126,14 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     }
 
     @Override
+    /**
+     * Get the Child command from this by the name, if it's not register it
+     * will return null.
+     * @param name String
+     *
+     * @return BukkitChildCommand
+     */
+    @Override @Nullable
     public BukkitChildCommand getChildCommand(String name) {
         for (BukkitChildCommand childCommand : childCommandList) {
             if (childCommand.equals(name)) return childCommand;
@@ -131,6 +157,15 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         return getName();
     }
 
+    /**
+     * Executes the command with the provided label and arguments.
+     * <p>If returns false, it wasn't able to execute</p>
+     * @param sender CommandSender
+     * @param commandLabel String
+     * @param args String[]
+     *
+     * @return boolean
+     */
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!frame.getPlugin().isEnabled()) {
