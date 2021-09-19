@@ -32,7 +32,6 @@ import java.util.ResourceBundle;
  */
 @Getter
 public final class MessageHolder {
-
     private final EnumMap<MessageType, String> messageMap = new EnumMap<>(MessageType.class);
 
     public MessageHolder() {
@@ -72,5 +71,4 @@ public final class MessageHolder {
             }
         }
     }
-
 }

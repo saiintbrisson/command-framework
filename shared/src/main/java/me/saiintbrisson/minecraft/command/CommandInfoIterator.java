@@ -29,7 +29,6 @@ import java.util.Iterator;
  */
 @RequiredArgsConstructor
 public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {
-
     private final CommandHolder<?, ?> root;
 
     private int index = -1;
@@ -54,5 +53,4 @@ public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {
 
         return current.next();
     }
-
 }

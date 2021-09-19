@@ -32,7 +32,7 @@ import me.saiintbrisson.minecraft.command.command.CommandHolder;
 public enum MessageType {
 
     /**
-     * Used when a error is thrown, the {error} can be
+     * Used when an error is thrown, the {error} can be
      * used to send the message of error
      */
     ERROR("{error}",
