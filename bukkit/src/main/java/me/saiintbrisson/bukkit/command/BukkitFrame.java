@@ -132,7 +132,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         final BukkitCommand command = commandMap.get(index == -1 ? name : name.substring(0, index));
         return command == null
           ? null : index == -1
-          ? command : command.findChild(name.substring(index), true);
+          ? command : command.findChild(name.substring(index + 1), true);
     }
 
     private BukkitCommand createRecursive(String name) {

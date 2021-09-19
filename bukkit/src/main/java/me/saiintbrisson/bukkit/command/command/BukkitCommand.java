@@ -245,7 +245,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
 
         return childCommand == null
           ? null : index == -1
-          ? childCommand : childCommand.findChild(name.substring(index), true);
+          ? childCommand : childCommand.findChild(name.substring(index + 1), true);
     }
 
     public BukkitChildCommand createRecursive(String name) {
@@ -258,7 +258,7 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
             getChildCommandList().add(childCommand);
         }
 
-        return index == -1 ? childCommand : childCommand.createRecursive(name.substring(index));
+        return index == -1 ? childCommand : childCommand.createRecursive(name.substring(index + 1));
     }
 
     @Override
