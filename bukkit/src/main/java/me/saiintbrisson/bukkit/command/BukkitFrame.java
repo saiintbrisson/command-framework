@@ -51,13 +51,12 @@ import java.util.concurrent.Executor;
 /**
  * The BukkitFrame is the core of the framework,
  * it registers the commands, adapters {@link AdapterMap}
- * and message holders {@link MessageHolder}
+ * and message holders {@link MessageHolder}.
  *
  * @author Luiz Carlos Mourão
  */
 @Getter
 public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, BukkitCommand> {
-
     private final Plugin plugin;
     private final AdapterMap adapterMap;
     private final MessageHolder messageHolder;
@@ -72,7 +71,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     private Executor executor;
 
     /**
-     * Creates a new BukkitFrame with the AdapterMap provided.
+     * Creates a new BukkitFrame with the {@link AdapterMap} provided.
      * @param plugin Plugin
      * @param adapterMap AdapterMap
      */
@@ -86,7 +85,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         this.methodEvaluator = new MethodEvaluator(adapterMap);
 
         try {
-            final Server server = Bukkit.getServer();
+            final Server server = plugin.getServer();
             final Method mapMethod = server.getClass().getMethod("getCommandMap");
 
             this.bukkitCommandMap = (CommandMap) mapMethod.invoke(server);
@@ -96,8 +95,8 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     }
 
     /**
-     * Creates a new BukkitFrame with the default AdapterMap. <p>If the registerDefault is true,
-     * it registers the default adapters for Bukkit.
+     * Creates a new BukkitFrame with the default {@link AdapterMap}.
+     * <br/>If the registerDefault is true, it registers the default adapters for Bukkit.
      *
      * @param plugin Plugin
      * @param registerDefault Boolean
@@ -112,12 +111,12 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     }
 
     /**
-     * Creates a new BukkitFrame with the default AdapterMap
+     * Creates a new BukkitFrame with the default {@link AdapterMap}
      * and default Bukkit adapters.
      *
      * @param plugin Plugin
      */
-    public BukkitFrame(Plugin plugin) {
+    public BukkitFrame(@NonNull @NotNull Plugin plugin) {
         this(plugin, true);
     }
 
@@ -130,22 +129,24 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     @Override
     public BukkitCommand getCommand(String name) {
         int index = name.indexOf('.');
-        String nextSubCommand = name;
-        if (index != -1) {
-            nextSubCommand = name.substring(0, index);
+        final BukkitCommand command = commandMap.get(index == -1 ? name : name.substring(0, index));
+        return command == null
+          ? null : index == -1
+          ? command : command.findChild(name.substring(index), true);
+    }
+
+    private BukkitCommand createRecursive(String name) {
+        int index = name.indexOf('.');
+        final String keyName = index == -1 ? name : name.substring(0, index);
+        BukkitCommand command = commandMap.get(keyName);
+
+        if (command == null) {
+            command = new BukkitCommand(this, keyName);
+            commandMap.put(keyName, command);
+            bukkitCommandMap.register(plugin.getName(), command);
         }
 
-        BukkitCommand subCommand = commandMap.get(nextSubCommand);
-        if (subCommand == null) {
-            subCommand = new BukkitCommand(this, nextSubCommand, 0);
-            commandMap.put(nextSubCommand, subCommand);
-        }
-
-        if (subCommand.getPosition() == 0) {
-            bukkitCommandMap.register(plugin.getName(), subCommand);
-        }
-
-        return subCommand.createRecursive(name);
+        return index == -1 ? command : command.createRecursive(name);
     }
 
     /**
@@ -178,22 +179,12 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      */
     @Override
     public void registerCommand(CommandInfo commandInfo, CommandExecutor<CommandSender> commandExecutor) {
-        final BukkitCommand recursive = getCommand(commandInfo.getName());
-        if (recursive == null) {
-            return;
-        }
-
-        recursive.initCommand(commandInfo, commandExecutor);
+        createRecursive(commandInfo.getName()).initCommand(commandInfo, commandExecutor);
     }
 
     @Override
     public void registerCompleter(String name, CompleterExecutor<CommandSender> completerExecutor) {
-        final BukkitCommand recursive = getCommand(name);
-        if (recursive == null) {
-            return;
-        }
-
-        recursive.initCompleter(completerExecutor);
+        createRecursive(name).initCompleter(completerExecutor);
     }
 
     /**
@@ -211,5 +202,4 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         final BukkitCommand command = commandMap.remove(name);
         return command != null && command.unregister(bukkitCommandMap);
     }
-
 }

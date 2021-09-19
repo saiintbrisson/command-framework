@@ -35,6 +35,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -186,6 +187,11 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
             if (childCommand.equals(name)) return childCommand;
         }
 
+        return null;
+    }
+
+    @Override
+    public @Nullable BungeeChildCommand findChild(String name, boolean recurse) {
         return null;
     }
 

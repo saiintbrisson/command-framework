@@ -37,7 +37,6 @@ import java.util.concurrent.Executor;
  * @author Luiz Carlos Mourão
  */
 public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
-
     P getPlugin();
     AdapterMap getAdapterMap();
     MessageHolder getMessageHolder();
@@ -61,7 +60,7 @@ public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     }
 
     /**
-     * Registers multiple command object once
+     * Registers all methods annotated with {@link me.saiintbrisson.minecraft.command.annotation.Command}.
      * @param objects Object...
      */
     void registerCommands(Object... objects);
@@ -75,10 +74,10 @@ public interface CommandFrame<P, S, C extends CommandHolder<S, ? extends C>> {
     void registerCompleter(String name, CompleterExecutor<S> completerExecutor);
 
     /**
-     * Unregisters the command with the provided name
-     * @param name String
+     * Unregisters a command.
+     * @param name the command to delete
      *
-     * @return Boolean
+     * @return whether the command existed or not
      */
     boolean unregisterCommand(String name);
 }

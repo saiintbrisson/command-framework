@@ -48,13 +48,12 @@ import java.util.List;
  */
 @Getter
 public class BukkitCommand extends Command implements CommandHolder<CommandSender, BukkitChildCommand> {
-
     private final BukkitFrame frame;
     private final MessageHolder messageHolder;
 
     private CommandInfo commandInfo;
 
-    private final int position;
+    private final int position = 0;
 
     private CommandExecutor<CommandSender> commandExecutor;
     private CompleterExecutor<CommandSender> completerExecutor;
@@ -65,13 +64,11 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
      * Creates a new BukkitCommand with the name provided.
      * @param frame BukkitFrame
      * @param name String
-     * @param position Integer
      */
-    public BukkitCommand(@NonNull @NotNull BukkitFrame frame, @NonNull @NotNull String name, int position) {
+    public BukkitCommand(@NonNull @NotNull BukkitFrame frame, @NonNull @NotNull String name) {
         super(name);
 
         this.frame = frame;
-        this.position = position;
 
         this.messageHolder = frame.getMessageHolder();
         this.childCommandList = new ArrayList<>();
@@ -122,22 +119,6 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         this.completerExecutor = completerExecutor;
     }
 
-    /**
-     * Get the Child command from this by the name, if it's not register it
-     * will return null.
-     * @param name String
-     *
-     * @return BukkitChildCommand
-     */
-    @Override @Nullable
-    public BukkitChildCommand getChildCommand(String name) {
-        for (BukkitChildCommand childCommand : childCommandList) {
-            if (childCommand.equals(name)) return childCommand;
-        }
-
-        return null;
-    }
-
     @Override
     public String getFancyName() {
         return getName();
@@ -174,11 +155,11 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         }
 
         if (args.length > 0) {
-            BukkitChildCommand command = getChildCommand(args[0]);
+            BukkitChildCommand child = findChild(args[0], false);
 
-            if (command != null) {
+            if (child != null) {
                 final String label = commandLabel + " " + args[0];
-                return command.execute(sender, label, Arrays.copyOfRange(args, 1, args.length));
+                return child.execute(sender, label, Arrays.copyOfRange(args, 1, args.length));
             }
         }
 
@@ -240,28 +221,44 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
         return super.tabComplete(sender, alias, args);
     }
 
-    public BukkitCommand createRecursive(String name) {
-        int position = getPosition() + StringUtils.countMatches(name, ".");
-        if (position == getPosition()) {
-            return this;
+    @Override
+    public BukkitChildCommand getChildCommand(String name) {
+        return findChild(name, false);
+    }
+
+    @Override
+    public BukkitChildCommand findChild(String name, boolean recurse) {
+        if (!recurse) {
+            for (BukkitChildCommand command : childCommandList) {
+                if (command.equals(name)) return command;
+            }
+
+            return null;
         }
 
-        String subName = name.substring(Math.max(name.indexOf('.') + 1, 0));
+        final int index = name.indexOf('.');
+        BukkitChildCommand childCommand = null;
 
-        int index = subName.indexOf('.');
-        String nextSubCommand = subName;
-        if (index != -1) {
-            nextSubCommand = subName.substring(0, index);
+        for (BukkitChildCommand command : childCommandList) {
+            if (command.equals(name)) childCommand = command;
         }
 
-        BukkitChildCommand childCommand = getChildCommand(nextSubCommand);
+        return childCommand == null
+          ? null : index == -1
+          ? childCommand : childCommand.findChild(name.substring(index), true);
+    }
 
+    public BukkitChildCommand createRecursive(String name) {
+        final int index = name.indexOf('.');
+        final String keyName = index == -1 ? name : name.substring(0, index);
+
+        BukkitChildCommand childCommand = findChild(keyName, false);
         if (childCommand == null) {
-            childCommand = new BukkitChildCommand(frame, nextSubCommand, this);
+            childCommand = new BukkitChildCommand(frame, keyName, this);
             getChildCommandList().add(childCommand);
         }
 
-        return childCommand.createRecursive(subName);
+        return index == -1 ? childCommand : childCommand.createRecursive(name.substring(index));
     }
 
     @Override

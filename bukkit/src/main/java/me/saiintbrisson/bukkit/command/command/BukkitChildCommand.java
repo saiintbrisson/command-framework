@@ -31,7 +31,6 @@ import java.util.Optional;
  * @author Luiz Carlos Mourão
  */
 public class BukkitChildCommand extends BukkitCommand {
-
     private final BukkitCommand parentCommand;
 
     /**
@@ -41,7 +40,7 @@ public class BukkitChildCommand extends BukkitCommand {
      * @param parentCommand BukkitCommand
      */
     public BukkitChildCommand(BukkitFrame frame, String name, BukkitCommand parentCommand) {
-        super(frame, name, parentCommand.getPosition() + 1);
+        super(frame, name);
         this.parentCommand = parentCommand;
     }
 
