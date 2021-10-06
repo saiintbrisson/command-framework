@@ -63,7 +63,7 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     @Setter
     private String usage;
 
-    private final String description = "Not provided";
+    private String description = "Not provided";
 
     public BungeeCommand(BungeeFrame frame, String name, int position) {
         super(name);
@@ -94,10 +94,14 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
             setUsage(((BungeeCommandExecutor) commandExecutor).getEvaluator().buildUsage(getFancyName()));
         }
 
+        final String description = commandInfo.getDescription();
+        if (description != null && description.length() > 0) {
+            this.description = description;
+        }
+
         if (commandExecutor instanceof BungeeCommandExecutor) {
             ((BungeeCommandExecutor) commandExecutor).setCommand(this);
         }
-
     }
 
     public final void initCompleter(CompleterExecutor<CommandSender> completerExecutor) {
@@ -150,6 +154,13 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         if (!testPermissionSilent(sender)) {
             return Collections.emptyList();
+        }
+
+        if (args.length > 0) {
+            BungeeChildCommand command = getChildCommand(args[0]);
+            if (command != null) {
+                return command.onTabComplete(sender, ArrayUtil.copyOfRange(args, 1, args.length));
+            }
         }
 
         if (completerExecutor != null) {

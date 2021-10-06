@@ -27,6 +27,7 @@ import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
 import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
 import me.saiintbrisson.minecraft.command.message.MessageHolder;
 import me.saiintbrisson.minecraft.command.message.MessageType;
+import me.saiintbrisson.minecraft.command.util.ArrayUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -189,6 +190,14 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
                                              @NotNull String[] args) throws IllegalArgumentException {
         if (!testPermissionSilent(sender)) {
             return Collections.emptyList();
+        }
+
+        if (args.length > 0) {
+            BukkitChildCommand command = getChildCommand(args[0]);
+            if (command != null) {
+                return command.tabComplete(sender, alias + " " + args[0],
+                                           ArrayUtil.copyOfRange(args, 1, args.length));
+            }
         }
 
         if (completerExecutor != null) {
