@@ -143,6 +143,10 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         if (command == null) {
             command = new BukkitCommand(this, keyName);
             commandMap.put(keyName, command);
+            
+            for (String alias : command.getAliases())
+                bukkitCommandMap.register(alias.toLowerCase(), command);
+            
             bukkitCommandMap.register(plugin.getName(), command);
         }
 
