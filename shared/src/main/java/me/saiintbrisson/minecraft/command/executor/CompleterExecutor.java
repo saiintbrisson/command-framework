@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,12 +21,15 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import java.util.List;
 
 /**
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
-
 @FunctionalInterface
 public interface CompleterExecutor<S> {
-
+    /**
+     * Executes the tab completer.
+     *
+     * @param context the command context.
+     * @return the list of possible arguments.
+     */
     List<String> execute(Context<S> context);
-
 }

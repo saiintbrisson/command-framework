@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,22 +19,18 @@ package me.saiintbrisson.minecraft.command.executor;
 import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
- * The BukkitCommandExecutor is the main executor of each
- * method that is listed as a Command, it invokes the method
- * and executes everything inside.
+ * The CommandExecutor is the instruction on how to
+ * run a command.
  *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 @FunctionalInterface
 public interface CommandExecutor<S> {
-
     /**
-     * Executes the command with the provided context
-     * <p>Returns false if the execution wasn't successful</p>
-     * @param context Context
+     * Executes the command with the provided context.
      *
-     * @return boolean
+     * @param context the command context.
+     * @return whether the command completed successfully.
      */
     boolean execute(Context<S> context);
-
 }
