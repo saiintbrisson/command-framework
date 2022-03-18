@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,16 +17,17 @@
 package me.saiintbrisson.minecraft.command.annotation;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Makes the argument parser ignore strings with whitespaces.
- *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
-
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface IgnoreQuote {}
+@Target(ElementType.METHOD)
+public @interface ExceptionHandler {
+    /**
+     * The command to be handled when throwing
+     * an exception. If empty, the handler will
+     * be responsible for all unhandled commands.
+     */
+    String value() default "";
+}
