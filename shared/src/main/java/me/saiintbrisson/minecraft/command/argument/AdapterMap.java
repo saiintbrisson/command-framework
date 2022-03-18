@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,47 +19,67 @@ package me.saiintbrisson.minecraft.command.argument;
 import java.util.HashMap;
 
 /**
- * The AdapterMap contains adapters such as
- * primitive values and such.
+ * The AdapterMap contains instructions on how to
+ * convert strings to java types.
  *
- * <p>It can be created with the default primitive types
- * or totally empty, after other values can be added</p>
- *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
+    /**
+     * Creates a new AdapterMap, with default
+     * adapters registered.
+     */
+    public AdapterMap() {
+        this(true);
+    }
 
     /**
-     * Creates a new AdapterMap that can be empty
-     * or registered with the default values.
+     * Creates a new AdapterMap.
      *
-     * @param registerDefault Boolean
+     * @param registerDefault whether to create the
+     *                        map with default adapters
+     *                        registered.
      */
     public AdapterMap(boolean registerDefault) {
         super();
-        if (!registerDefault) return;
 
-        put(String.class, String::valueOf);
-        put(Character.class, argument -> argument.charAt(0));
-        put(Integer.class, Integer::valueOf);
-        put(Double.class, Double::valueOf);
-        put(Float.class, Float::valueOf);
-        put(Long.class, Long::valueOf);
-        put(Boolean.class, Boolean::valueOf);
-        put(Byte.class, Byte::valueOf);
+        if (registerDefault) {
+            put(String.class, String::valueOf);
+            put(Integer.class, Integer::valueOf);
+            put(Double.class, Double::valueOf);
+            put(Float.class, Float::valueOf);
+            put(Long.class, Long::valueOf);
+            put(Boolean.class, Boolean::valueOf);
+            put(Byte.class, Byte::valueOf);
 
-        put(Character.TYPE, argument -> argument.charAt(0));
-        put(Integer.TYPE, Integer::parseInt);
-        put(Double.TYPE, Double::parseDouble);
-        put(Float.TYPE, Float::parseFloat);
-        put(Long.TYPE, Long::parseLong);
-        put(Boolean.TYPE, Boolean::parseBoolean);
-        put(Byte.TYPE, Byte::parseByte);
+            put(Integer.TYPE, Integer::parseInt);
+            put(Double.TYPE, Double::parseDouble);
+            put(Float.TYPE, Float::parseFloat);
+            put(Long.TYPE, Long::parseLong);
+            put(Boolean.TYPE, Boolean::parseBoolean);
+
+            put(Character.TYPE, argument -> argument.charAt(0));
+            put(Byte.TYPE, Byte::parseByte);
+        }
     }
 
+    /**
+     * Registers a new adapter.
+     *
+     * <pre>{@code
+     * AdapterMap map = new AdapterMap();
+     * map.put(Integer.class, (string) -> {
+     *     return Integer.valueOf(string) * 10;
+     * });
+     * }</pre>
+     *
+     * @param key the target class.
+     * @param map the mapping function.
+     * @param <T> the target type.
+     * @return the adapter created.
+     */
     @SuppressWarnings("unchecked")
-    public <T> TypeAdapter<T> put(Class<T> key, TypeAdapter<T> value) {
-        return (TypeAdapter<T>) super.put(key, value);
+    public <T> TypeAdapter<T> put(Class<T> key, TypeAdapter<T> map) {
+        return (TypeAdapter<T>) super.put(key, map);
     }
-
 }
