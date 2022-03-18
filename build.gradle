@@ -10,10 +10,14 @@ allprojects {
 
         repositories {
             mavenCentral()
+
+            maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
         }
 
         dependencies {
             implementation 'org.jetbrains:annotations:21.0.1'
+
+            implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
 
             def lombok = 'org.projectlombok:lombok:1.18.20'
             compileOnly lombok
