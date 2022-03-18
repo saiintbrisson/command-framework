@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 package me.saiintbrisson.minecraft.command.argument;
 
 /**
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 public interface TypeAdapter<T> {
-
     T convert(String raw);
 
     default T convertNonNull(String raw) {
@@ -32,5 +31,4 @@ public interface TypeAdapter<T> {
 
         return result;
     }
-
 }
