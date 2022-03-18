@@ -22,13 +22,9 @@ import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Array;
 
-/**
- * @author The Apache Software Foundation
- */
 @SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArrayUtil {
-
     public static <T> T[] copyOfRange(T[] original, int from, int to) {
         return copyOfRange(original, from, to, (Class<? extends T[]>) original.getClass());
     }
@@ -38,9 +34,9 @@ public final class ArrayUtil {
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
 
-        T[] copy = ((Object) newType == (Object) Object[].class)
-          ? (T[]) new Object[newLength]
-          : (T[]) Array.newInstance(newType.getComponentType(), newLength);
+        T[] copy = (newType.getComponentType() == Object.class)
+                ? (T[]) new Object[newLength]
+                : (T[]) Array.newInstance(newType.getComponentType(), newLength);
 
         System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
         return copy;

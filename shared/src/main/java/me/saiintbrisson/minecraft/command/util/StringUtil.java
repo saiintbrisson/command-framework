@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil {
-
     public static boolean startsWithIgnoreCase(String str, String prefix) {
         return startsWith(str, prefix, true);
     }
@@ -49,10 +48,5 @@ public final class StringUtil {
         }
 
         return count;
-    }
-
-    public static String uncapitalize(String str) {
-        if (str == null || str.length() == 0) return str;
-        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 }
