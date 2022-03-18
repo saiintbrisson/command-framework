@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,152 +16,142 @@
 
 package me.saiintbrisson.minecraft.command.command;
 
-import me.saiintbrisson.minecraft.command.CommandFrame;
-import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
-import me.saiintbrisson.minecraft.command.exception.CommandException;
+import me.saiintbrisson.minecraft.command.exception.InsufficientPermissionsException;
+import me.saiintbrisson.minecraft.command.exception.MismatchedTargetException;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import net.md_5.bungee.api.chat.BaseComponent;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
  * The context is where all information from the command dispatcher
  * is stored, such as the sender, arguments and label
- * @author Luiz Carlos Mourão
+ *
+ * @author Luiz Carlos Carvalho
  */
 public interface Context<S> {
-
     /**
-     * Contains the label sent by the command
-     * @return String
+     * The command executed.
+     *
+     * @return the command executed.
      */
-    String getLabel();
+    Command command();
 
     /**
-     * The generic value can be either
-     * a Console or Player
-     * @return S
+     * The label used by the sender.
+     *
+     * @return the label used.
      */
-    S getSender();
+    String label();
 
     /**
-     * @return the executor type
+     * Who executed the command.
+     *
+     * @return the sender.
      */
-    CommandTarget getTarget();
+    S sender();
 
     /**
-     * Contains all arguments sent by the command
-     * @return String[] of arguments
+     * Get the type of the sender.
+     *
+     * @return the sender type.
      */
-    String[] getArgs();
-
+    CommandTarget senderType();
 
     /**
-     * @return the number of arguments
+     * Get all arguments passed to this command.
+     *
+     * @return the arguments.
+     */
+    String[] args();
+
+    /**
+     * Get the arguments count passed to this command.
+     *
+     * @return the number of arguments.
      */
     default int argsCount() {
-        return getArgs().length;
+        return args().length;
     }
 
     /**
-     * @param index the index of the argument
-     * @return the argument - null if the index is out of bounds
+     * Get the arg at the given index.
+     *
+     * @param index the index of the argument.
+     * @return the argument, null if the index is out of bounds.
      */
     default String getArg(int index) {
         try {
-            return getArgs()[index];
+            return args()[index];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> T getArg(int index, Class<T> type) {
-        return (T) getCommandFrame().getAdapterMap().get(type).convertNonNull(getArg(index));
-    }
-
     /**
-     * Gets all args between indexes from and to
+     * Gets all args between indexes <code>from</code> and <code>to</code>.
      *
-     * @param from defines the start of the array relative to the arguments, inclusive
-     * @param to   defines the end of the array relative to the arguments, exclusive
-     * @return the arguments array - null if the indexes are out of bounds
+     * @param from defines the start of the array relative
+     *             to the arguments, inclusive.
+     * @param to   defines the end of the array relative
+     *             to the arguments, exclusive.
+     * @return the arguments array,
+     * null if the indexes are out of bounds.
      */
     default String[] getArgs(int from, int to) {
         try {
-            return Arrays.copyOfRange(getArgs(), from, to);
+            return Arrays.copyOfRange(args(), from, to);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> T[] getArgs(int from, int to, Class<T> type) {
-        try {
-            final TypeAdapter<?> adapter = getCommandFrame().getAdapterMap().get(type);
-            final T[] instance = (T[]) Array.newInstance(type,  to - from);
-
-            for (int i = from; i <= to; i++) {
-                instance[i - from] = (T) adapter.convertNonNull(getArg(i));
-            }
-
-            return instance;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-    }
-
-
     /**
-     * Sends a message to the executor
+     * Sends a message to the sender.
      *
-     * @param message the message to be sent
+     * @param message the message to be sent.
      */
-    void sendMessage(String message);
+    void send(String message);
 
     /**
-     * Sends multiple messages to the executor
+     * Sends multiple messages to the sender.
      *
-     * @param messages the messages to be sent
+     * @param messages the messages to be sent.
      */
-    void sendMessage(String[] messages);
+    void send(String[] messages);
 
     /**
-     * Sends a message formatting it with the String#format() method
+     * Sends a message to the sender.
      *
-     * @param message the message to be sent
-     * @param objects the objects to be inserted
+     * @param component the component to be sent.
      */
-    default void sendMessage(String message, Object... objects) {
-        sendMessage(String.format(message, objects));
-    }
-
+    void send(BaseComponent component);
 
     /**
-     * Tests whether the executor has a permission
+     * Sends a message to the sender.
+     * In contrast to {@link Context#send(String[])}, this method
+     * will only send one message, unless a line feed is
+     * explicitly defined.
      *
-     * @param permission the permission to be tested
-     * @param silent     whether a exception should be thrown
-     * @return the test result if silent
+     * @param components the components to be sent.
      */
-    boolean testPermission(String permission, boolean silent) throws CommandException;
+    void send(BaseComponent[] components);
 
     /**
-     * Tests whether the executor is a target
+     * Tests whether the sender has the given permission.
      *
-     * @param target the target to be tested
-     * @param silent whether a exception should be thrown
-     * @return the test result if silent
+     * @param permission the permission to be tested.
+     * @param silent     whether an exception should be thrown.
+     * @return the test result if silent.
      */
-    boolean testTarget(CommandTarget target, boolean silent) throws CommandException;
+    boolean checkPermission(String permission, boolean silent) throws InsufficientPermissionsException;
 
     /**
-     * @return this command's frame
+     * Tests whether the sender matches the given target.
+     *
+     * @param target the target to be tested against.
+     * @param silent whether an exception should be thrown.
+     * @return the test result if silent.
      */
-    CommandFrame<?, ?, ?> getCommandFrame();
-
-    /**
-     * @return this command's holder
-     */
-    CommandHolder<?, ?> getCommandHolder();
+    boolean checkTarget(CommandTarget target, boolean silent) throws MismatchedTargetException;
 }
