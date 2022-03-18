@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,23 +17,20 @@
 package me.saiintbrisson.minecraft.command.target;
 
 /**
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 public enum CommandTarget {
     /**
-     * The ALL target can be all senders listed below,
-     * that means that it can receive command from
-     * PLAYER and CONSOLE.
+     * Used by any possible target, this usually
+     * means TERMINAL or PLAYER.
      */
-    ALL,
+    ANY,
     /**
-     * The PLAYER target only accepts Players
-     * to execute that command
+     * Used by in-game players.
      */
     PLAYER,
     /**
-     * The CONSOLE target only accept the Console
-     * to execute that command
+     * Used by the console sender.
      */
-    CONSOLE
+    TERMINAL
 }

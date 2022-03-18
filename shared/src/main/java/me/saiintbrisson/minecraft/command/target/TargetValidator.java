@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,30 +17,26 @@
 package me.saiintbrisson.minecraft.command.target;
 
 /**
- * The BukkitTargetValidator validates if the Target
- * is a correct and usable {@link CommandTarget}
+ * Responsible for validating if the given sender
+ * is compatible with the defined {@link CommandTarget}.
  *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 public interface TargetValidator {
+    /**
+     * Tries to validate the sender against the given {@link CommandTarget}.
+     *
+     * @param target the target to test against.
+     * @param sender the sender.
+     * @return whether the sender is valid.
+     */
+    boolean validate(CommandTarget target, Object sender);
 
     /**
-     * Tries to validate the Command target and Sender object.
-     * <p> Returns false if it wasn't validated</p>
-     * @param target CommandTarget
-     * @param object Object
+     * Returns the corresponding {@link CommandTarget} for the given sender.
      *
-     * @return Boolean
+     * @param sender the sender to be converted.
+     * @return the corresponding {@link CommandTarget}.
      */
-    boolean validate(CommandTarget target, Object object);
-
-    /**
-     * Returns the CommandTarget by the Sender object
-     * <p>Example: The Player object returns a {@link CommandTarget} of PLAYER</p>
-     * @param object Object
-     *
-     * @return CommandTarget
-     */
-    CommandTarget fromSender(Object object);
-
+    CommandTarget fromSender(Object sender);
 }
