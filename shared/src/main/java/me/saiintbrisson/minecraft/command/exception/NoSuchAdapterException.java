@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package me.saiintbrisson.minecraft.command.exception;
 
+import lombok.Getter;
+
 /**
- * The NoSuchConverterException is thrown when there
- * isn't a converter for the type provided.
+ * Thrown when an adapter for the given type
+ * was not provided.
  *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
-public class NoSuchConverterException extends CommandException {
+@Getter
+public class NoSuchAdapterException extends Exception {
+    private final Class<?> type;
 
-    public NoSuchConverterException(Class<?> type) {
+    public NoSuchAdapterException(Class<?> type) {
         super("No converter found for type " + type.getTypeName());
+        this.type = type;
     }
-
 }
