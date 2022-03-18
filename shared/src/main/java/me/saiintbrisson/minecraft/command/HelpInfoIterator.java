@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,40 +17,47 @@
 package me.saiintbrisson.minecraft.command;
 
 import lombok.RequiredArgsConstructor;
-import me.saiintbrisson.minecraft.command.command.CommandHolder;
+import me.saiintbrisson.minecraft.command.command.Command;
+import me.saiintbrisson.minecraft.command.command.CommandInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
 /**
- * The CommandInfoIterator is a Iterator for
- * CommandHolder, it can access the next command from the list.
- *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 @RequiredArgsConstructor
-public class CommandInfoIterator implements Iterator<CommandHolder<?, ?>> {
-    private final CommandHolder<?, ?> root;
+public class HelpInfoIterator implements Iterator<CommandInfo>, Iterable<CommandInfo> {
+    private final Command root;
 
     private int index = -1;
-    private CommandInfoIterator current;
+    private HelpInfoIterator current;
 
     @Override
     public boolean hasNext() {
-        return (current != null && current.hasNext()) || index < root.getChildCommandList().size();
+        return (current != null && current.hasNext()) || index < root.childCommandList().size();
     }
 
     @Override
-    public CommandHolder<?, ?> next() {
+    public CommandInfo next() {
         if (index == -1) {
             index++;
-            return root;
+            return root.commandInfo();
         }
 
         if (current == null || !current.hasNext()) {
-            current = new CommandInfoIterator(root.getChildCommandList().get(index));
+            current = new HelpInfoIterator(root.childCommandList().get(index));
             index++;
         }
 
         return current.next();
+    }
+
+    @NotNull
+    @Override
+    public Iterator<CommandInfo> iterator() {
+        this.index = -1;
+        this.current = null;
+        return this;
     }
 }
