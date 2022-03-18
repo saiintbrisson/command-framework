@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Luiz Carlos Mourão Paes de Carvalho
+ * Copyright 2020 Luiz Carlos Carvalho Paes de Carvalho
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,18 +19,19 @@ package me.saiintbrisson.minecraft.command.argument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
+import lombok.experimental.Accessors;
 
 /**
  * The model for each argument in the command.
  * <p>It contains the main information of each argument
- * such as it's type and name.</p>
+ * such as its type and name.
  *
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
 @Getter
 @Builder
 @AllArgsConstructor
+@Accessors(fluent = true)
 public class Argument<T> {
     private final String name;
 
