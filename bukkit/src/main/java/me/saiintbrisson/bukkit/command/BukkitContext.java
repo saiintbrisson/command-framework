@@ -47,12 +47,12 @@ final class BukkitContext implements Context<CommandSender> {
 
     @Override
     public void send(BaseComponent component) {
-        sender.spigot().sendMessage(component);
+        ((Player) sender).spigot().sendMessage(component);
     }
 
     @Override
     public void send(BaseComponent[] components) {
-        sender.spigot().sendMessage(components);
+        ((Player) sender).spigot().sendMessage(components);
     }
 
     @Override
