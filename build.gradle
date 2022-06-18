@@ -1,4 +1,6 @@
 allprojects {
+    apply plugin: 'maven'
+
     group 'me.saiintbrisson.command'
     version '2.0.0-SNAPSHOT'
 
