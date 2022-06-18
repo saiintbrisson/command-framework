@@ -14,15 +14,18 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.argument;
+package me.saiintbrisson.minecraft.command.parameter.interfaces;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Luiz Carlos Carvalho
  */
+@FunctionalInterface
 public interface TypeAdapter<T> {
-    T convert(String raw);
+    T convert(@NotNull String raw);
 
-    default T convertNonNull(String raw) {
+    default T convertNonNull(@NotNull String raw) {
         final T result = convert(raw);
 
         if (result == null) {
