@@ -16,10 +16,13 @@
 
 package me.saiintbrisson.minecraft.command.command;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.experimental.Accessors;
-import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.SenderType;
+import me.saiintbrisson.minecraft.command.annotation.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Luiz Carlos Carvalho
@@ -35,7 +38,7 @@ public final class CommandInfo {
      * Example: `money :username pay :value`, where
      * strings beginning with colons represent input tokens.
      */
-    @NonNull
+    @NotNull
     private final String path;
 
     /**
@@ -43,28 +46,35 @@ public final class CommandInfo {
      * if it wasn't provided, it returns a empty
      * String
      */
+    @NotNull
     @Builder.Default
     private final String description = "";
+
     /**
      * Defines the command usage for the MessageuHolder,
      * if it's empty, returns a empty String
      */
+    @NotNull
     @Builder.Default
     private final String usage = "";
+
     /**
      * Defines the permission required to execute
      * the command, if it's empty the default permission
      * is a empty String
      */
+    @NotNull
     @Builder.Default
     private final String permission = "";
+
     /**
      * Defines the CommandTarget of the command,
      * if it's empty, it returns a ALL target.
      */
-    @NonNull
+    @NotNull
     @Builder.Default
     private final SenderType target = SenderType.ANY;
+
     /**
      * Tells the executor how to run the command,
      * some implementations might ignore this option as they are async by default.

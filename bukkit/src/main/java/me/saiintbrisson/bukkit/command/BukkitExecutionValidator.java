@@ -16,7 +16,7 @@ final class BukkitExecutionValidator implements ExecutionValidator<CommandSender
     @Override
     public void validate(CommandInfo commandInfo, CommandSender sender)
       throws InsufficientPermissionsException, MismatchedTargetException {
-        if (!sender.hasPermission(commandInfo.permission())) {
+        if (!commandInfo.permission().isEmpty() && !sender.hasPermission(commandInfo.permission())) {
             throw new InsufficientPermissionsException(commandInfo.permission());
         }
 

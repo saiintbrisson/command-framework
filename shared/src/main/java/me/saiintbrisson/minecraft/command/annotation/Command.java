@@ -39,12 +39,6 @@ public @interface Command {
     String value();
 
     /**
-     * Use `value` instead.
-     */
-    @Deprecated
-    String name() default "";
-
-    /**
      * @return the command aliases.
      */
     @Deprecated
