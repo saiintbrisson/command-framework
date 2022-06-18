@@ -11,6 +11,7 @@ import me.saiintbrisson.minecraft.command.path.Path;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,8 @@ public final class BukkitFrame extends AbstractFrame<Plugin> {
         }
 
         this.executor = new CommandExecutor<>(this, new BukkitExecutionValidator());
+
+        registerAdapter(Player.class, raw -> plugin.getServer().getPlayer(raw));
     }
 
     @Override

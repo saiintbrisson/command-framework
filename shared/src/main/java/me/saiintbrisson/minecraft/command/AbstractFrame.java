@@ -44,7 +44,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                 Map.Entry<Path, Path> entry = Path.ofCommandInfo(objectInfo);
                 entry.getValue().setInfo(objectInfo);
 
-                root = entry.getKey();
+                root = entry.getValue();
                 registerCommand(root, objectInfo);
             }
 

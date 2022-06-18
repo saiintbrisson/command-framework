@@ -16,6 +16,7 @@
 
 package me.saiintbrisson.minecraft.command.parameter;
 
+import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.Extractor;
 
 import java.util.HashMap;
@@ -27,6 +28,10 @@ import java.util.HashMap;
  * @author Luiz Carlos Carvalho
  */
 public final class ExtractorMap extends HashMap<Class<?>, Extractor<?>> {
+    public ExtractorMap() {
+        put(Context.class, ctx -> ctx);
+    }
+
     /**
      * Registers a new adapter.
      *

@@ -21,6 +21,7 @@ import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
 import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
 import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
+import me.saiintbrisson.minecraft.command.parameter.interfaces.Extractor;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.TypeAdapter;
 
 /**
@@ -68,6 +69,23 @@ public interface CommandFrame<P> {
      */
     default <T> void registerAdapter(Class<T> type, TypeAdapter<T> adapter) {
         getAdapterMap().put(type, adapter);
+    }
+
+    /**
+     * Registers a new extractor.
+     *
+     * <pre>{@code
+     * frame.registerExtractor(YourClass.class, (context) -> {
+     *     return new YourClass(context.getLabel());
+     * });
+     * }</pre>
+     *
+     * @param type      the target class.
+     * @param extractor the mapping function.
+     * @param <T>       the target type.
+     */
+    default <T> void registerExtractor(Class<T> type, Extractor<T> extractor) {
+        getExtractorMap().put(type, extractor);
     }
 
     /**
