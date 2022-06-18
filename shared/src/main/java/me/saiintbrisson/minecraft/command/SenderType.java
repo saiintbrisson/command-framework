@@ -14,21 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package me.saiintbrisson.minecraft.command;
 
 /**
  * @author Luiz Carlos Carvalho
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
+public enum SenderType {
     /**
-     * @return the command to complete.
+     * Used by any possible target, this usually
+     * means TERMINAL or PLAYER.
      */
-    String name();
+    ANY,
+    /**
+     * Used by in-game players.
+     */
+    PLAYER,
+    /**
+     * Used by the console sender.
+     */
+    TERMINAL
 }

@@ -1,4 +1,4 @@
 rootProject.name = 'command-framework'
 include 'shared'
 include 'bukkit'
-include 'bungee'
+

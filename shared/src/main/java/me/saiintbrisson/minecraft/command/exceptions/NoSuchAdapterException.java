@@ -14,21 +14,22 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.annotation;
+package me.saiintbrisson.minecraft.command.exceptions;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Getter;
 
 /**
+ * Thrown when an adapter for the given type
+ * was not provided.
+ *
  * @author Luiz Carlos Carvalho
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
-    /**
-     * @return the command to complete.
-     */
-    String name();
+@Getter
+public class NoSuchAdapterException extends RuntimeException {
+    private final Class<?> type;
+
+    public NoSuchAdapterException(Class<?> type) {
+        super("No converter found for type " + type.getTypeName());
+        this.type = type;
+    }
 }

@@ -14,21 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.annotation;
+package me.saiintbrisson.minecraft.command.handlers;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import me.saiintbrisson.minecraft.command.command.Context;
+
+import java.util.List;
 
 /**
  * @author Luiz Carlos Carvalho
+ * @since 2.0
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
+@FunctionalInterface
+public interface CompleterHandler<S> {
     /**
-     * @return the command to complete.
+     * Handles a completion request.
+     *
+     * @param context the command context.
+     * @return the list of possible arguments.
      */
-    String name();
+    List<String> handle(Context<S> context);
 }

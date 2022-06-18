@@ -17,55 +17,64 @@
 package me.saiintbrisson.minecraft.command.command;
 
 import me.saiintbrisson.minecraft.command.CommandFrame;
-import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
-import me.saiintbrisson.minecraft.command.exception.CommandException;
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
+import me.saiintbrisson.minecraft.command.exceptions.MismatchedTargetException;
+import me.saiintbrisson.minecraft.command.SenderType;
+import net.md_5.bungee.api.chat.BaseComponent;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
- * The context is where all information from the command dispatcher
- * is stored, such as the sender, arguments and label
- * @author Luiz Carlos Mourão
+ * Holds all relevant information about the execution of a command.
+ * It also facilitates sending messages and checking for certain
+ * conditions.
+ *
+ * @author Luiz Carlos Carvalho
+ * @since 1.0
  */
 public interface Context<S> {
+    /**
+     * The command frame instance responsible
+     * for the execution of this command.
+     *
+     * @return the command frame instance.
+     */
+    CommandFrame<?> getCommandFrame();
 
     /**
-     * Contains the label sent by the command
-     * @return String
+     * The label used by the sender.
+     *
+     * @return the label used.
      */
     String getLabel();
 
     /**
-     * The generic value can be either
-     * a Console or Player
-     * @return S
+     * Who executed the command.
+     *
+     * @return the sender.
      */
     S getSender();
 
     /**
-     * @return the executor type
+     * Get the type of the sender.
+     *
+     * @return the sender type.
      */
-    CommandTarget getTarget();
+    SenderType getSenderType();
 
     /**
-     * Contains all arguments sent by the command
-     * @return String[] of arguments
+     * Get all arguments passed to this command.
+     *
+     * @return the arguments.
      */
     String[] getArgs();
 
-
     /**
-     * @return the number of arguments
-     */
-    default int argsCount() {
-        return getArgs().length;
-    }
-
-    /**
-     * @param index the index of the argument
-     * @return the argument - null if the index is out of bounds
+     * Get the arg at the given index.
+     *
+     * @param index the index of the argument.
+     * @return the argument, null if the index is out of bounds.
      */
     default String getArg(int index) {
         try {
@@ -75,17 +84,15 @@ public interface Context<S> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> T getArg(int index, Class<T> type) {
-        return (T) getCommandFrame().getAdapterMap().get(type).convertNonNull(getArg(index));
-    }
-
     /**
-     * Gets all args between indexes from and to
+     * Gets all args between indexes <code>from</code> and <code>to</code>.
      *
-     * @param from defines the start of the array relative to the arguments, inclusive
-     * @param to   defines the end of the array relative to the arguments, exclusive
-     * @return the arguments array - null if the indexes are out of bounds
+     * @param from defines the start of the array relative
+     *             to the arguments, inclusive.
+     * @param to   defines the end of the array relative
+     *             to the arguments, exclusive.
+     * @return the arguments array,
+     * null if the indexes are out of bounds.
      */
     default String[] getArgs(int from, int to) {
         try {
@@ -95,73 +102,63 @@ public interface Context<S> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> T[] getArgs(int from, int to, Class<T> type) {
-        try {
-            final TypeAdapter<?> adapter = getCommandFrame().getAdapterMap().get(type);
-            final T[] instance = (T[]) Array.newInstance(type,  to - from);
+    Map<String, String> getInputs();
 
-            for (int i = from; i <= to; i++) {
-                instance[i - from] = (T) adapter.convertNonNull(getArg(i));
-            }
-
-            return instance;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+    default String getInput(String identifier) {
+        return getInputs().get(identifier);
     }
 
+    /**
+     * Sends a message to the sender.
+     *
+     * @param message the message to be sent.
+     */
+    void send(String message);
 
     /**
-     * Sends a message to the executor
+     * Sends multiple messages to the sender.
      *
-     * @param message the message to be sent
+     * @param messages the messages to be sent.
      */
-    void sendMessage(String message);
+    void send(String[] messages);
 
     /**
-     * Sends multiple messages to the executor
+     * Sends a message to the sender.
      *
-     * @param messages the messages to be sent
+     * @param component the component to be sent.
      */
-    void sendMessage(String[] messages);
+    void send(BaseComponent component);
 
     /**
-     * Sends a message formatting it with the String#format() method
+     * Sends a message to the sender.
+     * In contrast to {@link Context#send(String[])}, this method
+     * will only send one message, unless a line feed is
+     * explicitly defined.
      *
-     * @param message the message to be sent
-     * @param objects the objects to be inserted
+     * @param components the components to be sent.
      */
-    default void sendMessage(String message, Object... objects) {
-        sendMessage(String.format(message, objects));
+    void send(BaseComponent[] components);
+
+    /**
+     * Tests whether the sender has the given permission.
+     *
+     * @param permission the permission to be tested.
+     * @param silent     whether an exception should be thrown.
+     * @return the test result if silent.
+     */
+    boolean checkPermission(String permission, boolean silent) throws InsufficientPermissionsException;
+
+    /**
+     * Tests whether the sender matches the given target.
+     *
+     * @param target the target to be tested against.
+     * @param silent whether an exception should be thrown.
+     * @return the test result if silent.
+     */
+    default boolean checkTarget(SenderType target, boolean silent) throws MismatchedTargetException {
+        boolean isTarget = target == SenderType.ANY || getSenderType() == target;
+        if (!silent && !isTarget) throw new MismatchedTargetException(target, getSenderType());
+
+        return isTarget;
     }
-
-
-    /**
-     * Tests whether the executor has a permission
-     *
-     * @param permission the permission to be tested
-     * @param silent     whether a exception should be thrown
-     * @return the test result if silent
-     */
-    boolean testPermission(String permission, boolean silent) throws CommandException;
-
-    /**
-     * Tests whether the executor is a target
-     *
-     * @param target the target to be tested
-     * @param silent whether a exception should be thrown
-     * @return the test result if silent
-     */
-    boolean testTarget(CommandTarget target, boolean silent) throws CommandException;
-
-    /**
-     * @return this command's frame
-     */
-    CommandFrame<?, ?, ?> getCommandFrame();
-
-    /**
-     * @return this command's holder
-     */
-    CommandHolder<?, ?> getCommandHolder();
 }

@@ -14,21 +14,24 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.annotation;
+package me.saiintbrisson.minecraft.command.parameter.interfaces;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Luiz Carlos Carvalho
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
-    /**
-     * @return the command to complete.
-     */
-    String name();
+@FunctionalInterface
+public interface TypeAdapter<T> {
+    T convert(@NotNull String raw);
+
+    default T convertNonNull(@NotNull String raw) {
+        final T result = convert(raw);
+
+        if (result == null) {
+            throw new NullPointerException();
+        }
+
+        return result;
+    }
 }

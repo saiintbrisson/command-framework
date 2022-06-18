@@ -16,7 +16,7 @@
 
 package me.saiintbrisson.minecraft.command.annotation;
 
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.SenderType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,53 +24,58 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
-
-@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Command {
     /**
-     * Defines the command name, sub-commands are split with dots
-     * <p><p>
-     * <b>Example:</b><p>
-     * parentcommand<p>
-     * parentcommand.subcommand<p>
+     * Defines the command path.
+     * Input params are prefixed with a colon (':'):
+     * `money|balance :username pay :amount`
      *
-     * @return the command name
+     * @return the command path.
      */
-    String name();
+    String value();
 
     /**
-     * @return the command aliases
+     * Use `value` instead.
      */
+    @Deprecated
+    String name() default "";
+
+    /**
+     * @return the command aliases.
+     */
+    @Deprecated
     String[] aliases() default {};
 
     /**
-     * @return the command description
+     * @return the command description.
      */
     String description() default "";
 
     /**
-     * @return the command usage example
+     * @return the command usage example.
      */
     String usage() default "";
 
     /**
-     * @return the required permission to execute the command
+     * @return the required permission to execute the command.
      */
     String permission() default "";
 
     /**
-     * @return the command target
+     * @return the command target.
      */
-    CommandTarget target() default CommandTarget.ALL;
+    SenderType target() default SenderType.ANY;
 
     /**
-     * Tells the executor how to run the command,
-     * some implementations might ignore this option as they are async by default.
-     * This option requires an executor.
-     * @return whether the command should be ran asynchronously
+     * Defines whether the command should be run in an async executor.
+     * Some implementations might ignore this option as they are async by
+     * default. This option requires an executor.
+     *
+     * @return whether the command should be run asynchronously.
      */
     boolean async() default false;
 }

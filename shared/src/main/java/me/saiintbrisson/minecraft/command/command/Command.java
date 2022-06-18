@@ -14,21 +14,18 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.annotation;
+package me.saiintbrisson.minecraft.command.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import me.saiintbrisson.minecraft.command.path.Path;
 
 /**
+ * The Command interface details information about a final
+ * command, including instructions on how to execute and its
+ * child commands.
+ *
  * @author Luiz Carlos Carvalho
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Completer {
-    /**
-     * @return the command to complete.
-     */
-    String name();
+public interface Command {
+    Path getPath();
+    CommandInfo getInfo();
 }

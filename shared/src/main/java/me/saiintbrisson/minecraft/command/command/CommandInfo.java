@@ -17,72 +17,54 @@
 package me.saiintbrisson.minecraft.command.command;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import me.saiintbrisson.minecraft.command.annotation.Command;
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.SenderType;
 
 /**
- * @author Luiz Carlos Mourão
+ * @author Luiz Carlos Carvalho
  */
-
 @Getter
 @Builder
 @AllArgsConstructor
-public class CommandInfo {
-
+@Accessors(fluent = true)
+public final class CommandInfo {
     /**
-     * Defines the command name, sub-commands are split with dots
-     * <p><p>
-     * <b>Example:</b><p>
-     * parentcommand<p>
-     * parentcommand.subcommand<p>
+     * Defines the command path.
+     * Can also be thought of as the command's name.
+     * Example: `money :username pay :value`, where
+     * strings beginning with colons represent input tokens.
      */
     @NonNull
-    private final String name;
-
-    /**
-     * Defines the array of aliases of the command,
-     * if it doesn't have aliases it return a empty
-     * array of strings
-     */
-    @NonNull
-    @Builder.Default
-    private final String[] aliases = new String[0];
+    private final String path;
 
     /**
      * Defines the description of the command,
      * if it wasn't provided, it returns a empty
      * String
      */
-    @Setter
     @Builder.Default
-    private String description = "";
-
+    private final String description = "";
     /**
      * Defines the command usage for the MessageuHolder,
      * if it's empty, returns a empty String
      */
-    @Setter
     @Builder.Default
-    private String usage = "";
-
+    private final String usage = "";
     /**
      * Defines the permission required to execute
      * the command, if it's empty the default permission
      * is a empty String
      */
-    @Setter
     @Builder.Default
-    private String permission = "";
-
+    private final String permission = "";
     /**
      * Defines the CommandTarget of the command,
      * if it's empty, it returns a ALL target.
      */
-    @Setter
     @NonNull
     @Builder.Default
-    private CommandTarget target = CommandTarget.ALL;
-
+    private final SenderType target = SenderType.ANY;
     /**
      * Tells the executor how to run the command,
      * some implementations might ignore this option as they are async by default.
@@ -91,10 +73,9 @@ public class CommandInfo {
     @Builder.Default
     private final boolean async = false;
 
-    public CommandInfo(Command command) {
-        this(
-          command.name(),
-          command.aliases(),
+    public static CommandInfo ofCommand(Command command) {
+        return new CommandInfo(
+          command.value(),
           command.description(),
           command.usage(),
           command.permission(),
@@ -102,5 +83,4 @@ public class CommandInfo {
           command.async()
         );
     }
-
 }
