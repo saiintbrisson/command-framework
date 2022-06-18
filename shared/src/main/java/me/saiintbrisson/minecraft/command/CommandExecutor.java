@@ -36,7 +36,9 @@ public final class CommandExecutor<P, S> {
               .findFirst()
               .orElseThrow(() -> new IllegalArgumentException(String.format("%s does not apply to any paths", arg)));
 
-            validator.validate(current.getInfo(), sender);
+            if (current.getInfo() != null) {
+                validator.validate(current.getInfo(), sender);
+            }
 
             if (current.isInput()) {
                 inputs.put(current.getIdentifier(), arg);
