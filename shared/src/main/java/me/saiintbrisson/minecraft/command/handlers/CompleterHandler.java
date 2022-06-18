@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.executor;
+package me.saiintbrisson.minecraft.command.handlers;
 
 import me.saiintbrisson.minecraft.command.command.Context;
 
@@ -22,14 +22,15 @@ import java.util.List;
 
 /**
  * @author Luiz Carlos Carvalho
+ * @since 2.0
  */
 @FunctionalInterface
-public interface CompleterExecutor<S> {
+public interface CompleterHandler<S> {
     /**
-     * Executes the tab completer.
+     * Handles a completion request.
      *
      * @param context the command context.
      * @return the list of possible arguments.
      */
-    List<String> execute(Context<S> context);
+    List<String> handle(Context<S> context);
 }

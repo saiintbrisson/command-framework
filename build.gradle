@@ -1,23 +1,22 @@
 allprojects {
+    group 'me.saiintbrisson.command'
+    version '2.0.0-SNAPSHOT'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
+
+subprojects {
     afterEvaluate {
-        apply plugin: 'java'
-        apply plugin: 'maven'
-
-        group 'me.saiintbrisson'
-        version '1.2-SNAPSHOT'
-
-        sourceCompatibility = 1.8
+        sourceCompatibility = '1.8'
 
         repositories {
             mavenCentral()
-
-            maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
         }
 
         dependencies {
-            implementation 'org.jetbrains:annotations:21.0.1'
-
-            implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
+            compileOnly 'org.jetbrains:annotations:21.0.1'
 
             def lombok = 'org.projectlombok:lombok:1.18.20'
             compileOnly lombok
@@ -25,10 +24,13 @@ allprojects {
 
             testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
             testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-        }
-    }
 
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
+            testImplementation lombok
+            testAnnotationProcessor lombok
+        }
+
+        test {
+            useJUnitPlatform()
+        }
     }
 }

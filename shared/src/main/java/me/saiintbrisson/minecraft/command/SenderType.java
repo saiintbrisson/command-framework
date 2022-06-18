@@ -14,29 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.target;
+package me.saiintbrisson.minecraft.command;
 
 /**
- * Responsible for validating if the given sender
- * is compatible with the defined {@link CommandTarget}.
- *
  * @author Luiz Carlos Carvalho
  */
-public interface TargetValidator {
+public enum SenderType {
     /**
-     * Tries to validate the sender against the given {@link CommandTarget}.
-     *
-     * @param target the target to test against.
-     * @param sender the sender.
-     * @return whether the sender is valid.
+     * Used by any possible target, this usually
+     * means TERMINAL or PLAYER.
      */
-    boolean validate(CommandTarget target, Object sender);
-
+    ANY,
     /**
-     * Returns the corresponding {@link CommandTarget} for the given sender.
-     *
-     * @param sender the sender to be converted.
-     * @return the corresponding {@link CommandTarget}.
+     * Used by in-game players.
      */
-    CommandTarget fromSender(Object sender);
+    PLAYER,
+    /**
+     * Used by the console sender.
+     */
+    TERMINAL
 }

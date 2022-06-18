@@ -16,11 +16,12 @@
 
 package me.saiintbrisson.minecraft.command;
 
-import me.saiintbrisson.minecraft.command.argument.AdapterMap;
-import me.saiintbrisson.minecraft.command.argument.TypeAdapter;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
-import me.saiintbrisson.minecraft.command.executor.CommandExecutor;
-import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
+import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
+import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
+import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
+import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
+import me.saiintbrisson.minecraft.command.parameter.interfaces.TypeAdapter;
 
 /**
  * The CommandFrame is the core of the framework,
@@ -28,13 +29,13 @@ import me.saiintbrisson.minecraft.command.executor.CompleterExecutor;
  *
  * @author Luiz Carlos Carvalho
  */
-public interface CommandFrame<P, S> {
+public interface CommandFrame<P> {
     /**
      * Get the plugin that owns this frame instance.
      *
      * @return the plugin that owns this frame instance.
      */
-    P plugin();
+    P getPlugin();
 
     /**
      * Get the adapter map used by this frame instance
@@ -43,6 +44,14 @@ public interface CommandFrame<P, S> {
      * @return the adapter map.
      */
     AdapterMap getAdapterMap();
+
+    /**
+     * Get the extract map used by this frame instance
+     * and its commands.
+     *
+     * @return the extractor map.
+     */
+    ExtractorMap getExtractorMap();
 
     /**
      * Registers a new adapter.
@@ -67,9 +76,9 @@ public interface CommandFrame<P, S> {
      * {@link me.saiintbrisson.minecraft.command.annotation.Completer Completer},
      * and {@link me.saiintbrisson.minecraft.command.annotation.ExceptionHandler ExceptionHandler}.
      *
-     * @param classes the classes to be searched for.
+     * @param instances the classes to be searched for.
      */
-    void registerAll(Object... classes);
+    void registerAll(Object... instances);
 
     /**
      * Registers a single command with the CommandInfo and Executor
@@ -77,7 +86,7 @@ public interface CommandFrame<P, S> {
      * @param commandInfo the command metadata.
      * @param executor    the command to be executed.
      */
-    void registerCommand(CommandInfo commandInfo, CommandExecutor<S> executor);
+    <S> void registerCommand(CommandInfo commandInfo, CommandHandler<S> executor);
 
     /**
      * Registers a single completer for the given command.
@@ -85,7 +94,7 @@ public interface CommandFrame<P, S> {
      * @param name     the command name.
      * @param executor the completer to be executed.
      */
-    void registerCompleter(String name, CompleterExecutor<S> executor);
+    <S> void registerCompleter(String name, CompleterHandler<S> executor);
 
     /**
      * Unregisters a command.

@@ -14,7 +14,9 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.argument;
+package me.saiintbrisson.minecraft.command.parameter;
+
+import me.saiintbrisson.minecraft.command.parameter.interfaces.TypeAdapter;
 
 import java.util.HashMap;
 
@@ -24,7 +26,7 @@ import java.util.HashMap;
  *
  * @author Luiz Carlos Carvalho
  */
-public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
+public final class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
     /**
      * Creates a new AdapterMap, with default
      * adapters registered.
@@ -58,7 +60,6 @@ public class AdapterMap extends HashMap<Class<?>, TypeAdapter<?>> {
             put(Long.TYPE, Long::parseLong);
             put(Boolean.TYPE, Boolean::parseBoolean);
 
-            put(Character.TYPE, argument -> argument.charAt(0));
             put(Byte.TYPE, Byte::parseByte);
         }
     }

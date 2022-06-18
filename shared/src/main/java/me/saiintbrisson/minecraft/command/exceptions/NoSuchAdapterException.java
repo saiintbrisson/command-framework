@@ -14,23 +14,22 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.target;
+package me.saiintbrisson.minecraft.command.exceptions;
+
+import lombok.Getter;
 
 /**
+ * Thrown when an adapter for the given type
+ * was not provided.
+ *
  * @author Luiz Carlos Carvalho
  */
-public enum CommandTarget {
-    /**
-     * Used by any possible target, this usually
-     * means TERMINAL or PLAYER.
-     */
-    ANY,
-    /**
-     * Used by in-game players.
-     */
-    PLAYER,
-    /**
-     * Used by the console sender.
-     */
-    TERMINAL
+@Getter
+public class NoSuchAdapterException extends RuntimeException {
+    private final Class<?> type;
+
+    public NoSuchAdapterException(Class<?> type) {
+        super("No converter found for type " + type.getTypeName());
+        this.type = type;
+    }
 }

@@ -14,23 +14,24 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.executor;
+package me.saiintbrisson.minecraft.command.parameter.interfaces;
 
-import me.saiintbrisson.minecraft.command.command.Context;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * The CommandExecutor is the instruction on how to
- * run a command.
- *
  * @author Luiz Carlos Carvalho
  */
 @FunctionalInterface
-public interface CommandExecutor<S> {
-    /**
-     * Executes the command with the provided context.
-     *
-     * @param context the command context.
-     * @return whether the command completed successfully.
-     */
-    boolean execute(Context<S> context);
+public interface TypeAdapter<T> {
+    T convert(@NotNull String raw);
+
+    default T convertNonNull(@NotNull String raw) {
+        final T result = convert(raw);
+
+        if (result == null) {
+            throw new NullPointerException();
+        }
+
+        return result;
+    }
 }

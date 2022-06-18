@@ -14,33 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.argument;
+package me.saiintbrisson.minecraft.command.handlers;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.experimental.Accessors;
+import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
- * The model for each argument in the command.
- * <p>It contains the main information of each argument
- * such as its type and name.
+ * Handles the execution of a command.
  *
  * @author Luiz Carlos Carvalho
+ * @since 2.0
  */
-@Getter
-@Builder
-@AllArgsConstructor
-@Accessors(fluent = true)
-public class Argument<T> {
-    private final String name;
-
-    private final Class<T> type;
-    private final TypeAdapter<T> adapter;
-
-    private final T defaultValue;
-
-    private final boolean isNullable;
-    private final boolean isArray;
-    private final boolean ignoreQuote;
+@FunctionalInterface
+public interface CommandHandler<S> {
+    /**
+     * Handles the command execution.
+     *
+     * @param context the command context.
+     * @return whether the command completed successfully.
+     */
+    boolean handle(Context<S> context);
 }

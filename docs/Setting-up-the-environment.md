@@ -1,12 +1,10 @@
-# Using command-framework as a dependency
+# Adding as a dependency
 
 [![](https://jitpack.io/v/SaiintBrisson/command-framework.svg)](https://jitpack.io/#SaiintBrisson/command-framework)
 
-This project is hosted by [JitPack](https://jitpack.io/#SaiintBrisson/command-framework), build artifacts can be found on their site.
+This project's artifacts are hosted on [JitPack](https://jitpack.io/#SaiintBrisson/command-framework).
 
-## Adding the repository
-
-### Gradle
+### Using Gradle
 
 ```groovy
 repositories {
@@ -14,86 +12,38 @@ repositories {
         url 'https://jitpack.io'
     }
 }
+
+dependencies {
+    // Add the `shared` module if you want to create custom implementations.
+    implementation 'com.github.SaiintBrisson.command-framework:shared:2.0.0'
+    
+    // Choose between the `bukkit` or `bungee` modules depending on where you
+    // plan to use the framework.
+    implementation 'com.github.SaiintBrisson.command-framework:bukkit:2.0.0'
+    implementation 'com.github.SaiintBrisson.command-framework:bungee:2.0.0'
+}
 ```
 
 I highly recommend using [John Engelman's Shadow gradle plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
 
-### Maven
+### Using Maven
 
 ```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
+<project>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
-## Bukkit
-
-### Gradle
-
-```groovy
-dependencies {
-    implementation 'com.github.SaiintBrisson.command-framework:bukkit:1.0.0'
-}
-```
-
-### Maven
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.github.SaiintBrisson.command-framework</groupId>
-        <artifactId>bukkit</artifactId>
-        <version>1.2.0</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
-```
-
-## BungeeCord
-
-### Gradle
-
-```groovy
-dependencies {
-    implementation 'com.github.SaiintBrisson.command-framework:bungee:1.0.0'
-}
-```
-
-### Maven
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.github.SaiintBrisson.command-framework</groupId>
-        <artifactId>bungee</artifactId>
-        <version>1.2.0</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
-```
-
-## Shared
-
-### Gradle
-
-```groovy
-dependencies {
-    implementation 'com.github.SaiintBrisson.command-framework:shared:1.0.0'
-}
-```
-
-### Maven
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.github.SaiintBrisson.command-framework</groupId>
-        <artifactId>shared</artifactId>
-        <version>1.2.0</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.SaiintBrisson.command-framework</groupId>
+            <artifactId>module</artifactId>
+            <version>2.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>
 ```
