@@ -14,12 +14,12 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.target;
+package me.saiintbrisson.minecraft.command;
 
 /**
  * @author Luiz Carlos Carvalho
  */
-public enum CommandTarget {
+public enum SenderType {
     /**
      * Used by any possible target, this usually
      * means TERMINAL or PLAYER.
