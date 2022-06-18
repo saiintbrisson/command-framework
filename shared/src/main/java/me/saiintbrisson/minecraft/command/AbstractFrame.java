@@ -59,17 +59,18 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
             if (methodCommand == null) continue;
 
             CommandInfo methodInfo = CommandInfo.ofCommand(methodCommand);
-            Map.Entry<Path, Path> entry = Path.ofCommandInfo(methodInfo);
-            Path node = entry.getValue();
+            Path node = rootNode;
 
-            if (rootNode == null) {
-                registerCommand(entry.getKey(), methodInfo);
-            } else {
-                if (node.getIdentifier().isEmpty()) {
-                    node = rootNode;
+            if (!methodInfo.path().isEmpty()) {
+                Map.Entry<Path, Path> entry = Path.ofCommandInfo(methodInfo);
+                if (node == null) {
+                    registerCommand(entry.getKey(), methodInfo);
                 } else {
-                    rootNode.addNode(entry.getKey());
+                    node.addNode(entry.getKey());
                 }
+                node = entry.getValue();
+            } else if (node == null) {
+                throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
             CommandHandler<?> executor = new MethodCommandHandler<>(instance, method, Parameters.ofMethod(method));
