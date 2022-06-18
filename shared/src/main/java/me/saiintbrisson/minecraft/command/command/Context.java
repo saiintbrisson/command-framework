@@ -16,63 +16,59 @@
 
 package me.saiintbrisson.minecraft.command.command;
 
-import me.saiintbrisson.minecraft.command.exception.InsufficientPermissionsException;
-import me.saiintbrisson.minecraft.command.exception.MismatchedTargetException;
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.CommandFrame;
+import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
+import me.saiintbrisson.minecraft.command.exceptions.MismatchedTargetException;
+import me.saiintbrisson.minecraft.command.SenderType;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
- * The context is where all information from the command dispatcher
- * is stored, such as the sender, arguments and label
+ * Holds all relevant information about the execution of a command.
+ * It also facilitates sending messages and checking for certain
+ * conditions.
  *
  * @author Luiz Carlos Carvalho
+ * @since 1.0
  */
 public interface Context<S> {
     /**
-     * The command executed.
+     * The command frame instance responsible
+     * for the execution of this command.
      *
-     * @return the command executed.
+     * @return the command frame instance.
      */
-    Command command();
+    CommandFrame<?> getCommandFrame();
 
     /**
      * The label used by the sender.
      *
      * @return the label used.
      */
-    String label();
+    String getLabel();
 
     /**
      * Who executed the command.
      *
      * @return the sender.
      */
-    S sender();
+    S getSender();
 
     /**
      * Get the type of the sender.
      *
      * @return the sender type.
      */
-    CommandTarget senderType();
+    SenderType getSenderType();
 
     /**
      * Get all arguments passed to this command.
      *
      * @return the arguments.
      */
-    String[] args();
-
-    /**
-     * Get the arguments count passed to this command.
-     *
-     * @return the number of arguments.
-     */
-    default int argsCount() {
-        return args().length;
-    }
+    String[] getArgs();
 
     /**
      * Get the arg at the given index.
@@ -82,7 +78,7 @@ public interface Context<S> {
      */
     default String getArg(int index) {
         try {
-            return args()[index];
+            return getArgs()[index];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -100,10 +96,16 @@ public interface Context<S> {
      */
     default String[] getArgs(int from, int to) {
         try {
-            return Arrays.copyOfRange(args(), from, to);
+            return Arrays.copyOfRange(getArgs(), from, to);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
+    }
+
+    Map<String, String> getInputs();
+
+    default String getInput(String identifier) {
+        return getInputs().get(identifier);
     }
 
     /**
@@ -153,5 +155,10 @@ public interface Context<S> {
      * @param silent whether an exception should be thrown.
      * @return the test result if silent.
      */
-    boolean checkTarget(CommandTarget target, boolean silent) throws MismatchedTargetException;
+    default boolean checkTarget(SenderType target, boolean silent) throws MismatchedTargetException {
+        boolean isTarget = target == SenderType.ANY || getSenderType() == target;
+        if (!silent && !isTarget) throw new MismatchedTargetException(target, getSenderType());
+
+        return isTarget;
+    }
 }

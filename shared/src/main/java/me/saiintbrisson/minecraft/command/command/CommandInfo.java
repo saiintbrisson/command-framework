@@ -19,7 +19,7 @@ package me.saiintbrisson.minecraft.command.command;
 import lombok.*;
 import lombok.experimental.Accessors;
 import me.saiintbrisson.minecraft.command.annotation.Command;
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.SenderType;
 
 /**
  * @author Luiz Carlos Carvalho
@@ -30,20 +30,14 @@ import me.saiintbrisson.minecraft.command.target.CommandTarget;
 @Accessors(fluent = true)
 public final class CommandInfo {
     /**
-     * Defines the command name.
-     * <p>One can define a sub-command by splitting
-     * the name with dots: "foo.bar".
+     * Defines the command path.
+     * Can also be thought of as the command's name.
+     * Example: `money :username pay :value`, where
+     * strings beginning with colons represent input tokens.
      */
     @NonNull
-    private final String name;
-    /**
-     * Defines the array of aliases of the command,
-     * if it doesn't have aliases it return a empty
-     * array of strings
-     */
-    @NonNull
-    @Builder.Default
-    private final String[] aliases = new String[0];
+    private final String path;
+
     /**
      * Defines the description of the command,
      * if it wasn't provided, it returns a empty
@@ -70,7 +64,7 @@ public final class CommandInfo {
      */
     @NonNull
     @Builder.Default
-    private final CommandTarget target = CommandTarget.ANY;
+    private final SenderType target = SenderType.ANY;
     /**
      * Tells the executor how to run the command,
      * some implementations might ignore this option as they are async by default.
@@ -79,15 +73,14 @@ public final class CommandInfo {
     @Builder.Default
     private final boolean async = false;
 
-    public CommandInfo(Command command) {
-        this(
-                command.value(),
-                command.aliases(),
-                command.description(),
-                command.usage(),
-                command.permission(),
-                command.target(),
-                command.async()
+    public static CommandInfo ofCommand(Command command) {
+        return new CommandInfo(
+          command.value(),
+          command.description(),
+          command.usage(),
+          command.permission(),
+          command.target(),
+          command.async()
         );
     }
 }
