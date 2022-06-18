@@ -16,7 +16,7 @@
 
 package me.saiintbrisson.minecraft.command.annotation;
 
-import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import me.saiintbrisson.minecraft.command.SenderType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,17 +30,24 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Command {
     /**
-     * Defines the command name.
-     * <p>One can define a sub-command by splitting
-     * the name with dots: "foo.bar".
+     * Defines the command path.
+     * Input params are prefixed with a colon (':'):
+     * `money|balance :username pay :amount`
      *
-     * @return the command name.
+     * @return the command path.
      */
     String value();
 
     /**
+     * Use `value` instead.
+     */
+    @Deprecated
+    String name() default "";
+
+    /**
      * @return the command aliases.
      */
+    @Deprecated
     String[] aliases() default {};
 
     /**
@@ -61,12 +68,12 @@ public @interface Command {
     /**
      * @return the command target.
      */
-    CommandTarget target() default CommandTarget.ANY;
+    SenderType target() default SenderType.ANY;
 
     /**
-     * Tells the executor how to run the command, some
-     * implementations might ignore this option as they
-     * are async by default. This option requires an executor.
+     * Defines whether the command should be run in an async executor.
+     * Some implementations might ignore this option as they are async by
+     * default. This option requires an executor.
      *
      * @return whether the command should be run asynchronously.
      */
