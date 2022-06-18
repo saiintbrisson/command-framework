@@ -1,4 +1,4 @@
-package me.saiintbrisson.minecraft.command.exception;
+package me.saiintbrisson.minecraft.command.exceptions;
 
 import lombok.Getter;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
  * @author Luiz Carlos Carvalho
  */
 @Getter
-public class MissingArgumentException extends Exception {
+public class MissingArgumentException extends RuntimeException {
     private final String name;
 
     public MissingArgumentException(String name) {

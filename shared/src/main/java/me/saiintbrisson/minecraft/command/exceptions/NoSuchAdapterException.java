@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.exception;
+package me.saiintbrisson.minecraft.command.exceptions;
 
 import lombok.Getter;
 
