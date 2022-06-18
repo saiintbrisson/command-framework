@@ -39,24 +39,23 @@ BukkitFrame frame = new BukkitFrame(plugin);
 frame.registerCommands(new Command());
 ```
 
-### Via `CommandFrame#registerCommand` method
+### Dynamic commands
 
-This approach **does not** support arguments, you can still use them via [Context][Context] however.
+The framework also provides a way to create dynamic commands by using the `CommandFrame#registerCommand` method.
 
 [CommandInfo][CommandInfo] has the same fields as [Command][Command] and [CommandExecutor][CommandExecutor] is a functional interface that receives `Context<CommandSender>`.
 
-> Creating a simple command
 ```java
 BukkitFrame frame = new BukkitFrame(plugin);
 
-frame.registerCommand(CommandInfo.builder()
-  .name("command")
-  .aliases(new String[]{
-    "nice"
-  })
-  .build(), context -> {
-    context.sendMessage("Hey!");
-    return false;
+CommandInfo command = CommandInfo.builder()
+  .path("money :username")
+  .build();
+frame.registerCommand(command, context -> {
+  String username = context.getInput("username");
+  context.send(username + "'s balance: $0");
+
+  return false;
 });
 ```
 
