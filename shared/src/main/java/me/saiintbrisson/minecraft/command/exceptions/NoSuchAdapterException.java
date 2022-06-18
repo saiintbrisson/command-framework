@@ -25,7 +25,7 @@ import lombok.Getter;
  * @author Luiz Carlos Carvalho
  */
 @Getter
-public class NoSuchAdapterException extends Exception {
+public class NoSuchAdapterException extends RuntimeException {
     private final Class<?> type;
 
     public NoSuchAdapterException(Class<?> type) {
