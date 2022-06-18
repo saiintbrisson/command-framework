@@ -14,23 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.executor;
+package me.saiintbrisson.minecraft.command.handlers;
 
 import me.saiintbrisson.minecraft.command.command.Context;
 
+import java.util.List;
+
 /**
- * The CommandExecutor is the instruction on how to
- * run a command.
- *
  * @author Luiz Carlos Carvalho
+ * @since 2.0
  */
 @FunctionalInterface
-public interface CommandExecutor<S> {
+public interface CompleterHandler<S> {
     /**
-     * Executes the command with the provided context.
+     * Handles a completion request.
      *
      * @param context the command context.
-     * @return whether the command completed successfully.
+     * @return the list of possible arguments.
      */
-    boolean execute(Context<S> context);
+    List<String> handle(Context<S> context);
 }
