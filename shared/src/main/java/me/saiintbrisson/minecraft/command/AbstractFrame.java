@@ -45,7 +45,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                 entry.getValue().setInfo(objectInfo);
 
                 root = entry.getValue();
-                registerCommand(root, objectInfo);
+                registerCommand(entry.getKey(), objectInfo);
             }
 
             registerMethods(instance, root);
