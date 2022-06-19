@@ -29,7 +29,7 @@ public final class CommandExecutor<P, S> {
             ExceptionHandler handler = frame.getGlobalExceptionHandler().get(e.getCause().getClass());
             if (handler == null) throw new RuntimeException(e.getCause());
 
-            handler.handle(e.context, e);
+            handler.handle(e.context, e.getCause());
             return false;
         }
     }
@@ -85,7 +85,7 @@ public final class CommandExecutor<P, S> {
 
                 return walk(current);
             } catch (ExecutionException e) {
-                handleException(current, e.context, e);
+                handleException(current, e.context, e.getCause());
             } catch (RuntimeException e) {
                 handleException(current, ctx, e);
             }
@@ -98,8 +98,8 @@ public final class CommandExecutor<P, S> {
                 ctx = frame.createContext(current.getInfo(), sender, label, args, inputs);
             }
 
-            ExceptionHandler handler = current.getExceptionHandlers().get(e.getCause().getClass());
-            if (handler == null) throw new ExecutionException(e.getCause(), ctx);
+            ExceptionHandler handler = current.getExceptionHandlers().get(e.getClass());
+            if (handler == null) throw new ExecutionException(e, ctx);
 
             handler.handle(ctx, e);
         }
