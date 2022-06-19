@@ -98,8 +98,6 @@ public final class CommandExecutor<P, S> {
                 ctx = frame.createContext(current.getInfo(), sender, label, args, inputs);
             }
 
-            ctx.getInputs().put("exception", e);
-
             ExceptionHandler handler = current.getExceptionHandlers().get(e.getCause().getClass());
             if (handler == null) throw new ExecutionException(e.getCause(), ctx);
 

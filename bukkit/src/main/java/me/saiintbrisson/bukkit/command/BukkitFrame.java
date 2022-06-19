@@ -53,6 +53,10 @@ public final class BukkitFrame extends AbstractFrame<Plugin> {
     @Override
     protected void registerPath(Path path, CommandInfo info) {
         BukkitCommand command = new BukkitCommand(path, this.executor);
+        if (path.getInfo() == null) {
+            path.setInfo(CommandInfo.builder().path(path.getIdentifier()).build());
+        }
+
         this.commandMap.register(getPlugin().getName(), command);
     }
 
