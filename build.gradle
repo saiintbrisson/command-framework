@@ -1,11 +1,12 @@
 allprojects {
-    apply plugin: 'maven-publish'
 
     group 'me.saiintbrisson.command'
     version '2.0.0-SNAPSHOT'
 }
 
 subprojects {
+    apply plugin: 'maven-publish'
+
     afterEvaluate {
         sourceCompatibility = '1.8'
 
@@ -29,6 +30,18 @@ subprojects {
 
         test {
             useJUnitPlatform()
+        }
+
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    groupId = 'com.github.SaiintBrisson.command-framework'
+                    artifactId = project.name
+                    version = project.version
+
+                    from components.java
+                }
+            }
         }
     }
 
