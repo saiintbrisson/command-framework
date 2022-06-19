@@ -83,7 +83,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                     node.addNode(entry.getKey());
                 }
                 node = entry.getValue();
-            } else if (node == null) {
+            } else if (methodCommand != null && node == null) {
                 throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
