@@ -9,11 +9,11 @@ import lombok.Getter;
  * @author Luiz Carlos Carvalho
  */
 @Getter
-public class MissingArgumentException extends RuntimeException {
+public class IncorrectUsageException extends RuntimeException {
     private final String name;
 
-    public MissingArgumentException(String name) {
-        super("Missing argument " + name);
+    public IncorrectUsageException(String name) {
+        super("Incorrect usage on " + name);
         this.name = name;
     }
 }

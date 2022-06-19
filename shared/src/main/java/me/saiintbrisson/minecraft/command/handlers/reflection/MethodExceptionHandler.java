@@ -3,40 +3,35 @@ package me.saiintbrisson.minecraft.command.handlers.reflection;
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
+import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import me.saiintbrisson.minecraft.command.parameter.Parameters;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * @author Luiz Carlos Carvalho
  */
 @AllArgsConstructor
-public class MethodCommandHandler<S> implements CommandHandler<S> {
+public class MethodExceptionHandler<S, E extends Throwable> implements ExceptionHandler<S, E> {
     private final Object instance;
     private final Method method;
-    private final Parameters parameters;
 
     @Override
-    public boolean handle(Context<S> context) {
+    public void handle(Context<S> context, E exception) {
         try {
-            Collection<?> parameters = this.parameters.extractParameters(context);
-            Object result = method.invoke(instance, parameters.toArray());
+            Object result = method.invoke(instance, context, exception);
 
-            return parseReturn(context, result);
+            parseReturn(context, result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e.getCause());
         }
     }
 
-    private boolean parseReturn(Context<?> context, Object result) {
-        if (result == null) {
-            return false;
-        } else if (result.getClass().equals(Boolean.TYPE)) {
-            return (boolean) result;
-        } else if (result instanceof String) {
+    private void parseReturn(Context<?> context, Object result) {
+        if (result instanceof String) {
             context.send((String) result);
         } else if (result instanceof String[]) {
             context.send((String[]) result);
@@ -45,7 +40,5 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
         } else if (result instanceof BaseComponent[]) {
             context.send((BaseComponent[]) result);
         }
-
-        return true;
     }
 }

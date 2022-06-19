@@ -2,9 +2,8 @@ package me.saiintbrisson.bukkit.command;
 
 import lombok.Getter;
 import me.saiintbrisson.minecraft.command.CommandExecutor;
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.command.Command;
-import me.saiintbrisson.minecraft.command.path.Path;
+import me.saiintbrisson.minecraft.command.Path;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -20,26 +19,24 @@ import java.util.List;
 @Getter
 final class BukkitCommand extends org.bukkit.command.Command implements Command {
     private final Path path;
-    private final CommandInfo info;
     private final CommandExecutor<Plugin, CommandSender> executor;
 
-    public BukkitCommand(@NotNull Path path, @NotNull CommandInfo info, CommandExecutor<Plugin, CommandSender> executor) {
+    public BukkitCommand(@NotNull Path path, CommandExecutor<Plugin, CommandSender> executor) {
         super(path.getIdentifier());
 
         this.path = path;
-        this.info = info;
         this.executor = executor;
     }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-        return this.executor.execute(sender, commandLabel, args, this);
+        return this.executor.execute(sender, commandLabel, args, this.getPath());
     }
 
     @Nullable
     @Override
     public String getPermission() {
-        return getInfo().permission();
+        return getPath().getInfo().permission();
     }
 
     @NotNull
@@ -51,12 +48,12 @@ final class BukkitCommand extends org.bukkit.command.Command implements Command 
     @NotNull
     @Override
     public String getDescription() {
-        return getInfo().description();
+        return getPath().getInfo().description();
     }
 
     @NotNull
     @Override
     public String getUsage() {
-        return getInfo().usage();
+        return getPath().getInfo().usage();
     }
 }

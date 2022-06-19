@@ -14,17 +14,23 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.command;
+package me.saiintbrisson.minecraft.command.handlers;
 
-import me.saiintbrisson.minecraft.command.Path;
+import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
- * The Command interface details information about a final
- * command, including instructions on how to execute and its
- * child commands.
+ * Handles an exception thrown by a command.
  *
  * @author Luiz Carlos Carvalho
+ * @since 2.0
  */
-public interface Command {
-    Path getPath();
+@FunctionalInterface
+public interface ExceptionHandler<S, E extends Throwable> {
+    /**
+     * Handles an exception thrown when execution a command.
+     *
+     * @param context the execution context.
+     * @param exception the exception thrown.
+     */
+    void handle(Context<S> context, E exception);
 }

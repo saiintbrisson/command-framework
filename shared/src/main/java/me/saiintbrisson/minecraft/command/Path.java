@@ -1,4 +1,4 @@
-package me.saiintbrisson.minecraft.command.path;
+package me.saiintbrisson.minecraft.command;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import lombok.ToString;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
+import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,8 @@ public final class Path {
     @Setter
     private CompleterHandler completerHandler;
 
+    private final Map<Class<?>, ExceptionHandler> exceptionHandlers;
+
     @Setter
     private CommandInfo info;
 
@@ -51,6 +54,8 @@ public final class Path {
         this.nodes = new TreeSet<>((o1, o2) ->
           o1 == o2 ? 0 : o1.isInput() ? 1 : -1
         );
+
+        this.exceptionHandlers = new HashMap<>();
     }
 
     public boolean isLeaf() {

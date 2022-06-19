@@ -43,6 +43,13 @@ public interface Context<S> {
     CommandFrame<?> getCommandFrame();
 
     /**
+     * Information related to the executed command.
+     *
+     * @return the executed command info.
+     */
+    CommandInfo getCommandInfo();
+
+    /**
      * The label used by the sender.
      *
      * @return the label used.

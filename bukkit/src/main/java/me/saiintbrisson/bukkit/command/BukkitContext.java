@@ -3,6 +3,7 @@ package me.saiintbrisson.bukkit.command;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.saiintbrisson.minecraft.command.CommandFrame;
+import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
 import me.saiintbrisson.minecraft.command.SenderType;
@@ -20,6 +21,7 @@ import java.util.Map;
 @AllArgsConstructor
 final class BukkitContext implements Context<CommandSender> {
     private final CommandFrame<?> commandFrame;
+    private final CommandInfo commandInfo;
 
     private final String label;
     private final CommandSender sender;

@@ -1,16 +1,18 @@
 package me.saiintbrisson.minecraft.command;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Command;
 import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
+import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import me.saiintbrisson.minecraft.command.handlers.reflection.MethodCommandHandler;
+import me.saiintbrisson.minecraft.command.handlers.reflection.MethodExceptionHandler;
 import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
 import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
 import me.saiintbrisson.minecraft.command.parameter.Parameters;
-import me.saiintbrisson.minecraft.command.path.Path;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -25,12 +27,15 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
     private final P plugin;
     private final AdapterMap adapterMap;
     private final ExtractorMap extractorMap;
+    @Getter(AccessLevel.PACKAGE)
+    private final Map<Class<?>, ExceptionHandler> globalExceptionHandler;
 
     protected abstract Command getCommand(String name);
 
-    protected abstract void createCommand(Path path, CommandInfo info);
+    protected abstract void registerPath(Path path, CommandInfo info);
 
-    protected abstract <S> Context<S> createContext(S sender, String label, String[] args, Map<String, String> inputs);
+    protected abstract <S> Context<S> createContext(CommandInfo info, S sender, String label, String[] args,
+                                                    Map<String, String> inputs);
 
     @Override
     public void registerAll(Object... instances) {
@@ -56,9 +61,18 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
         for (Method method : instance.getClass().getDeclaredMethods()) {
             me.saiintbrisson.minecraft.command.annotation.Command methodCommand = method.getAnnotation(
               me.saiintbrisson.minecraft.command.annotation.Command.class);
-            if (methodCommand == null) continue;
+            me.saiintbrisson.minecraft.command.annotation.ExceptionHandler methodExceptionHandler= method.getAnnotation(
+              me.saiintbrisson.minecraft.command.annotation.ExceptionHandler.class);
 
-            CommandInfo methodInfo = CommandInfo.ofCommand(methodCommand);
+            CommandInfo methodInfo;
+            if (methodCommand != null) {
+                methodInfo = CommandInfo.ofCommand(methodCommand);
+            } else if (methodExceptionHandler != null) {
+                methodInfo = CommandInfo.builder().path(methodExceptionHandler.value()).build();
+            } else {
+                continue;
+            }
+
             Path node = rootNode;
 
             if (!methodInfo.path().isEmpty()) {
@@ -73,8 +87,27 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                 throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
-            CommandHandler<?> executor = new MethodCommandHandler<>(instance, method, Parameters.ofMethod(method));
-            node.setCommandHandler(executor);
+            if (methodCommand != null) {
+                CommandHandler<?> commandHandler = new MethodCommandHandler<>(instance, method, Parameters.ofMethod(method));
+                node.setCommandHandler(commandHandler);
+            } else {
+                ExceptionHandler<?, ?> exceptionHandler = new MethodExceptionHandler<>(instance, method);
+                if (method.getParameterCount() != 2) {
+                    throw new IllegalArgumentException("exception handler must receive two arguments");
+                }
+
+                Class<?> throwable = method.getParameters()[1].getType();
+                boolean isThrowable = Throwable.class.isAssignableFrom(throwable);
+                if (!isThrowable) {
+                    throw new IllegalArgumentException("second parameter must receive a throwable");
+                }
+
+                if (rootNode == null && methodExceptionHandler.value().isEmpty()) {
+                    getGlobalExceptionHandler().put(throwable, exceptionHandler);
+                } else {
+                    node.getExceptionHandlers().put(throwable, exceptionHandler);
+                }
+            }
         }
     }
 
@@ -97,6 +130,6 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
             throw new IllegalArgumentException("root command name cannot be empty");
         }
 
-        createCommand(path, info);
+        registerPath(path, info);
     }
 }

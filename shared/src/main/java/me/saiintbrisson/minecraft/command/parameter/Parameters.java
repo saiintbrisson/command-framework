@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-public class Parameters {
+public final class Parameters {
     private final Collection<HandlerParameter> parameters;
 
     public Collection<Object> extractParameters(Context<?> ctx) {
