@@ -20,6 +20,7 @@ import me.saiintbrisson.minecraft.command.CommandFrame;
 import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
 import me.saiintbrisson.minecraft.command.exceptions.MismatchedTargetException;
 import me.saiintbrisson.minecraft.command.SenderType;
+import me.saiintbrisson.minecraft.command.path.PathInfo;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public interface Context<S> {
      *
      * @return the executed command info.
      */
-    CommandInfo getCommandInfo();
+    PathInfo getPathInfo();
 
     /**
      * The label used by the sender.

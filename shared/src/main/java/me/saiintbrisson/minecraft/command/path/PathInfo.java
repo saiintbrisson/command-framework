@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package me.saiintbrisson.minecraft.command.command;
+package me.saiintbrisson.minecraft.command.path;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 @AllArgsConstructor
 @Accessors(fluent = true)
-public final class CommandInfo {
+public final class PathInfo {
     /**
      * Defines the command path.
      * Can also be thought of as the command's name.
@@ -42,17 +42,16 @@ public final class CommandInfo {
     private final String path;
 
     /**
-     * Defines the description of the command,
-     * if it wasn't provided, it returns a empty
-     * String
+     * Defines the description of the command.
+     * Defaults to an empty string.
      */
     @NotNull
     @Builder.Default
     private final String description = "";
 
     /**
-     * Defines the command usage for the MessageuHolder,
-     * if it's empty, returns a empty String
+     * Defines the command usage.
+     * Defaults to an auto generated usage message.
      */
     @NotNull
     @Builder.Default
@@ -60,16 +59,16 @@ public final class CommandInfo {
 
     /**
      * Defines the permission required to execute
-     * the command, if it's empty the default permission
-     * is a empty String
+     * the command.
+     * Defaults to an empty string.
      */
     @NotNull
     @Builder.Default
     private final String permission = "";
 
     /**
-     * Defines the CommandTarget of the command,
-     * if it's empty, it returns a ALL target.
+     * Defines the expected sender type to execute the command.
+     * Defaults to any sender.
      */
     @NotNull
     @Builder.Default
@@ -83,8 +82,30 @@ public final class CommandInfo {
     @Builder.Default
     private final boolean async = false;
 
-    public static CommandInfo ofCommand(Command command) {
-        return new CommandInfo(
+    public PathInfo(@NotNull String path) {
+        this(
+          path,
+          "",
+          "",
+          "",
+          SenderType.ANY,
+          false
+        );
+    }
+
+    public static PathInfo combine(PathInfo node, PathInfo leaf) {
+        return new PathInfo(
+          String.format("%s %s", node.path, leaf.path),
+          leaf.description,
+          leaf.usage,
+          leaf.permission,
+          leaf.target,
+          leaf.async
+        );
+    }
+
+    public static PathInfo ofCommand(Command command) {
+        return new PathInfo(
           command.value(),
           command.description(),
           command.usage(),
@@ -92,5 +113,17 @@ public final class CommandInfo {
           command.target(),
           command.async()
         );
+    }
+
+    @Override
+    public String toString() {
+        return "PathInfo{" +
+          "path='" + path + '\'' +
+          ", description='" + description + '\'' +
+          ", usage='" + usage + '\'' +
+          ", permission='" + permission + '\'' +
+          ", target=" + target +
+          ", async=" + async +
+          '}';
     }
 }

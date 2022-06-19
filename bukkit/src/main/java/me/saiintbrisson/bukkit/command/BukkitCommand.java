@@ -3,7 +3,7 @@ package me.saiintbrisson.bukkit.command;
 import lombok.Getter;
 import me.saiintbrisson.minecraft.command.CommandExecutor;
 import me.saiintbrisson.minecraft.command.command.Command;
-import me.saiintbrisson.minecraft.command.Path;
+import me.saiintbrisson.minecraft.command.path.Path;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

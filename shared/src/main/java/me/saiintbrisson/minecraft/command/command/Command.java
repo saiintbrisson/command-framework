@@ -16,7 +16,7 @@
 
 package me.saiintbrisson.minecraft.command.command;
 
-import me.saiintbrisson.minecraft.command.Path;
+import me.saiintbrisson.minecraft.command.path.Path;
 
 /**
  * The Command interface details information about a final

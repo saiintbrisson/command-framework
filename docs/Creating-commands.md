@@ -1,4 +1,4 @@
-There are two ways to create a command: by methods annotated with a [Command][Command] or by registering a [CommandInfo][CommandInfo] with a [CommandExecutor][CommandExecutor] using `CommandFrame#registerCommand(CommandInfo, CommandExecutor)`.
+There are two ways to create a command: by methods annotated with a [Command][Command] or by registering a [PathInfo][PathInfo] with a [CommandExecutor][CommandExecutor] using `CommandFrame#registerCommand(PathInfo, CommandExecutor)`.
 
 ##### Subcommands
 
@@ -43,12 +43,12 @@ frame.registerCommands(new Command());
 
 The framework also provides a way to create dynamic commands by using the `CommandFrame#registerCommand` method.
 
-[CommandInfo][CommandInfo] has the same fields as [Command][Command] and [CommandExecutor][CommandExecutor] is a functional interface that receives `Context<CommandSender>`.
+[PathInfo][PathInfo] has the same fields as [Command][Command] and [CommandExecutor][CommandExecutor] is a functional interface that receives `Context<CommandSender>`.
 
 ```java
 BukkitFrame frame = new BukkitFrame(plugin);
 
-CommandInfo command = CommandInfo.builder()
+PathInfo command = PathInfo.builder()
   .path("money :username")
   .build();
 frame.registerCommand(command, context -> {
@@ -62,7 +62,7 @@ frame.registerCommand(command, context -> {
 <!--Variables-->
 
 [Command]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/annotation/Command.java
-[CommandInfo]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/command/CommandInfo.java
+[PathInfo]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/command/PathInfo.java
 [CommandExecutor]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/executor/CommandExecutor.java
 
 [Context]: https://github.com/SaiintBrisson/command-framework/blob/master/shared/src/main/java/me/saiintbrisson/minecraft/command/command/Context.java

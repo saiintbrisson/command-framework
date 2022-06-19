@@ -52,7 +52,7 @@ public class DefaultExceptionHandlers {
     @ExceptionHandler
     public void handleIncorrectUsage(Context<?> ctx, IncorrectUsageException ex) {
         ctx.send(new ComponentBuilder("Usage: /").color(ChatColor.RED)
-          .append(ctx.getCommandInfo().usage())
+          .append(ctx.getPathInfo().usage())
           .create());
     }
 }

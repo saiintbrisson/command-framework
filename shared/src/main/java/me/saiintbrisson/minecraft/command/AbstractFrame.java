@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Command;
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
@@ -13,8 +12,11 @@ import me.saiintbrisson.minecraft.command.handlers.reflection.MethodExceptionHan
 import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
 import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
 import me.saiintbrisson.minecraft.command.parameter.Parameters;
+import me.saiintbrisson.minecraft.command.path.Path;
+import me.saiintbrisson.minecraft.command.path.PathInfo;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -32,64 +34,57 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
 
     protected abstract Command getCommand(String name);
 
-    protected abstract void registerPath(Path path, CommandInfo info);
+    protected abstract void registerToPlatform(Path path);
 
-    protected abstract <S> Context<S> createContext(CommandInfo info, S sender, String label, String[] args,
+    protected abstract <S> Context<S> createContext(PathInfo info, S sender, String label, String[] args,
                                                     Map<String, String> inputs);
 
     @Override
     public void registerAll(Object... instances) {
         for (Object instance : instances) {
-            me.saiintbrisson.minecraft.command.annotation.Command objectCommand = instance.getClass()
+            me.saiintbrisson.minecraft.command.annotation.Command containerCommand = instance.getClass()
               .getAnnotation(me.saiintbrisson.minecraft.command.annotation.Command.class);
-            Path root = null;
+            Path container = null;
 
-            if (objectCommand != null) {
-                CommandInfo objectInfo = CommandInfo.ofCommand(objectCommand);
-                Map.Entry<Path, Path> entry = Path.ofCommandInfo(objectInfo);
-                entry.getValue().setInfo(objectInfo);
-
-                root = entry.getValue();
-                registerCommand(entry.getKey(), objectInfo);
+            if (containerCommand != null) {
+                PathInfo containerInfo = PathInfo.ofCommand(containerCommand);
+                container = resolveAndRegister(null, containerInfo.path());
             }
 
-            registerMethods(instance, root);
+            registerMethods(instance, container);
         }
     }
 
-    private void registerMethods(Object instance, Path rootNode) {
+    private void registerMethods(Object instance, Path container) {
         for (Method method : instance.getClass().getDeclaredMethods()) {
             me.saiintbrisson.minecraft.command.annotation.Command methodCommand = method.getAnnotation(
               me.saiintbrisson.minecraft.command.annotation.Command.class);
-            me.saiintbrisson.minecraft.command.annotation.ExceptionHandler methodExceptionHandler= method.getAnnotation(
+            me.saiintbrisson.minecraft.command.annotation.ExceptionHandler methodExceptionHandler = method.getAnnotation(
               me.saiintbrisson.minecraft.command.annotation.ExceptionHandler.class);
 
-            CommandInfo methodInfo;
+            PathInfo methodInfo;
             if (methodCommand != null) {
-                methodInfo = CommandInfo.ofCommand(methodCommand);
+                methodInfo = PathInfo.ofCommand(methodCommand);
             } else if (methodExceptionHandler != null) {
-                methodInfo = CommandInfo.builder().path(methodExceptionHandler.value()).build();
+                methodInfo = PathInfo.builder().path(methodExceptionHandler.value()).build();
             } else {
                 continue;
             }
 
-            Path node = rootNode;
+            Path path = container;
 
             if (!methodInfo.path().isEmpty()) {
-                Map.Entry<Path, Path> entry = Path.ofCommandInfo(methodInfo);
-                if (node == null) {
-                    registerCommand(entry.getKey(), methodInfo);
-                } else {
-                    node.addNode(entry.getKey());
+                path = resolveAndRegister(null, methodInfo.path());
+                if (container != null) {
+                    container.addNode(path);
                 }
-                node = entry.getValue();
-            } else if (methodCommand != null && node == null) {
+            } else if (methodCommand != null && path == null) {
                 throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
             if (methodCommand != null) {
                 CommandHandler<?> commandHandler = new MethodCommandHandler<>(instance, method, Parameters.ofMethod(method));
-                node.setCommandHandler(commandHandler);
+                path.setCommandHandler(commandHandler);
             } else {
                 ExceptionHandler<?, ?> exceptionHandler = new MethodExceptionHandler<>(instance, method);
                 if (method.getParameterCount() != 2) {
@@ -102,34 +97,51 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                     throw new IllegalArgumentException("second parameter must receive a throwable");
                 }
 
-                if (rootNode == null && methodExceptionHandler.value().isEmpty()) {
+                if (container == null && methodExceptionHandler.value().isEmpty()) {
                     getGlobalExceptionHandler().put(throwable, exceptionHandler);
                 } else {
-                    node.getExceptionHandlers().put(throwable, exceptionHandler);
+                    path.getExceptionHandlers().put(throwable, exceptionHandler);
                 }
             }
         }
     }
 
     @Override
-    public <S> void registerCommand(CommandInfo commandInfo, CommandHandler<S> handler) {
-        Map.Entry<Path, Path> entry = Path.ofCommandInfo(commandInfo);
-
-        registerCommand(entry.getKey(), commandInfo);
-        entry.getValue().setCommandHandler(handler);
+    public <S> void registerCommand(PathInfo info, CommandHandler<S> handler) {
+        Path path = resolveAndRegister(null, info.path());
+        path.setCommandHandler(handler);
     }
 
-    private void registerCommand(Path path, CommandInfo info) {
-        Command command = getCommand(path.getIdentifier());
+    private Path resolveAndRegister(
+      Path parent, String path) {
+        Iterator<Path> resolver = Path.createPathResolver(path);
+        Path head = resolver.next();
+        Path tail = head;
+
+        while (resolver.hasNext()) {
+            Path temp = resolver.next();
+            if (parent != null) {
+                temp.setInfo(PathInfo.combine(tail.getInfo(), temp.getInfo()));
+            }
+            tail.addNode(tail = temp);
+        }
+
+        if (parent != null) {
+            head.setInfo(PathInfo.combine(parent.getInfo(), head.getInfo()));
+            parent.addNode(head);
+        }
+
+        Command command = getCommand(head.getIdentifier());
         if (command != null) {
-            command.getPath().apply(path);
-            return;
+            command.getPath().apply(head);
+        } else {
+            if (head.getIdentifier().isEmpty()) {
+                throw new IllegalArgumentException("root command name cannot be empty");
+            }
+
+            registerToPlatform(head);
         }
 
-        if (path.getIdentifier().isEmpty()) {
-            throw new IllegalArgumentException("root command name cannot be empty");
-        }
-
-        registerPath(path, info);
+        return tail;
     }
 }

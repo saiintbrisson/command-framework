@@ -1,10 +1,10 @@
 package me.saiintbrisson.bukkit.command;
 
 import me.saiintbrisson.minecraft.command.ExecutionValidator;
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
 import me.saiintbrisson.minecraft.command.exceptions.MismatchedTargetException;
 import me.saiintbrisson.minecraft.command.SenderType;
+import me.saiintbrisson.minecraft.command.path.PathInfo;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -14,13 +14,13 @@ import org.bukkit.entity.Player;
  */
 final class BukkitExecutionValidator implements ExecutionValidator<CommandSender> {
     @Override
-    public void validate(CommandInfo commandInfo, CommandSender sender)
+    public void validate(PathInfo pathInfo, CommandSender sender)
       throws InsufficientPermissionsException, MismatchedTargetException {
-        if (!commandInfo.permission().isEmpty() && !sender.hasPermission(commandInfo.permission())) {
-            throw new InsufficientPermissionsException(commandInfo.permission());
+        if (!pathInfo.permission().isEmpty() && !sender.hasPermission(pathInfo.permission())) {
+            throw new InsufficientPermissionsException(pathInfo.permission());
         }
 
-        SenderType target = commandInfo.target();
+        SenderType target = pathInfo.target();
         SenderType senderType = fromSender(sender);
         if (target != SenderType.ANY && senderType != target) {
             throw new MismatchedTargetException(target, senderType);

@@ -16,13 +16,13 @@
 
 package me.saiintbrisson.minecraft.command;
 
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
 import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
 import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.Extractor;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.TypeAdapter;
+import me.saiintbrisson.minecraft.command.path.PathInfo;
 
 /**
  * The CommandFrame is the core of the framework,
@@ -99,12 +99,12 @@ public interface CommandFrame<P> {
     void registerAll(Object... instances);
 
     /**
-     * Registers a single command with the CommandInfo and Executor
+     * Registers a single command with the PathInfo and Executor
      *
-     * @param commandInfo the command metadata.
-     * @param executor    the command to be executed.
+     * @param pathInfo the command metadata.
+     * @param executor the command to be executed.
      */
-    <S> void registerCommand(CommandInfo commandInfo, CommandHandler<S> executor);
+    <S> void registerCommand(PathInfo pathInfo, CommandHandler<S> executor);
 
     /**
      * Registers a single completer for the given command.

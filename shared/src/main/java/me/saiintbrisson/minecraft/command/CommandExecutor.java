@@ -6,6 +6,7 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exceptions.IncorrectUsageException;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
+import me.saiintbrisson.minecraft.command.path.Path;
 
 import java.util.Arrays;
 import java.util.Iterator;

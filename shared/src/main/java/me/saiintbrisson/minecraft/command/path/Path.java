@@ -1,15 +1,11 @@
-package me.saiintbrisson.minecraft.command;
+package me.saiintbrisson.minecraft.command.path;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -17,32 +13,26 @@ import java.util.*;
  * @author Luiz Carlos Carvalho
  */
 @Getter
-@ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class Path {
-    @ToString.Include
-    @EqualsAndHashCode.Include
-    private final @NotNull String identifier;
-    @ToString.Include
+    private final String identifier;
+    @Setter
+    private PathInfo info;
+
     private final boolean input;
 
-    @ToString.Include
     private final Set<Path> nodes;
-    @ToString.Include
     private final Set<String> aliases;
 
     @Setter
     private CommandHandler commandHandler;
     @Setter
     private CompleterHandler completerHandler;
-
     private final Map<Class<?>, ExceptionHandler> exceptionHandlers;
 
-    @Setter
-    private CommandInfo info;
-
-    public Path(@NotNull String identifier, boolean input, @NotNull Set<String> aliases) {
+    public Path(@NotNull String identifier, PathInfo info, boolean input, @NotNull Set<String> aliases) {
         this.identifier = identifier;
+        this.info = info;
+
         this.input = input;
 
         if (input && !aliases.isEmpty()) {
@@ -107,52 +97,64 @@ public final class Path {
     /**
      * Parses the giving string into a tree of nodes.
      *
-     * @param info the command info path to parse
-     * @return an entry where the first key is the head path,
-     * and the value is the tail.
+     * @param path the path to follow.
+     * @return an iterator that goes through every path
+     * until it reaches the tail.
      */
-    public static Map.Entry<Path, Path> ofCommandInfo(CommandInfo info) {
-        if (info.path().isEmpty()) {
-            Path path = new Path("", false, new HashSet<>());
-            path.setInfo(info);
-
-            return new AbstractMap.SimpleImmutableEntry<>(path, path);
-        }
-
-        AbstractMap.SimpleImmutableEntry<Path, Path> path = createPath(info.path());
-        if (path == null) {
-            throw new IllegalArgumentException("command name must not be empty");
-        }
-
-        path.getValue().setInfo(info);
-        return path;
+    public static Iterator<Path> createPathResolver(String path) {
+        return new PathResolver(path);
     }
 
-    @Nullable
-    private static AbstractMap.SimpleImmutableEntry<Path, Path> createPath(String string) {
-        String[] parts = string.split(" ", 2);
-        if (parts.length == 0) return null;
+    @Override
+    public String toString() {
+        return "Path{" +
+          "identifier='" + identifier + '\'' +
+          ", info=" + info +
+          ", nodes=" + nodes +
+          '}';
+    }
 
-        List<String> names = new ArrayList<>(Arrays.asList(parts[0].split("\\|")));
-        if (names.stream().anyMatch(String::isEmpty)) {
-            throw new IllegalArgumentException("aliases must not be empty");
+    private static class PathResolver implements Iterator<Path> {
+        private final String concatenatedPath;
+        private final String[] pathSegments;
+        private int currentIdx;
+
+        public PathResolver(String concatenatedPath) {
+            this.concatenatedPath = concatenatedPath;
+            this.pathSegments = concatenatedPath.split(" ");
+            this.currentIdx = 0;
         }
 
-        String identifier = names.remove(0);
-        HashSet<String> aliases = new HashSet<>(names);
+        @Override
+        public boolean hasNext() {
+            return currentIdx < pathSegments.length;
+        }
 
-        boolean isInput = identifier.startsWith(":");
-        Path path = new Path(identifier.substring(isInput ? 1 : 0), isInput, aliases);
+        @Override
+        public Path next() {
+            int pathI = ordinalIndexOf(concatenatedPath, " ", currentIdx + 1);
+            if (pathI == -1) pathI = concatenatedPath.length();
 
-        Path current = path;
-        if (parts.length > 1) {
-            Map.Entry<Path, Path> next = createPath(parts[1]);
-            if (next != null) {
-                current.addNode(next.getKey());
-                current = next.getValue();
+            PathInfo info = new PathInfo(concatenatedPath.substring(0, pathI));
+            String path = pathSegments[currentIdx++];
+            boolean isInput = path.startsWith(":");
+
+            List<String> names = new ArrayList<>(Arrays.asList(path.split("\\|")));
+            if (names.stream().anyMatch(String::isEmpty)) {
+                throw new IllegalArgumentException("alias must not be empty");
             }
+
+            String identifier = names.remove(0);
+            Set<String> aliases = new HashSet<>(names);
+
+            return new Path(identifier.substring(isInput ? 1 : 0), info, isInput, aliases);
         }
 
-        return new AbstractMap.SimpleImmutableEntry<>(path, current);
+        private static int ordinalIndexOf(String str, String subStr, int n) {
+            int pos = str.indexOf(subStr);
+            while (--n > 0 && pos != -1)
+                pos = str.indexOf(subStr, pos + 1);
+            return pos;
+        }
     }
 }

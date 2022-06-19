@@ -1,14 +1,14 @@
 package me.saiintbrisson.bukkit.command;
 
 import me.saiintbrisson.minecraft.command.CommandExecutor;
-import me.saiintbrisson.minecraft.command.command.CommandInfo;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exceptions.DefaultExceptionHandlers;
 import me.saiintbrisson.minecraft.command.handlers.CompleterHandler;
 import me.saiintbrisson.minecraft.command.parameter.AdapterMap;
 import me.saiintbrisson.minecraft.command.AbstractFrame;
 import me.saiintbrisson.minecraft.command.parameter.ExtractorMap;
-import me.saiintbrisson.minecraft.command.Path;
+import me.saiintbrisson.minecraft.command.path.Path;
+import me.saiintbrisson.minecraft.command.path.PathInfo;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -51,17 +51,13 @@ public final class BukkitFrame extends AbstractFrame<Plugin> {
     }
 
     @Override
-    protected void registerPath(Path path, CommandInfo info) {
+    protected void registerToPlatform(Path path) {
         BukkitCommand command = new BukkitCommand(path, this.executor);
-        if (path.getInfo() == null) {
-            path.setInfo(CommandInfo.builder().path(path.getIdentifier()).build());
-        }
-
         this.commandMap.register(getPlugin().getName(), command);
     }
 
     @Override
-    protected <S> Context<S> createContext(CommandInfo info, S sender, String label, String[] args, Map<String, String> inputs) {
+    protected <S> Context<S> createContext(PathInfo info, S sender, String label, String[] args, Map<String, String> inputs) {
         return (Context<S>) new BukkitContext(this, info, label, (CommandSender) sender, args, inputs);
     }
 
