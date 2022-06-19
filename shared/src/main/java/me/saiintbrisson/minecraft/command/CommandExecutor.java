@@ -3,6 +3,7 @@ package me.saiintbrisson.minecraft.command;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Context;
+import me.saiintbrisson.minecraft.command.exceptions.IncorrectUsageException;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 
@@ -62,7 +63,7 @@ public final class CommandExecutor<P, S> {
                     ctx = frame.createContext(current.getInfo(), sender, label, args, inputs);
 
                     if (handler == null) {
-                        throw new IllegalArgumentException(String.format("path %s is unhandled", current.getIdentifier()));
+                        throw new IncorrectUsageException(String.format("path %s is unhandled", current.getIdentifier()));
                     }
 
                     return handler.handle(ctx);
@@ -76,7 +77,7 @@ public final class CommandExecutor<P, S> {
                     || sub.getIdentifier().equals(loweredArg)
                     || sub.getAliases().contains(loweredArg))
                   .findFirst()
-                  .orElseThrow(() -> new IllegalArgumentException(String.format("%s does not apply to any paths", arg)));
+                  .orElseThrow(() -> new IncorrectUsageException(String.format("%s does not apply to any paths", arg)));
 
                 if (current.isInput()) {
                     inputs.put(current.getIdentifier(), arg);
