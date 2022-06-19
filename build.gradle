@@ -1,15 +1,11 @@
 allprojects {
-    apply plugin: 'maven'
-
     group 'me.saiintbrisson.command'
     version '2.0.0-SNAPSHOT'
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
 }
 
 subprojects {
+    apply plugin: 'maven-publish'
+
     afterEvaluate {
         sourceCompatibility = '1.8'
 
@@ -34,5 +30,9 @@ subprojects {
         test {
             useJUnitPlatform()
         }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
     }
 }
