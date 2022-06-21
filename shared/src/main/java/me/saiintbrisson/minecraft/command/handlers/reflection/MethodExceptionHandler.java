@@ -2,7 +2,6 @@ package me.saiintbrisson.minecraft.command.handlers.reflection;
 
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Context;
-import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import me.saiintbrisson.minecraft.command.parameter.Parameters;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -18,19 +17,21 @@ import java.util.Collection;
 public class MethodExceptionHandler<S, E extends Throwable> implements ExceptionHandler<S, E> {
     private final Object instance;
     private final Method method;
+    private final Parameters parameters;
 
     @Override
     public void handle(Context<S> context, E exception) {
         try {
-            Object result = method.invoke(instance, context, exception);
+            Collection<Object> parameters = this.parameters.extractParameters(context, exception);
+            Object result = method.invoke(instance, parameters.toArray());
 
-            parseReturn(context, result);
+            evalReturn(context, result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e.getCause());
         }
     }
 
-    private void parseReturn(Context<?> context, Object result) {
+    private void evalReturn(Context<?> context, Object result) {
         if (result instanceof String) {
             context.send((String) result);
         } else if (result instanceof String[]) {

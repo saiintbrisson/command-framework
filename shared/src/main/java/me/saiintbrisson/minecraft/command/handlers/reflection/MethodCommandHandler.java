@@ -22,16 +22,16 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
     @Override
     public boolean handle(Context<S> context) {
         try {
-            Collection<?> parameters = this.parameters.extractParameters(context);
+            Collection<?> parameters = this.parameters.extractParameters(context, null);
             Object result = method.invoke(instance, parameters.toArray());
 
-            return parseReturn(context, result);
+            return evalReturn(context, result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e.getCause());
         }
     }
 
-    private boolean parseReturn(Context<?> context, Object result) {
+    private boolean evalReturn(Context<?> context, Object result) {
         if (result == null) {
             return false;
         } else if (result.getClass().equals(Boolean.TYPE)) {

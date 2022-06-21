@@ -48,10 +48,6 @@ public final class Path {
         this.exceptionHandlers = new HashMap<>();
     }
 
-    public boolean isLeaf() {
-        return !this.nodes.isEmpty();
-    }
-
     public Optional<Path> getNode(String name) {
         final String loweredName = name.toLowerCase();
 

@@ -74,7 +74,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
             Path path = container;
 
             if (!methodInfo.path().isEmpty()) {
-                path = resolveAndRegister(null, methodInfo.path());
+                path = resolveAndRegister(container, methodInfo.path());
                 if (container != null) {
                     container.addNode(path);
                 }
@@ -82,22 +82,18 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
                 throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
+            Parameters parameters = Parameters.ofMethod(method, methodCommand == null);
+
             if (methodCommand != null) {
-                CommandHandler<?> commandHandler = new MethodCommandHandler<>(instance, method, Parameters.ofMethod(method));
+                CommandHandler<?> commandHandler = new MethodCommandHandler<>(instance, method, parameters);
                 path.setCommandHandler(commandHandler);
             } else {
-                ExceptionHandler<?, ?> exceptionHandler = new MethodExceptionHandler<>(instance, method);
-                if (method.getParameterCount() != 2) {
-                    throw new IllegalArgumentException("exception handler must receive two arguments");
-                }
+                ExceptionHandler<?, ?> exceptionHandler = new MethodExceptionHandler<>(instance, method, parameters);
+                Class<?> throwable = parameters
+                  .getException()
+                  .orElseThrow(() -> new IllegalArgumentException("missing exception parameter"));
 
-                Class<?> throwable = method.getParameters()[1].getType();
-                boolean isThrowable = Throwable.class.isAssignableFrom(throwable);
-                if (!isThrowable) {
-                    throw new IllegalArgumentException("second parameter must receive a throwable");
-                }
-
-                if (container == null && methodExceptionHandler.value().isEmpty()) {
+                if (path == null) {
                     getGlobalExceptionHandler().put(throwable, exceptionHandler);
                 } else {
                     path.getExceptionHandlers().put(throwable, exceptionHandler);
@@ -121,7 +117,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
         while (resolver.hasNext()) {
             Path temp = resolver.next();
             if (parent != null) {
-                temp.setInfo(PathInfo.combine(tail.getInfo(), temp.getInfo()));
+                temp.setInfo(PathInfo.combine(parent.getInfo(), temp.getInfo()));
             }
             tail.addNode(tail = temp);
         }

@@ -1,6 +1,5 @@
 package me.saiintbrisson.minecraft.command.parameter;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.saiintbrisson.minecraft.command.annotation.Extract;
@@ -8,13 +7,12 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exceptions.NoSuchAdapterException;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.Extractor;
 import me.saiintbrisson.minecraft.command.parameter.interfaces.TypeAdapter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,71 +23,97 @@ import java.util.stream.Collectors;
 public final class Parameters {
     private final Collection<HandlerParameter> parameters;
 
-    public Collection<Object> extractParameters(Context<?> ctx) {
+    public Collection<Object> extractParameters(Context<?> ctx, @Nullable Throwable exception) {
         Iterator<String> inputs = ctx.getInputs().values().iterator();
 
         return parameters.stream().map(parameter -> {
-            if (parameter instanceof ArgumentParameter) {
-                if (!inputs.hasNext()) {
-                    throw new IllegalArgumentException("received less arguments than needed");
-                }
+            Class<?> type = parameter.type;
 
-                return parseArgument((ArgumentParameter) parameter, ctx, inputs.next());
-            } else if (parameter instanceof ExtractorParameter) {
-                return instantiateExtractor((ExtractorParameter) parameter, ctx);
+            switch (parameter.behavior) {
+                case ARGUMENT:
+                    if (!inputs.hasNext()) {
+                        throw new IllegalArgumentException("received less arguments than needed");
+                    }
+
+                    return parseArgument(type, ctx, inputs.next());
+                case EXTRACTOR:
+                    return instantiateExtractor(type, ctx);
+                case EXCEPTION:
+                    return extractException(exception, type);
+                default:
+                    throw new UnsupportedOperationException("unknown parameter type");
             }
-
-            throw new UnsupportedOperationException("unknown parameter type");
         }).collect(Collectors.toList());
     }
 
-    public Object instantiateExtractor(ExtractorParameter parameter, Context<?> ctx) {
-        Extractor<?> extractor = ctx.getCommandFrame().getExtractorMap().get(parameter.getType());
+    public Object instantiateExtractor(Class<?> parameterType, Context<?> ctx) {
+        Extractor<?> extractor = ctx.getCommandFrame().getExtractorMap().get(parameterType);
         if (extractor == null) {
-            throw new NoSuchAdapterException(parameter.getType());
+            throw new NoSuchAdapterException(parameterType);
         }
 
         return extractor.extract(ctx);
     }
 
-    public Object parseArgument(ArgumentParameter parameter, Context<?> ctx, String input) {
-        TypeAdapter<?> adapter = ctx.getCommandFrame().getAdapterMap().get(parameter.getType());
+    public Object parseArgument(Class<?> parameterType, Context<?> ctx, String input) {
+        TypeAdapter<?> adapter = ctx.getCommandFrame().getAdapterMap().get(parameterType);
         if (adapter == null) {
-            throw new NoSuchAdapterException(parameter.getType());
+            throw new NoSuchAdapterException(parameterType);
         }
 
         return adapter.convertNonNull(input);
     }
 
-    public static Parameters ofMethod(Method method) {
+    @NotNull
+    private static Throwable extractException(@Nullable Throwable exception, Class<?> type) {
+        if (exception == null) {
+            throw new IllegalArgumentException("expected an exception");
+        }
+
+        if (!type.equals(exception.getClass())) {
+            throw new IllegalArgumentException("incompatible exception type");
+        }
+
+        return exception;
+    }
+
+    public Optional<Class<?>> getException() {
+        return this.parameters
+          .stream()
+          .filter(parameter -> parameter.behavior == ParameterBehavior.EXCEPTION)
+          .findFirst()
+          .map(p -> p.type);
+    }
+
+    public static Parameters ofMethod(Method method, boolean exceptionHandler) {
         List<HandlerParameter> parameters = new LinkedList<>();
 
         for (Parameter parameter : method.getParameters()) {
             Class<?> type = parameter.getType();
 
             if (type.equals(Context.class) || parameter.getAnnotation(Extract.class) != null) {
-                parameters.add(new ExtractorParameter(type));
+                parameters.add(new HandlerParameter(type, ParameterBehavior.EXTRACTOR));
             } else {
-                parameters.add(new ArgumentParameter(type));
+                if (exceptionHandler && Throwable.class.isAssignableFrom(type)) {
+                    parameters.add(new HandlerParameter(type, ParameterBehavior.EXCEPTION));
+                } else {
+                    parameters.add(new HandlerParameter(type, ParameterBehavior.ARGUMENT));
+                }
             }
         }
 
         return new Parameters(parameters);
     }
 
-    private interface HandlerParameter {
-        Class<?> getType();
+    @RequiredArgsConstructor
+    private static class HandlerParameter {
+        private final Class<?> type;
+        private final ParameterBehavior behavior;
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    private static class ArgumentParameter implements HandlerParameter {
-        private final Class<?> type;
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    private static class ExtractorParameter implements HandlerParameter {
-        private final Class<?> type;
+    enum ParameterBehavior {
+        ARGUMENT,
+        EXTRACTOR,
+        EXCEPTION,
     }
 }
