@@ -1,6 +1,7 @@
 package me.saiintbrisson.minecraft.command.handlers.reflection;
 
 import lombok.AllArgsConstructor;
+import me.saiintbrisson.minecraft.command.CommandExecutor;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.parameter.Parameters;
@@ -26,8 +27,10 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
             Object result = method.invoke(instance, parameters.toArray());
 
             return evalReturn(context, result);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e.getCause());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch ( InvocationTargetException e) {
+            throw new CommandExecutor.ExecutionException(e.getCause(), context);
         }
     }
 

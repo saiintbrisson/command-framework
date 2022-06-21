@@ -107,7 +107,7 @@ public final class CommandExecutor<P, S> {
     }
 
 
-    private static class ExecutionException extends Exception {
+    public static class ExecutionException extends RuntimeException {
         private final Context context;
 
         public ExecutionException(Throwable cause, Context context) {

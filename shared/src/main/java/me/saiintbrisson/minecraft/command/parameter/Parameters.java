@@ -23,6 +23,14 @@ import java.util.stream.Collectors;
 public final class Parameters {
     private final Collection<HandlerParameter> parameters;
 
+    public Optional<Class<?>> getException() {
+        return this.parameters
+          .stream()
+          .filter(parameter -> parameter.behavior == ParameterBehavior.EXCEPTION)
+          .findFirst()
+          .map(p -> p.type);
+    }
+
     public Collection<Object> extractParameters(Context<?> ctx, @Nullable Throwable exception) {
         Iterator<String> inputs = ctx.getInputs().values().iterator();
 
@@ -46,7 +54,7 @@ public final class Parameters {
         }).collect(Collectors.toList());
     }
 
-    public Object instantiateExtractor(Class<?> parameterType, Context<?> ctx) {
+    private static Object instantiateExtractor(Class<?> parameterType, Context<?> ctx) {
         Extractor<?> extractor = ctx.getCommandFrame().getExtractorMap().get(parameterType);
         if (extractor == null) {
             throw new NoSuchAdapterException(parameterType);
@@ -55,7 +63,7 @@ public final class Parameters {
         return extractor.extract(ctx);
     }
 
-    public Object parseArgument(Class<?> parameterType, Context<?> ctx, String input) {
+    private static Object parseArgument(Class<?> parameterType, Context<?> ctx, String input) {
         TypeAdapter<?> adapter = ctx.getCommandFrame().getAdapterMap().get(parameterType);
         if (adapter == null) {
             throw new NoSuchAdapterException(parameterType);
@@ -64,7 +72,6 @@ public final class Parameters {
         return adapter.convertNonNull(input);
     }
 
-    @NotNull
     private static Throwable extractException(@Nullable Throwable exception, Class<?> type) {
         if (exception == null) {
             throw new IllegalArgumentException("expected an exception");
@@ -75,14 +82,6 @@ public final class Parameters {
         }
 
         return exception;
-    }
-
-    public Optional<Class<?>> getException() {
-        return this.parameters
-          .stream()
-          .filter(parameter -> parameter.behavior == ParameterBehavior.EXCEPTION)
-          .findFirst()
-          .map(p -> p.type);
     }
 
     public static Parameters ofMethod(Method method, boolean exceptionHandler) {

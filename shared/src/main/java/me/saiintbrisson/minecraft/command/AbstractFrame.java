@@ -108,8 +108,7 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
         path.setCommandHandler(handler);
     }
 
-    private Path resolveAndRegister(
-      Path parent, String path) {
+    private Path resolveAndRegister(Path parent, String path) {
         Iterator<Path> resolver = Path.createPathResolver(path);
         Path head = resolver.next();
         Path tail = head;
