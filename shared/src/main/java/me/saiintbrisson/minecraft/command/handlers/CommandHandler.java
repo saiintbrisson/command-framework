@@ -16,6 +16,9 @@
 
 package me.saiintbrisson.minecraft.command.handlers;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Context;
 
 /**
@@ -32,5 +35,24 @@ public interface CommandHandler<S> {
      * @param context the command context.
      * @return whether the command completed successfully.
      */
-    boolean handle(Context<S> context);
+    HandlerResponse handle(Context<S> context);
+
+    @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    class HandlerResponse {
+        public static HandlerResponse success() {
+            return new HandlerResponse(true, null);
+        }
+
+        public static HandlerResponse error() {
+            return new HandlerResponse(false, null);
+        }
+
+        public static HandlerResponse error(Throwable throwable) {
+            return new HandlerResponse(false, throwable);
+        }
+
+        private final boolean success;
+        private final Throwable throwable;
+    }
 }

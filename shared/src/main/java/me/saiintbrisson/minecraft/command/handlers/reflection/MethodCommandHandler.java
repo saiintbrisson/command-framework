@@ -21,7 +21,7 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
     private final Parameters parameters;
 
     @Override
-    public boolean handle(Context<S> context) {
+    public HandlerResponse handle(Context<S> context) {
         try {
             Collection<?> parameters = this.parameters.extractParameters(context, null);
             Object result = method.invoke(instance, parameters.toArray());
@@ -29,16 +29,16 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
             return evalReturn(context, result);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        } catch ( InvocationTargetException e) {
-            throw new CommandExecutor.ExecutionException(e.getCause(), context);
+        } catch (InvocationTargetException e) {
+            return HandlerResponse.error(e);
         }
     }
 
-    private boolean evalReturn(Context<?> context, Object result) {
+    private HandlerResponse evalReturn(Context<?> context, Object result) {
         if (result == null) {
-            return false;
+            return HandlerResponse.error();
         } else if (result.getClass().equals(Boolean.TYPE)) {
-            return (boolean) result;
+            return (boolean) result ? HandlerResponse.success() : HandlerResponse.error();
         } else if (result instanceof String) {
             context.send((String) result);
         } else if (result instanceof String[]) {
@@ -47,8 +47,10 @@ public class MethodCommandHandler<S> implements CommandHandler<S> {
             context.send((BaseComponent) result);
         } else if (result instanceof BaseComponent[]) {
             context.send((BaseComponent[]) result);
+        } else if (result instanceof HandlerResponse) {
+            return ((HandlerResponse) result);
         }
 
-        return true;
+        return HandlerResponse.success();
     }
 }

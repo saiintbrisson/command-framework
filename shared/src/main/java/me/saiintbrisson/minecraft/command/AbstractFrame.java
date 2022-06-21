@@ -2,9 +2,11 @@ package me.saiintbrisson.minecraft.command;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Command;
 import me.saiintbrisson.minecraft.command.command.Context;
+import me.saiintbrisson.minecraft.command.exceptions.IncorrectUsageException;
+import me.saiintbrisson.minecraft.command.exceptions.InsufficientPermissionsException;
+import me.saiintbrisson.minecraft.command.exceptions.MismatchedTargetException;
 import me.saiintbrisson.minecraft.command.handlers.CommandHandler;
 import me.saiintbrisson.minecraft.command.handlers.ExceptionHandler;
 import me.saiintbrisson.minecraft.command.handlers.reflection.MethodCommandHandler;
@@ -16,6 +18,7 @@ import me.saiintbrisson.minecraft.command.path.Path;
 import me.saiintbrisson.minecraft.command.path.PathInfo;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -24,13 +27,23 @@ import java.util.Map;
  */
 
 @Getter
-@RequiredArgsConstructor
 public abstract class AbstractFrame<P> implements CommandFrame<P> {
     private final P plugin;
     private final AdapterMap adapterMap;
     private final ExtractorMap extractorMap;
     @Getter(AccessLevel.PACKAGE)
     private final Map<Class<?>, ExceptionHandler> globalExceptionHandler;
+
+    public AbstractFrame(P plugin) {
+        this.plugin = plugin;
+        this.adapterMap = new AdapterMap();
+        this.extractorMap = new ExtractorMap();
+        this.globalExceptionHandler = new HashMap<Class<?>, ExceptionHandler>() {{
+            put(IncorrectUsageException.class, new IncorrectUsageException.Handler());
+            put(InsufficientPermissionsException.class, new InsufficientPermissionsException.Handler());
+            put(MismatchedTargetException.class, new MismatchedTargetException.Handler());
+        }};
+    }
 
     protected abstract Command getCommand(String name);
 
@@ -62,29 +75,31 @@ public abstract class AbstractFrame<P> implements CommandFrame<P> {
             me.saiintbrisson.minecraft.command.annotation.ExceptionHandler methodExceptionHandler = method.getAnnotation(
               me.saiintbrisson.minecraft.command.annotation.ExceptionHandler.class);
 
-            PathInfo methodInfo;
+            PathInfo info;
             if (methodCommand != null) {
-                methodInfo = PathInfo.ofCommand(methodCommand);
+                info = PathInfo.ofCommand(methodCommand);
             } else if (methodExceptionHandler != null) {
-                methodInfo = PathInfo.builder().path(methodExceptionHandler.value()).build();
+                info = PathInfo.builder().path(methodExceptionHandler.value()).build();
             } else {
                 continue;
             }
 
             Path path = container;
 
-            if (!methodInfo.path().isEmpty()) {
-                path = resolveAndRegister(container, methodInfo.path());
+            if (!info.path().isEmpty()) {
+                path = resolveAndRegister(container, info.path());
                 if (container != null) {
                     container.addNode(path);
                 }
-            } else if (methodCommand != null && path == null) {
-                throw new IllegalArgumentException("empty paths must be located within a command container class");
             }
 
             Parameters parameters = Parameters.ofMethod(method, methodCommand == null);
 
             if (methodCommand != null) {
+                if (path == null) {
+                    throw new IllegalArgumentException("empty paths must be located within a command container class");
+                }
+
                 CommandHandler<?> commandHandler = new MethodCommandHandler<>(instance, method, parameters);
                 path.setCommandHandler(commandHandler);
             } else {

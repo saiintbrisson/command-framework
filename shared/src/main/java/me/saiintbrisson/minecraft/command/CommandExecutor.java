@@ -1,5 +1,6 @@
 package me.saiintbrisson.minecraft.command;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.saiintbrisson.minecraft.command.command.Context;
@@ -23,16 +24,18 @@ public final class CommandExecutor<P, S> {
     private final ExecutionValidator<S> validator;
 
     public boolean execute(S sender, String label, String[] args, Path root) {
-        try {
-            Execution execution = new Execution(sender, label, args);
-            return execution.walk(root);
-        } catch (ExecutionException e) {
-            ExceptionHandler handler = frame.getGlobalExceptionHandler().get(e.getCause().getClass());
-            if (handler == null) throw new RuntimeException(e.getCause());
-
-            handler.handle(e.context, e.getCause());
-            return false;
+        Execution execution = new Execution(sender, label, args);
+        ExecutionResponse response = execution.walk(root);
+        if (response.handled) {
+            return response.response.isSuccess();
         }
+
+        Throwable throwable = response.response.getThrowable();
+        ExceptionHandler handler = frame.getGlobalExceptionHandler().get(throwable.getClass());
+        if (handler == null) throw new RuntimeException(throwable);
+
+        handler.handle(response.context, throwable);
+        return false;
     }
 
     private class Execution {
@@ -51,8 +54,8 @@ public final class CommandExecutor<P, S> {
             this.inputs = new LinkedHashMap<>();
         }
 
-        private boolean walk(Path current) throws ExecutionException {
-            Context ctx = null;
+        private ExecutionResponse walk(Path current) {
+            Context<?> ctx = null;
 
             try {
                 if (current.getInfo() != null) {
@@ -67,16 +70,18 @@ public final class CommandExecutor<P, S> {
                         throw new IncorrectUsageException(String.format("path %s is unhandled", current.getIdentifier()));
                     }
 
-                    return handler.handle(ctx);
+                    return new ExecutionResponse(ctx, handler.handle(ctx), true);
                 }
 
                 final String arg = iterator.next();
                 final String loweredArg = arg.toLowerCase();
 
-                current = current.getNodes().stream()
-                  .filter(sub -> sub.isInput()
-                    || sub.getIdentifier().equals(loweredArg)
-                    || sub.getAliases().contains(loweredArg))
+                current = current
+                  .getNodes()
+                  .stream()
+                  .filter(sub -> sub.isInput() || sub.getIdentifier().equals(loweredArg) || sub
+                    .getAliases()
+                    .contains(loweredArg))
                   .findFirst()
                   .orElseThrow(() -> new IncorrectUsageException(String.format("%s does not apply to any paths", arg)));
 
@@ -84,35 +89,35 @@ public final class CommandExecutor<P, S> {
                     inputs.put(current.getIdentifier(), arg);
                 }
 
-                return walk(current);
-            } catch (ExecutionException e) {
-                handleException(current, e.context, e.getCause());
-            } catch (RuntimeException e) {
-                handleException(current, ctx, e);
-            }
+                ExecutionResponse response = walk(current);
+                if (!response.handled) {
+                    response = handleException(current, response.context, response.response.getThrowable());
+                }
 
-            return false;
+                return response;
+            } catch (RuntimeException e) {
+                return handleException(current, ctx, e);
+            }
         }
 
-        private void handleException(Path current, Context ctx, Throwable e) throws ExecutionException {
+        private ExecutionResponse handleException(Path current, Context ctx, Throwable e) {
             if (ctx == null) {
                 ctx = frame.createContext(current.getInfo(), sender, label, args, inputs);
             }
 
             ExceptionHandler handler = current.getExceptionHandlers().get(e.getClass());
-            if (handler == null) throw new ExecutionException(e, ctx);
+            if (handler == null) return new ExecutionResponse(ctx, CommandHandler.HandlerResponse.error(e));
 
             handler.handle(ctx, e);
+            return new ExecutionResponse(ctx, CommandHandler.HandlerResponse.error(e), true);
         }
     }
 
-
-    public static class ExecutionException extends RuntimeException {
-        private final Context context;
-
-        public ExecutionException(Throwable cause, Context context) {
-            super(cause);
-            this.context = context;
-        }
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    private class ExecutionResponse {
+        private final Context<?> context;
+        private final CommandHandler.HandlerResponse response;
+        private boolean handled;
     }
 }
