@@ -51,8 +51,14 @@ public class DefaultExceptionHandlers {
 
     @ExceptionHandler
     public void handleIncorrectUsage(Context<?> ctx, IncorrectUsageException ex) {
-        ctx.send(new ComponentBuilder("Usage: /").color(ChatColor.RED)
-          .append(ctx.getPathInfo().usage())
-          .create());
+        if (ex.getMessage().contains("unhandled")) {
+            ctx.send(new ComponentBuilder("The command is incomplete, usage: /").color(ChatColor.RED)
+              .append(ctx.getPathInfo().usage())
+              .create());
+        } else {
+            ctx.send(new ComponentBuilder("Invalid command, usage: /").color(ChatColor.RED)
+              .append(ctx.getPathInfo().usage())
+              .create());
+        }
     }
 }
