@@ -4,7 +4,7 @@ allprojects {
         apply plugin: 'maven'
 
         group 'me.saiintbrisson'
-        version '1.2-SNAPSHOT'
+        version '1.3.1-SNAPSHOT'
 
         sourceCompatibility = 1.8
 
