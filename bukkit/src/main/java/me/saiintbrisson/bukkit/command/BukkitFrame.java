@@ -132,7 +132,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      */
     @Override
     public BukkitCommand getCommand(String name) {
-        return getOrRegisterCommand(name, null)
+        return getOrRegisterCommand(name, null);
     }
 
     private BukkitCommand getOrRegisterCommand(String name, Consumer<BukkitCommand> whenComplete) {
