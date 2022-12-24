@@ -44,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -131,45 +132,30 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      */
     @Override
     public BukkitCommand getCommand(String name) {
-        int index = name.indexOf('.');
-        String nextSubCommand = name;
-        if (index != -1) {
-            nextSubCommand = name.substring(0, index);
-        }
-
-        BukkitCommand subCommand = commandMap.get(nextSubCommand);
-        if (subCommand == null) {
-            subCommand = new BukkitCommand(this, nextSubCommand, 0);
-            commandMap.put(nextSubCommand, subCommand);
-        }
-
-        if (subCommand.getPosition() == 0) {
-            bukkitCommandMap.register(plugin.getName(), subCommand);
-        }
-
-        return subCommand.createRecursive(name);
+        return getOrRegisterCommand(name, null)
     }
 
-    // Due to the fact that the above method isn't good for registering commands with multiple aliases, I've added this method.
-    private BukkitCommand getCommand(String name, Consumer<BukkitCommand> whenComplete) {
-        int index = name.indexOf('.');
-        String nextSubCommand = name;
-        if (index != -1) {
-            nextSubCommand = name.substring(0, index);
+    private BukkitCommand getOrRegisterCommand(String name, Consumer<BukkitCommand> whenComplete) {
+        String[] segments = name.split("\\.");
+        String root = segments[0];
+        BukkitCommand command = commandMap.get(root);
+        if (command == null) {
+            command = new BukkitCommand(this, root, 0);
+
+            commandMap.put(root, command);
+
+            if (segments.length > 1) {
+                bukkitCommandMap.register(plugin.getName(), command);
+            }
         }
 
-        BukkitCommand subCommand = commandMap.get(nextSubCommand);
-        if (subCommand == null) {
-            subCommand = new BukkitCommand(this, nextSubCommand, 0);
-            whenComplete.accept(subCommand);
-            commandMap.put(nextSubCommand, subCommand);
+        command = command.createRecursive(name);
+        if (whenComplete != null) {
+            whenComplete.accept(command);
         }
-
-        if (subCommand.getPosition() == 0) {
-            bukkitCommandMap.register(plugin.getName(), subCommand);
+        if (command.getPosition() == 0) {
+            bukkitCommandMap.register(plugin.getName(), command);
         }
-
-        return subCommand.createRecursive(name);
     }
 
     /**
@@ -203,24 +189,16 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      */
     @Override
     public void registerCommand(CommandInfo commandInfo, CommandExecutor<CommandSender> commandExecutor) {
-        final BukkitCommand recursive = getCommand(commandInfo.getName(), command -> {
+        getOrRegisterCommand(commandInfo.getName(), command -> {
             command.initCommand(commandInfo, commandExecutor);
         });
-
-        if (recursive != null) {
-            recursive.initCommand(commandInfo, commandExecutor);
-        }
     }
 
     @Override
     public void registerCompleter(String name, CompleterExecutor<CommandSender> completerExecutor) {
-        final BukkitCommand recursive = getCommand(name, command -> {
+        getOrRegisterCommand(name, command -> {
             command.initCompleter(completerExecutor);
         });
-
-        if (recursive != null) {
-            recursive.initCompleter(completerExecutor);
-        }
     }
 
     /**
