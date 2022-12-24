@@ -138,10 +138,10 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     private BukkitCommand getOrRegisterCommand(String name, Consumer<BukkitCommand> whenComplete) {
         String[] segments = name.split("\\.");
         String root = segments[0];
+
         BukkitCommand command = commandMap.get(root);
         if (command == null) {
             command = new BukkitCommand(this, root, 0);
-
             commandMap.put(root, command);
 
             if (segments.length > 1) {
@@ -153,9 +153,12 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         if (whenComplete != null) {
             whenComplete.accept(command);
         }
+
         if (command.getPosition() == 0) {
             bukkitCommandMap.register(plugin.getName(), command);
         }
+
+	return command;
     }
 
     /**
