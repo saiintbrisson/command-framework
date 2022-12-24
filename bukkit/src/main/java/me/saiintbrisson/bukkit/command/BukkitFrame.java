@@ -73,7 +73,8 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
 
     /**
      * Creates a new BukkitFrame with the AdapterMap provided.
-     * @param plugin Plugin
+     *
+     * @param plugin     Plugin
      * @param adapterMap AdapterMap
      */
     public BukkitFrame(@NonNull @NotNull Plugin plugin, @NonNull @NotNull AdapterMap adapterMap) {
@@ -99,7 +100,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      * Creates a new BukkitFrame with the default AdapterMap. <p>If the registerDefault is true,
      * it registers the default adapters for Bukkit.
      *
-     * @param plugin Plugin
+     * @param plugin          Plugin
      * @param registerDefault Boolean
      */
     public BukkitFrame(@NonNull @NotNull Plugin plugin, boolean registerDefault) {
@@ -123,8 +124,8 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
 
     /**
      * Get a command by their name in the CommandMap
-     * @param name String
      *
+     * @param name String
      * @return BukkitCommand
      */
     @Override
@@ -141,15 +142,12 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
             commandMap.put(nextSubCommand, subCommand);
         }
 
-        if (subCommand.getPosition() == 0) {
-            bukkitCommandMap.register(plugin.getName(), subCommand);
-        }
-
         return subCommand.createRecursive(name);
     }
 
     /**
      * Registers multiple command objects into the CommandMap.
+     *
      * @param objects Object...
      */
     @Override
@@ -173,7 +171,7 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
     /**
      * Registers a command into the CommandMap
      *
-     * @param commandInfo CommandInfo
+     * @param commandInfo     CommandInfo
      * @param commandExecutor CommandExecutor
      */
     @Override
@@ -184,6 +182,9 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
         }
 
         recursive.initCommand(commandInfo, commandExecutor);
+        if (recursive.getPosition() == 0) {
+            bukkitCommandMap.register(plugin.getName(), recursive);
+        }
     }
 
     @Override
@@ -202,8 +203,8 @@ public final class BukkitFrame implements CommandFrame<Plugin, CommandSender, Bu
      *
      * <p>Returns a boolean that depends if the
      * operation was successful</p>
-     * @param name String | Command name
      *
+     * @param name String | Command name
      * @return boolean
      */
     @Override
