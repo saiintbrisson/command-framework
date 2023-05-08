@@ -19,6 +19,7 @@ package me.saiintbrisson.bungee.command.command;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import me.saiintbrisson.bungee.command.BungeeFrame;
 import me.saiintbrisson.bungee.command.executor.BungeeCommandExecutor;
 import me.saiintbrisson.bungee.command.target.BungeeTargetValidator;
@@ -211,7 +212,9 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
 
     @Override
     public List<String> getAliasesList() {
-        return Arrays.asList(getAliases());
+        val aliases = this.getAliases();
+        if(Objects.isNull(aliases)) return Lists.newArrayList();
+        return Arrays.asList(aliases);
     }
 
     @Override
