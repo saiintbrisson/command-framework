@@ -19,7 +19,6 @@ package me.saiintbrisson.bungee.command.command;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 import me.saiintbrisson.bungee.command.BungeeFrame;
 import me.saiintbrisson.bungee.command.executor.BungeeCommandExecutor;
 import me.saiintbrisson.bungee.command.target.BungeeTargetValidator;
