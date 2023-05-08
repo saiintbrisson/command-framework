@@ -211,7 +211,8 @@ public class BungeeCommand extends Command implements CommandHolder<CommandSende
 
     @Override
     public List<String> getAliasesList() {
-        return Arrays.asList(getAliases());
+        String[] aliases = this.getAliases();
+        return aliases == null ? Collections.emptyList() : Arrays.asList(aliases);
     }
 
     @Override
